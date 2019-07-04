@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ASCII"?>
+<openclProject:OpenCLProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:openclProject="http://www.xilinx.com/openclproject" name="test5" location="/home/user/workspace2018/test5" platform="/opt/xilinx/platforms/xilinx_vcu1525_xdma_201830_1/xilinx_vcu1525_xdma_201830_1.xpfm" platformUID="xilinx:vcu1525:xdma:201830.1" systemProject="test5_system" sysConfig="Linux" cpu="" cpuInstance="" os="linux">
+  <configuration name="Emulation-SW" id="com.xilinx.sdx.opencl.config.sw_emu.709647829" dirty="true">
+    <configBuildOptions xsi:type="openclProject:OpenCLOptions" kernelDebug="true"/>
+  </configuration>
+  <configuration name="Emulation-HW" id="com.xilinx.sdx.opencl.config.hw_emu.723136529">
+    <configBuildOptions xsi:type="openclProject:OpenCLOptions" kernelDebug="true" target="hw_emu"/>
+    <lastBuildOptions xsi:type="openclProject:OpenCLOptions" kernelDebug="true" target="hw_emu"/>
+  </configuration>
+  <configuration name="System" id="com.xilinx.sdx.opencl.config.hw.741370027" dirty="true">
+    <configBuildOptions xsi:type="openclProject:OpenCLOptions" target="hw"/>
+  </configuration>
+</openclProject:OpenCLProject>
