@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ASCII"?>
+<openclProject:OpenCLProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:openclProject="http://www.xilinx.com/openclproject" name="test6" location="/home/user/workspace2018/test6" platform="/opt/xilinx/platforms/xilinx_vcu1525_xdma_201830_1/xilinx_vcu1525_xdma_201830_1.xpfm" platformUID="xilinx:vcu1525:xdma:201830.1" systemProject="test6_system" sysConfig="Linux" cpu="" cpuInstance="" os="linux">
+  <configuration name="Emulation-SW" id="com.xilinx.sdx.opencl.config.sw_emu.1208380323" dirty="true">
+    <configBuildOptions xsi:type="openclProject:OpenCLOptions" kernelDebug="true">
+      <binaryContainers name="binary_container_1"/>
+    </configBuildOptions>
+  </configuration>
+  <configuration name="Emulation-HW" id="com.xilinx.sdx.opencl.config.hw_emu.1479129708" dirty="true">
+    <configBuildOptions xsi:type="openclProject:OpenCLOptions" kernelDebug="true" target="hw_emu">
+      <binaryContainers name="binary_container_1"/>
+    </configBuildOptions>
+    <lastBuildOptions xsi:type="openclProject:OpenCLOptions" kernelDebug="true" target="hw_emu">
+      <binaryContainers name="binary_container_1">
+        <precompiledKernels name="sdx_kernel_wizard_0" sourceFile="src/sdx_rtl_kernel/sdx_kernel_wizard_0/sdx_kernel_wizard_0.xo">
+          <computeUnits name="sdx_kernel_wizard_0_1" slr=""/>
+        </precompiledKernels>
+      </binaryContainers>
+    </lastBuildOptions>
+  </configuration>
+  <configuration name="System" id="com.xilinx.sdx.opencl.config.hw.206774667" dirty="true">
+    <configBuildOptions xsi:type="openclProject:OpenCLOptions" target="hw">
+      <binaryContainers name="binary_container_1"/>
+    </configBuildOptions>
+    <lastBuildOptions xsi:type="openclProject:OpenCLOptions" target="hw">
+      <binaryContainers name="binary_container_1">
+        <precompiledKernels name="sdx_kernel_wizard_0" sourceFile="src/sdx_rtl_kernel/sdx_kernel_wizard_0/sdx_kernel_wizard_0.xo">
+          <computeUnits name="sdx_kernel_wizard_0_1" slr=""/>
+        </precompiledKernels>
+      </binaryContainers>
+    </lastBuildOptions>
+  </configuration>
+</openclProject:OpenCLProject>
