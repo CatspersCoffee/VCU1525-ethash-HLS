@@ -1,0 +1,13 @@
+
+
+disk1 = 
+/mnt/80428418-ff15-411f-bfdf-97304700216c/
+
+disk2 = 
+/mnt/d996ae17-c479-4050-935f-2a629fc1cf04/
+
+disk3 =
+/mnt/cbea4eb1-844a-4b4b-8fbb-52ed04cf6ffa/
+
+
+
