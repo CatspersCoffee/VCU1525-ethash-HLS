@@ -46,6 +46,11 @@ clean_all:
 HLS_oneonly:
 	cd SDX_ACCL_KERNEL_PASSTHRU/Make_flow; make srai_hw
 
+HLS_passthru2:
+	cd SDX_ACCL_KERNEL_PASSTHRU2/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+HLS_passthru3:
+	cd SDX_ACCL_KERNEL_PASSTHRU3/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
 
 
 help:

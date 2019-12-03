@@ -1,6 +1,16 @@
 source ../../../device_type.tcl
-set XILINX_VIVADO /home/applications/Xilinx/Vivado/2019.1
-set XILINX_OPENCL /home/applications/Xilinx/SDx/2017.4
+
+#set XILINX_VIVADO /home/applications/Xilinx/Vivado/2019.1
+#set XILINX_OPENCL /home/applications/Xilinx/SDx/2017.4
+#set XILINX_VIVADO /mnt/disk2/tools/Xilinx/Vivado/2019.1
+#set XILINX_OPENCL /mnt/disk2/tools/Xilinx/SDx/2019.1
+
+# this is Disk2
+set XILINX_VIVADO /mnt/d996ae17-c479-4050-935f-2a629fc1cf04/tools/Xilinx/Vivado/2019.1
+set XILINX_OPENCL /mnt/d996ae17-c479-4050-935f-2a629fc1cf04/tools/Xilinx/SDx/2019.1
+
+
+
 set INCLUDES "-I../src -I../../common_src"
 
 open_project vhls_prj

@@ -1,0 +1,1 @@
+./SDX_ACCL_KERNEL_PASSTHRU/Make_flow/passthru.hw ../bitfiles/role/VU9P_AXI_ICAP_PR_DESIGN_top.IP_SDX_ACCL_KERNEL_PASSTHRU3_pblock_role_HLS_PR_NORTH_partial.bin
