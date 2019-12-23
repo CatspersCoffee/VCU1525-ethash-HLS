@@ -1,0 +1,208 @@
+
+44: setting the HLS PASSTHUR test program to place input/output data on an 8GB Boundary
+
+Start---
+	|
+	 --> setup bin directories and the device type.
+	|
+	 --> make the HLS IP, this involves SDx.
+	|
+	 --> make the role.
+	|
+	 --> make the shell.
+	|
+	 --> make each reconfigurable unit.
+	|
+	 -->
+
+
+
+
+
+
+
+
+setenv XILINX_VIVADO <vivado_install_dir>/Vivado/2014.1
+
+
+--- setup the device type and bin directories ------------------------------------------------------------------------------------------
+
+
+	source ./device_type.tcl
+	source ./bins/set_bins.tcl
+
+
+
+--- make the HLS IP ------------------------------------------------------------------------------------------
+This has to be done with the makefile but running "make HLS_IP" from withing the directory /HLS 
+or by running each .tcl script individually.
+
+
+/mnt/cbea4eb1-844a-4b4b-8fbb-52ed04cf6ffa/xilinx_projects2/41/HLS
+
+	cd SDX_ACCL_KERNEL_PASSTHRU/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+	cd SDX_ACCL_KERNEL_FP_VECTOR_MULT/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+	cd SDX_ACCL_MATRIX_INVERT_4X4_CPP_KERNEL/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+	cd SDX_ACCL_MATRIX_INVERT_5X5_CPP_KERNEL/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+	cd SDX_ACCL_MATRIX_MULT_6X6/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+	cd SDX_ACCL_MATRIX_MULT_8X8/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+
+
+
+--- make the role ------------------------------------------------------------------------------------------
+
+to make the role for each core you can:
+use the makefile located in "42/IP/role" and running "make create_all_ip" OR individually source each tcl script
+
+	cd IP_SDX_ACCL_KERNEL_FP_VECTOR_MULT; vivado -mode batch -source inital_hls_sdx_import.tcl
+	cd IP_SDX_ACCL_KERNEL_PASSTHRU; vivado -mode batch -source inital_hls_sdx_import.tcl
+	cd IP_SDX_ACCL_MATRIX_INVERT_4X4_CPP_KERNEL; vivado -mode batch -source inital_hls_sdx_import.tcl
+	cd IP_SDX_ACCL_MATRIX_INVERT_5X5_CPP_KERNEL; vivado -mode batch -source inital_hls_sdx_import.tcl
+	cd IP_SDX_ACCL_MATRIX_MULT_6X6; vivado -mode batch -source inital_hls_sdx_import.tcl
+	cd IP_SDX_ACCL_MATRIX_MULT_8X8; vivado -mode batch -source inital_hls_sdx_import.tcl
+
+
+cd into any one of the cores, e.g., the PASSTHRU and create role from there.
+change the directory to: 
+cd IP/role/SDX_ACCL_KERNEL_PASSTHRU
+
+Note this directory cannot have any of the following files present:
+/SDX_ACCL_KERNEL_PASSTHRU
+/Project_X
+/HLS_PR_SDX_SRAI
+/.Xil
+
+then run in the dir 
+source ./inital_hls_sdx_import.tcl
+
+close_project
+
+do this for each role you want to create. Note that the block diagram file .bd for the role for each core you 
+want to build the PR .bin file for is required for building each of the reconfigurable areas (steps below).
+
+
+--- make the shell ----------------------------------------------------------------------------------------------------------------------
+
+change directory to 42/IP/shell
+run the script:
+source ./PCIe_Bridge_ICAP_complex_bd_42.tcl
+
+This will create "PCIe_Bridge_ICAP_complex" directory in /42/IP/shell as "/IP/shell/PCIe_Bridge_ICAP_complex"
+
+
+
+change directory to "/42/vivado_batch_shell" and run 
+
+source ./vivado_batch_40_shell2.tcl
+
+this will run vivado and attempt to create the batch shell, it will fail at some point with an error about IP.
+you will need to manually from the design flow window, synthesize the design. once the design synthesizes.
+
+source ./vivado_batch_40_shell3.tcl
+
+This will finish with sucess.
+
+The directory /42/batch_shell/ should now have the .bit .mcs .bin files in it and some .dcp files with whatever name was chosen 
+for the top module. in the below case it was "IP_SDX_ACCL_KERNEL_PASSTHRU"
+
+VU9P_AXI_ICAP_PR_DESIGN_top.IP_SDX_ACCL_KERNEL_PASSTHRU.mcs
+VU9P_AXI_ICAP_PR_DESIGN_top.IP_SDX_ACCL_KERNEL_PASSTHRU.bit
+VU9P_AXI_ICAP_PR_DESIGN_top.IP_SDX_ACCL_KERNEL_PASSTHRU.bin
+
+close_project.
+
+
+copy 
+;cp *_partial*.bin; cp *.bi* ../bitfiles/shell; cp *.ltx ../bitfiles/shell; cp *.mcs ../bitfiles/shell; cp *.prm ../bitfiles/shell
+
+
+--- building each of the reconfigurable areas -------------------------------------------------------------------------------------------
+
+Before making the role make sure that in the main directory "/42" that these sub-directories have nothing in them except .tcl scripts
+
+42/vivado_batch_SDX_ACCL_MATRIX_MULT_8X8
+42/vivado_batch_SDX_ACCL_MATRIX_MULT_6X6
+42/vivado_batch_SDX_ACCL_MATRIX_INVERT_5X5_CPP_KERNEL
+42/vivado_batch_SDX_ACCL_MATRIX_INVERT_4X4_CPP_KERNEL
+42/vivado_batch_SDX_ACCL_KERNEL_PASSTHRU
+42/vivado_batch_SDX_ACCL_KERNEL_FP_VECTOR_MULT
+
+cd into the directory you want to build the PR section for and run the script
+
+source ./vivado_batch_mod1.tcl
+
+
+
+
+
+
+
+
+
+
+
+************************************************************************************************************************************
+*		SCRATCH_PAD													*
+************************************************************************************************************************************
+FOR Project 40
+----------------------------------------------------------------------
+single run:
+make build_G
+
+
+Step by Step: look below
+----------------------------------------------------------------------
+to make HLS parts with SDx
+
+
+cd SDX_ACCL_KERNEL_PASSTHRU/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+
+
+
+----------------------------------------------------------------------
+cd /IP/role/IP_SDX_ACCL_KERNEL_PASSTRHU/
+source ./blah6.tcl 
+
+once design is generated, open the board design and run
+generate_target_HSL_ip
+
+this will generate the ip and put it in a dir 
+/35/IP/role/IP_SDX_ACCL_KERNEL_PASSTHRU/project_X/project_X.srcs/sources_1/bd/
+
+copy the directory "HLS_PR_SDX_SRAI" back up a few levels to the main dir where
+you ran the blah7.tcl script. into:
+/35/IP/role/IP_SDX_ACCL_KERNEL_PASSTHRU/
+
+
+----------------------------------------------------------------------
+to make static part of shell:
+
+cd /IP/shell/
+
+run from tcl console the below to create the static part of the shell:
+source ./pcie_bridge_mod4.tcl 		--> OLD for 33
+source ./pcie_bridge_35_mod5.tcl 	--> For 35, has 16GB 
+
+ 
+after this is generated, run from tcl console:
+generate_target_HLS_ip
+
+This will create "PCIe_Bridge_ICAP_complex" directory in /IP/shell/
+
+as "/IP/shell/PCIe_Bridge_ICAP_complex"
+
+----------------------------------------------------------------------
+
+go back to root dir /35/ and run Makefile from the tcl command line with:
+
+make build_F
+
+this will run vivado and attempt to create the batch shell, it will fail at some point.
+you will need to manually from the design flow window, synthesize the design. once the design synthesizes.
+close_project. 
+
+there will now be "synth" and ip and hw_handoff in "/IP/shell/PCIe_Bridge_ICAP_complex/" directory.
+
+re run "make build_F" from the root directory. this time is should pass.
