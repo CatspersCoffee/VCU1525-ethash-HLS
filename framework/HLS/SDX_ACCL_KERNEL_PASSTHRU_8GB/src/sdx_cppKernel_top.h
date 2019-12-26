@@ -92,7 +92,7 @@ void passthru (data_t *a_in, data_t *results);
 #ifdef XOCC_CPP_KERNEL 
 extern "C" {
 #endif
-void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, unsigned int NUMBER_OF_DATA_SETS_t, uint32_t *ker_count);
+void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, unsigned int NUMBER_OF_DATA_SETS_t, uint32_t *ker_count);
 #ifdef XOCC_CPP_KERNEL 
 }
 #endif

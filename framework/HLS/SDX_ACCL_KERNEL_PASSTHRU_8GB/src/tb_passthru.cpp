@@ -150,9 +150,10 @@ int main(int argc, char** argv) {
     kernel_execution_metric_struct kernel_execution_metric; 
 
     printf("\n\n\n-------------------------------------------------------------\n\n\n");
-
+    sdx_data_t* dag_ptr;
     char *dag_ptr_c_POSIX = NULL;
     ethash_full* dag_ptr_c;
+    ethash_full* dag_head_c;
     uint64_t size_dag = 1073739904U;
     posix_memalign((void **)&dag_ptr_c_POSIX, 64, size_dag + 64);
     dag_ptr_c = (ethash_full*)dag_ptr_c_POSIX;
@@ -166,38 +167,38 @@ int main(int argc, char** argv) {
 
 
 
-  cout << "Srai_ DBG NUMBER_OF_DATA_SETS  =  " << NUMBER_OF_DATA_SETS << endl;
-  cout << "Srai_ DBG GLOBAL_DATA_IN_SIZE  =  " << GLOBAL_DATA_IN_SIZE << endl;
-  cout << "Srai_ DBG GLOBAL_DATA_OUT_SIZE =  " << GLOBAL_DATA_OUT_SIZE << endl;
-  if ((GLOBAL_DATA_IN_SIZE_BYTES > ONE_GIG) | (GLOBAL_DATA_OUT_SIZE_BYTES > ONE_GIG)) {
-    cout << "Memory reguirement over 1GB .......... exiting\n";
-    exit (1);
-  }
+    cout << "Srai_ DBG NUMBER_OF_DATA_SETS  =  " << NUMBER_OF_DATA_SETS << endl;
+    cout << "Srai_ DBG GLOBAL_DATA_IN_SIZE  =  " << GLOBAL_DATA_IN_SIZE << endl;
+    cout << "Srai_ DBG GLOBAL_DATA_OUT_SIZE =  " << GLOBAL_DATA_OUT_SIZE << endl;
+    if ((GLOBAL_DATA_IN_SIZE_BYTES > ONE_GIG) | (GLOBAL_DATA_OUT_SIZE_BYTES > ONE_GIG)) {
+        cout << "Memory reguirement over 1GB .......... exiting\n";
+        exit (1);
+    }
 
 
-  posix_memalign((void **)&a_in_ptr_c_POSIX, 4096, GLOBAL_DATA_IN_SIZE_BYTES + 4096);
-  a_in_ptr_c = (srai_mem_conv_IN0 *)a_in_ptr_c_POSIX;
-  posix_memalign((void **)&y_out_ptr_c_POSIX, 4096, GLOBAL_DATA_OUT_SIZE_BYTES + 4096);
-  y_out_ptr_c = (srai_mem_conv_OUT0 *)y_out_ptr_c_POSIX;
+    posix_memalign((void **)&a_in_ptr_c_POSIX, 4096, GLOBAL_DATA_IN_SIZE_BYTES + 4096);
+    a_in_ptr_c = (srai_mem_conv_IN0 *)a_in_ptr_c_POSIX;
+    posix_memalign((void **)&y_out_ptr_c_POSIX, 4096, GLOBAL_DATA_OUT_SIZE_BYTES + 4096);
+    y_out_ptr_c = (srai_mem_conv_OUT0 *)y_out_ptr_c_POSIX;
 
-  a_in_head_c = a_in_ptr_c;
-  y_out_head_c = y_out_ptr_c;
+    a_in_head_c = a_in_ptr_c;
+    y_out_head_c = y_out_ptr_c;
 
 
-  printf("-------------------------------------------------------------\n");
-  printf("Create Test Data Set\n");
-  printf("Note DATA_IN_SIZE (Input Memory size in bytes  ) = %d (%x)\n",(GLOBAL_DATA_IN_SIZE_BYTES),(GLOBAL_DATA_IN_SIZE_BYTES));
-  printf("Note DATA_OUT_SIZE(Input Memory size in bytes  ) = %d (%x)\n",(GLOBAL_DATA_OUT_SIZE_BYTES),(GLOBAL_DATA_OUT_SIZE_BYTES));
-  cout << "Size of data_t = " << sizeof(data_t) <<  " Bytes" << endl;
-  cout << "Number of Input Operands =  " << NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE*NUM_ELEMENTS_PER_SDX_DATA_BEAT<< endl;
-  cout << "Number of Output Operands = " << NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_OUT_SIZE*NUM_ELEMENTS_PER_SDX_DATA_BEAT<< endl;
-  cout << "Size of srai_mem_conv_IN0 = " << sizeof(srai_mem_conv_IN0) <<  " Bytes" << endl;
-  cout << "True Size (in Bytes) of Input Data  = " << sizeof(data_t)*NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE*NUM_ELEMENTS_PER_SDX_DATA_BEAT<< endl;
-  cout << "Allocated Size (in Bytes) of a_in_ptr = " <<  GLOBAL_DATA_IN_SIZE_BYTES  << " | 0x"<< hex <<  GLOBAL_DATA_IN_SIZE_BYTES << endl;
-  cout << dec;
-  cout << "Allocated Size (in Bytes) of a_in_ptr_c = " << sizeof(srai_mem_conv_IN0)*NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE << " | 0x" << hex << sizeof(srai_mem_conv_IN0)*NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE << endl;
-  cout << dec;
-  printf("-------------------------------------------------------------\n\n\n");
+    printf("-------------------------------------------------------------\n");
+    printf("Create Test Data Set\n");
+    printf("Note DATA_IN_SIZE (Input Memory size in bytes  ) = %d (%x)\n",(GLOBAL_DATA_IN_SIZE_BYTES),(GLOBAL_DATA_IN_SIZE_BYTES));
+    printf("Note DATA_OUT_SIZE(Input Memory size in bytes  ) = %d (%x)\n",(GLOBAL_DATA_OUT_SIZE_BYTES),(GLOBAL_DATA_OUT_SIZE_BYTES));
+    cout << "Size of data_t = " << sizeof(data_t) <<  " Bytes" << endl;
+    cout << "Number of Input Operands =  " << NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE*NUM_ELEMENTS_PER_SDX_DATA_BEAT<< endl;
+    cout << "Number of Output Operands = " << NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_OUT_SIZE*NUM_ELEMENTS_PER_SDX_DATA_BEAT<< endl;
+    cout << "Size of srai_mem_conv_IN0 = " << sizeof(srai_mem_conv_IN0) <<  " Bytes" << endl;
+    cout << "True Size (in Bytes) of Input Data  = " << sizeof(data_t)*NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE*NUM_ELEMENTS_PER_SDX_DATA_BEAT<< endl;
+    cout << "Allocated Size (in Bytes) of a_in_ptr = " <<  GLOBAL_DATA_IN_SIZE_BYTES  << " | 0x"<< hex <<  GLOBAL_DATA_IN_SIZE_BYTES << endl;
+    cout << dec;
+    cout << "Allocated Size (in Bytes) of a_in_ptr_c = " << sizeof(srai_mem_conv_IN0)*NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE << " | 0x" << hex << sizeof(srai_mem_conv_IN0)*NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE << endl;
+    cout << dec;
+    printf("-------------------------------------------------------------\n\n\n");
 
 
 
@@ -208,13 +209,19 @@ int main(int argc, char** argv) {
 
     a_in_ptr = (sdx_data_t *)a_in_head_c;
     y_out_ptr = (sdx_data_t *)y_out_head_c;
-
-    //print_gen_test_matrix(a_in_ptr_c);
     a_in_ptr_c = a_in_head_c;
+
     cout << "Memory Initialized with test Data\n";
 
+
+    dag_ptr = (sdx_data_t *)dag_head_c;
+    dag_ptr_c = dag_head_c;
+
+
+
 #ifdef GPP_ONLY_FLOW  
-    sdx_cppKernel_top(a_in_ptr, y_out_ptr, (unsigned int)NUMBER_OF_DATA_SETS, &dbg_ker_count);
+    //sdx_cppKernel_top(a_in_ptr, y_out_ptr, (unsigned int)NUMBER_OF_DATA_SETS, &dbg_ker_count);
+    sdx_cppKernel_top(a_in_ptr, y_out_ptr, dag_ptr, (unsigned int)NUMBER_OF_DATA_SETS, &dbg_ker_count);
 
 #else
 // Compile for SRAI custom HLS accelerator platform 
@@ -273,12 +280,13 @@ int main(int argc, char** argv) {
     fpga_PROGRAM_NORTH_PR(my_fpga_xDMA_ptr, PR_binFile_name);
     cout << " ............... Done Programing PR Bitstream ------------------ " << endl;
 
-    // Read the PR_HLS Control register to poll the Idle bit (bit 1)  
-    fpga_xfer_data_to_card64(my_fpga_xDMA_ptr, AXI_MM_DDR4_C0, (char*)a_in_ptr, (GLOBAL_DATA_IN_SIZE_BYTES));
+    // Read the PR_HLS Control register to poll the Idle bit (bit 1) -----  
+    fpga_xfer_data_to_card64(my_fpga_xDMA_ptr, AXI_MM_DDR4_dag_C1, (char*)dag_ptr_c, size_dag);                         // copy dag data
+    fpga_xfer_data_to_card64(my_fpga_xDMA_ptr, AXI_MM_DDR4_input_C1, (char*)a_in_ptr, (GLOBAL_DATA_IN_SIZE_BYTES));     // copy input data
 
 
     // Write to PR_HLS Address offset registers to set the location in Memory where Input Data and Output results are stored 
-    fpga_run_NORTH_PR64(my_fpga_xDMA_ptr, AXI_MM_DDR4_C0, AXI_MM_DDR4_results_C0, (NUMBER_OF_DATA_SETS));
+    fpga_run_NORTH_PR64(my_fpga_xDMA_ptr, AXI_MM_DDR4_input_C1, AXI_MM_DDR4_results_C1, (NUMBER_OF_DATA_SETS));
 
     start_t = chrono::high_resolution_clock::now();
     compute_itn_count = fpga_check_compute_done_NORTH_PR(my_fpga_xDMA_ptr);
@@ -286,7 +294,7 @@ int main(int argc, char** argv) {
     cout << "compute_itn_count = " << compute_itn_count << endl;
 
     // Read Results from DDR4 output (results) area 
-    fpga_xfer_data_from_card64(my_fpga_xDMA_ptr, AXI_MM_DDR4_results_C0, (char*)y_out_ptr, (GLOBAL_DATA_OUT_SIZE_BYTES));
+    fpga_xfer_data_from_card64(my_fpga_xDMA_ptr, AXI_MM_DDR4_results_C1, (char*)y_out_ptr, (GLOBAL_DATA_OUT_SIZE_BYTES));
 
     elapsed_hi_res = stop_t - start_t ;
     high_res_elapsed_time = elapsed_hi_res.count();
