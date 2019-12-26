@@ -3,42 +3,76 @@
 #ifndef SDX_CPPKERNEL_TOP_H_
 #define SDX_CPPKERNEL_TOP_H_ 
 
-#define data_t uint32_t
+#define data_t uint32_t     // 4 bytes
 
 #define NUMBER_OF_SDX_BUS_XFERS_PER_INPUT 1UL
 #define NUMBER_OF_SDX_BUS_XFERS_PER_OUTPUT 1UL
 
-#define SDX_BUS_WIDTH 512UL
-#define sdx_data_t ap_uint<SDX_BUS_WIDTH>
-#define SDX_BUS_WIDTH_BYTES SDX_BUS_WIDTH/8UL
+#define SDX_BUS_WIDTH 512UL                     // 512
+#define sdx_data_t ap_uint<SDX_BUS_WIDTH>       // 512
+#define SDX_BUS_WIDTH_BYTES SDX_BUS_WIDTH/8UL   // 512/8 = 64
+
 #define SDX_CU_LOCAL_SIZE 16UL
+
+
 //#define NUMBER_OF_DATA_SETS 1024UL
 //#define NUMBER_OF_DATA_SETS 1024UL
-#define NUMBER_OF_DATA_SETS 1024UL*1024UL
+//#define NUMBER_OF_DATA_SETS 1024UL*1024UL
+#define NUMBER_OF_DATA_SETS 1UL
+
+
 #define HW_Kernel_frequency 250.0e6
 
 #define NUM_INPUT_KERNEL_FUNCTION_ARGUMENTS 1UL
 #define NUM_OUTPUT_KERNEL_FUNCTION_ARGUMENTS 1UL
 
 
-#define SDX_CU_LOCAL_IN_SIZE (SDX_CU_LOCAL_SIZE*NUM_INPUT_KERNEL_FUNCTION_ARGUMENTS) 
+#define SDX_CU_LOCAL_IN_SIZE (SDX_CU_LOCAL_SIZE*NUM_INPUT_KERNEL_FUNCTION_ARGUMENTS)    // how many elements are in the local CU. = 16
 #define SDX_CU_LOCAL_OUT_SIZE (SDX_CU_LOCAL_SIZE*NUM_OUTPUT_KERNEL_FUNCTION_ARGUMENTS) 
-#define NUM_ELEMENTS_PER_SDX_DATA_BEAT ((sizeof(sdx_data_t))/(sizeof(data_t)))
+#define NUM_ELEMENTS_PER_SDX_DATA_BEAT ((sizeof(sdx_data_t))/(sizeof(data_t)))          // 64 (bytes wide) / 4 (each element is byte wide) = 16 
 
 #define GLOBAL_DATA_IN_SIZE ((uint32_t)(SDX_CU_LOCAL_IN_SIZE*NUMBER_OF_DATA_SETS*NUMBER_OF_SDX_BUS_XFERS_PER_INPUT))
 #define GLOBAL_DATA_OUT_SIZE ((uint32_t)(SDX_CU_LOCAL_OUT_SIZE*NUMBER_OF_DATA_SETS*NUMBER_OF_SDX_BUS_XFERS_PER_OUTPUT))
 #define GLOBAL_DATA_IN_SIZE_BYTES ((uint32_t)(GLOBAL_DATA_IN_SIZE*sizeof(sdx_data_t)))
 #define GLOBAL_DATA_OUT_SIZE_BYTES ((uint32_t)(GLOBAL_DATA_OUT_SIZE*sizeof(sdx_data_t)))
 
+
+//-----------------------------------------------------------
+
+#define NODE_WORDS (64/4) //16
+/*
+typedef union node {
+    uint8_t bytes[NODE_WORDS * 4];
+    uint32_t words[NODE_WORDS];
+    uint64_t double_words[NODE_WORDS / 2];
+} node;
+
+typedef union ethash_full {
+	node* data;
+} ethash_full;
+*/
+
+typedef union ethash_full {
+    uint8_t bytes[NODE_WORDS * 4];
+    uint32_t words[NODE_WORDS];
+	uint64_t double_words[NODE_WORDS / 2];
+} ethash_full;
+
+
+//-----------------------------------------------------------
+
 typedef union {
     uint32_t my_uint32;
     data_t my_data_t;
 } srai_conv;
 
+
 typedef union {
     unsigned char my_uint_char[64*NUMBER_OF_SDX_BUS_XFERS_PER_INPUT];
     data_t my_data_t[NUM_ELEMENTS_PER_SDX_DATA_BEAT];
 } srai_mem_conv_IN0;
+
+
 typedef union {
     unsigned char my_uint_char[64*NUMBER_OF_SDX_BUS_XFERS_PER_OUTPUT];
     data_t my_data_t[NUM_ELEMENTS_PER_SDX_DATA_BEAT];

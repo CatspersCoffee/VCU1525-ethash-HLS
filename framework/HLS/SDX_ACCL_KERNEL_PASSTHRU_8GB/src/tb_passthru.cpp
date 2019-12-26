@@ -20,19 +20,89 @@ using namespace std;
 
 
 
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------
+void load_dag(ethash_full* _dag_mem, uint64_t _dag_size_in_bytes){
+
+    uint64_t some_word = 0x00;
+    int node_double_words = 8;
+    uint64_t nodes_in_dag = _dag_size_in_bytes / 64;
+
+    cout << "nodes_in_dag  =  " << nodes_in_dag << endl;
+
+    for (uint64_t i = 0 ; i < nodes_in_dag; i++) {
+        for (int j = 0 ; j < node_double_words; j++) { 
+            //_dag_mem->data->double_words[j] = some_word;
+            _dag_mem->double_words[j] = some_word;
+        }
+        some_word++;
+        _dag_mem++;
+    }
+
+}
+
+//------------------------------------------------------------------------------
+void read_dag(){
+
+    size_t size_dag = 1073739904U;
+
+    streampos size;
+    char* dag_memblock;
+
+    ifstream file ("full-R23-0000000000000000", ios::in|ios::binary|ios::ate);
+    if (file.is_open())
+    {
+        size = file.tellg();
+        dag_memblock = new char [size];
+        file.seekg (0, ios::beg);
+        file.read (dag_memblock, size);
+        file.close();
+
+        cout << "the entire file content is in memory";
+
+        
+    }
+    else cout << "Unable to open file";
+
+
+    printf("\n");
+    for (unsigned int index = 0; index < 64;index++) {
+        printf ("%02x", dag_memblock[index]);
+    }
+    delete[] dag_memblock;
+}
+
+//------------------------------------------------------------------------------
+
+
 void gen_test_data(srai_mem_conv_IN0 *a) {
 
     data_t temp[NUM_ELEMENTS_PER_SDX_DATA_BEAT];
 
-
+    uint8_t some_byte = 0x00;
+    
     for (int j = 0 ; j < NUMBER_OF_DATA_SETS; j++) {
         for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {
+            some_byte = 0x00;
             for (unsigned int index = 0; index < NUM_ELEMENTS_PER_SDX_DATA_BEAT;index++) {
-                a->my_data_t[index] = (data_t((rand() % 32768)));
+                a->my_data_t[index] = some_byte;
+                some_byte++;
             }
+
             a++;
         }
     }
+    
+
+
+
 }
 
 void print_test_data(srai_mem_conv_IN0 *a) {
@@ -52,35 +122,49 @@ printf ("-----------------------------------------------------\n");
 
 int main(int argc, char** argv) {
 
-  int compute_itn_count;
-  time_t t;
-  srand((unsigned) time(&t));
-  double high_res_elapsed_time = 0.0f;
-  double high_res_elapsed_time_HW = 0.0f;
-  double high_res_elapsed_time_SW = 0.0f;
-  chrono::high_resolution_clock::time_point start_t;
-  chrono::high_resolution_clock::time_point stop_t;
-  chrono::duration<double> elapsed_hi_res;
+    int compute_itn_count;
+    time_t t;
+    srand((unsigned) time(&t));
+    double high_res_elapsed_time = 0.0f;
+    double high_res_elapsed_time_HW = 0.0f;
+    double high_res_elapsed_time_SW = 0.0f;
+    chrono::high_resolution_clock::time_point start_t;
+    chrono::high_resolution_clock::time_point stop_t;
+    chrono::duration<double> elapsed_hi_res;
 
 
-  uint32_t dbg_ker_count = 0;
-  sdx_data_t *a_in_ptr;
-#ifdef LINUX_BUILD
-  char *a_in_ptr_c_POSIX = NULL;
-  char *y_out_ptr_c_POSIX = NULL;
-#else
-  void *a_in_ptr_c_WIN32;
-  void *y_out_ptr_c_WIN32;
-#endif
-  srai_mem_conv_IN0 *a_in_ptr_c;
-  srai_mem_conv_OUT0 *y_out_ptr_c;
-  srai_mem_conv_IN0 *a_in_head_c;
-  srai_mem_conv_OUT0 *y_out_head_c;
-  sdx_data_t *y_out_ptr;
+    uint32_t dbg_ker_count = 0;
+    sdx_data_t *a_in_ptr;
 
-  SysMon_temp_struct sys_temprature;
-  bool RESULT_SUCESSFULL;
-  kernel_execution_metric_struct kernel_execution_metric; 
+    char *a_in_ptr_c_POSIX = NULL;
+    char *y_out_ptr_c_POSIX = NULL;
+
+    srai_mem_conv_IN0 *a_in_ptr_c;
+    srai_mem_conv_OUT0 *y_out_ptr_c;
+    srai_mem_conv_IN0 *a_in_head_c;
+    srai_mem_conv_OUT0 *y_out_head_c;
+    sdx_data_t *y_out_ptr;
+
+    SysMon_temp_struct sys_temprature;
+    bool RESULT_SUCESSFULL;
+    kernel_execution_metric_struct kernel_execution_metric; 
+
+    printf("\n\n\n-------------------------------------------------------------\n\n\n");
+
+    char *dag_ptr_c_POSIX = NULL;
+    ethash_full* dag_ptr_c;
+    uint64_t size_dag = 1073739904U;
+    posix_memalign((void **)&dag_ptr_c_POSIX, 64, size_dag + 64);
+    dag_ptr_c = (ethash_full*)dag_ptr_c_POSIX;
+
+    cout << "Load fake-DAG with some node values\n";
+    load_dag(dag_ptr_c, size_dag);
+
+
+    printf("-------------------------------------------------------------\n\n\n");
+
+
+
 
   cout << "Srai_ DBG NUMBER_OF_DATA_SETS  =  " << NUMBER_OF_DATA_SETS << endl;
   cout << "Srai_ DBG GLOBAL_DATA_IN_SIZE  =  " << GLOBAL_DATA_IN_SIZE << endl;
@@ -90,20 +174,15 @@ int main(int argc, char** argv) {
     exit (1);
   }
 
-#ifdef LINUX_BUILD
-  posix_memalign((void **)&a_in_ptr_c_POSIX, 4096/*alignment*/, GLOBAL_DATA_IN_SIZE_BYTES + 4096);
+
+  posix_memalign((void **)&a_in_ptr_c_POSIX, 4096, GLOBAL_DATA_IN_SIZE_BYTES + 4096);
   a_in_ptr_c = (srai_mem_conv_IN0 *)a_in_ptr_c_POSIX;
-  posix_memalign((void **)&y_out_ptr_c_POSIX, 4096/*alignment*/, GLOBAL_DATA_OUT_SIZE_BYTES + 4096);
+  posix_memalign((void **)&y_out_ptr_c_POSIX, 4096, GLOBAL_DATA_OUT_SIZE_BYTES + 4096);
   y_out_ptr_c = (srai_mem_conv_OUT0 *)y_out_ptr_c_POSIX;
-#else
-  a_in_ptr_c_WIN32 = _aligned_malloc(GLOBAL_DATA_IN_SIZE_BYTES, 4096);
-  a_in_ptr_c = (srai_mem_conv_IN0 *)a_in_ptr_c_WIN32;
-  y_out_ptr_c_WIN32 = _aligned_malloc(GLOBAL_DATA_OUT_SIZE_BYTES, 4096);
-  y_out_ptr_c = (srai_mem_conv_OUT0 *)y_out_ptr_c_WIN32;
-#endif
 
   a_in_head_c = a_in_ptr_c;
   y_out_head_c = y_out_ptr_c;
+
 
   printf("-------------------------------------------------------------\n");
   printf("Create Test Data Set\n");
@@ -120,9 +199,13 @@ int main(int argc, char** argv) {
   cout << dec;
   printf("-------------------------------------------------------------\n\n\n");
 
+
+
     //Fill ddr4_Memory wr_data_buffer
     cout << "Initializing Memory with InputA args\n";
+
     gen_test_data(a_in_ptr_c);
+
     a_in_ptr = (sdx_data_t *)a_in_head_c;
     y_out_ptr = (sdx_data_t *)y_out_head_c;
 
@@ -165,7 +248,7 @@ int main(int argc, char** argv) {
     cout << "Current FPGA Min Die Temprature (deg C) =  " << sys_temprature.minimum_temp << endl;
 
 
-    /* xDMA Throughput testing */
+    // xDMA Throughput testing 
     cout << "xDMA BandWidth test C0  : \n";
    fpga_PCIE_BANDWIDTH_test64(my_fpga_xDMA_ptr, AXI_MM_DDR4_C0, (char*)a_in_ptr, GLOBAL_DATA_OUT_SIZE_BYTES);
    cout << "..........................\n";
@@ -186,20 +269,24 @@ int main(int argc, char** argv) {
     fpga_PROGRAM_PR_CLOCK (my_fpga_xDMA_ptr, HW_Kernel_frequency);
     cout << " ....DONE ...... Programing PR clock ------------------ " << endl;
 
-    /* Program Partial Bit file */
+    // Program Partial Bit file 
     fpga_PROGRAM_NORTH_PR(my_fpga_xDMA_ptr, PR_binFile_name);
     cout << " ............... Done Programing PR Bitstream ------------------ " << endl;
-    /* Read the PR_HLS Control register to poll the Idle bit (bit 1) */ 
-    fpga_xfer_data_to_card64(my_fpga_xDMA_ptr, AXI_MM_DDR4_C1, (char*)a_in_ptr, (GLOBAL_DATA_IN_SIZE_BYTES));
-    /* Write to PR_HLS Address offset registers to set the location in Memory where Input Data and Output results are stored */
-    fpga_run_NORTH_PR64(my_fpga_xDMA_ptr, AXI_MM_DDR4_C1, AXI_MM_DDR4_results_C1, (NUMBER_OF_DATA_SETS));
+
+    // Read the PR_HLS Control register to poll the Idle bit (bit 1)  
+    fpga_xfer_data_to_card64(my_fpga_xDMA_ptr, AXI_MM_DDR4_C0, (char*)a_in_ptr, (GLOBAL_DATA_IN_SIZE_BYTES));
+
+
+    // Write to PR_HLS Address offset registers to set the location in Memory where Input Data and Output results are stored 
+    fpga_run_NORTH_PR64(my_fpga_xDMA_ptr, AXI_MM_DDR4_C0, AXI_MM_DDR4_results_C0, (NUMBER_OF_DATA_SETS));
+
     start_t = chrono::high_resolution_clock::now();
     compute_itn_count = fpga_check_compute_done_NORTH_PR(my_fpga_xDMA_ptr);
     stop_t = chrono::high_resolution_clock::now();
     cout << "compute_itn_count = " << compute_itn_count << endl;
 
-    /* Read Results from DDR4 output (results) area */
-    fpga_xfer_data_from_card64(my_fpga_xDMA_ptr, AXI_MM_DDR4_results_C1, (char*)y_out_ptr, (GLOBAL_DATA_OUT_SIZE_BYTES));
+    // Read Results from DDR4 output (results) area 
+    fpga_xfer_data_from_card64(my_fpga_xDMA_ptr, AXI_MM_DDR4_results_C0, (char*)y_out_ptr, (GLOBAL_DATA_OUT_SIZE_BYTES));
 
     elapsed_hi_res = stop_t - start_t ;
     high_res_elapsed_time = elapsed_hi_res.count();
@@ -215,19 +302,17 @@ int main(int argc, char** argv) {
     fpga_clean(my_fpga_xDMA_ptr);
 #endif
     int MAX_ITERATION_to_print = 1;
-    uint32_t random_index[4];
 
-    for (int i = 0; i < 4; i++) {
-        random_index[i]  = (uint32_t)(rand() % NUMBER_OF_DATA_SETS); 
-    }
 
     cout << "Verifying results ..............\n";
-    RESULT_SUCESSFULL = 1;
     high_res_elapsed_time =  0.0f;
+
     for (int j = 0 ; j < NUMBER_OF_DATA_SETS; j++) {
-    data_t fn_in_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT];
-    data_t fn_out_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT];
-        for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {
+    data_t fn_in_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT];  // 16
+    data_t fn_out_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT]; // 16
+
+        for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {   // 16
+
             for (unsigned int k = 0 ; k < (NUM_ELEMENTS_PER_SDX_DATA_BEAT); k++) {
                 fn_in_arg0[k] = a_in_ptr_c->my_data_t[k];
             }
@@ -236,37 +321,26 @@ int main(int argc, char** argv) {
                 fn_out_arg0[k] = y_out_ptr_c->my_data_t[k];
             }
             y_out_ptr_c++;
+
             for (unsigned int index = 0; index < (NUM_ELEMENTS_PER_SDX_DATA_BEAT);index++) {
-                //if ( (i == 0) & (j == random_index[0]) | (j == random_index[1]) | (j == random_index[2]) | (j == random_index[3]) ) {
-                if ( (i == 0) & (j == random_index[0])) { 
-                    printf ("Input A = %d Output Y = %d \n", (fn_in_arg0[index]),(fn_out_arg0[index]));
+                if ( (i == 0) & (j == 0)) { 
+
+                    printf ("Index[%d] = %04x \n", index, (fn_out_arg0[index]));
                 }
-                if (fn_in_arg0[index] == fn_out_arg0[index]){
-                    RESULT_SUCESSFULL &= 1;
-                } else {
-                    RESULT_SUCESSFULL &= 0;
-                }
+
             }
         }
     }
 
-    if (!RESULT_SUCESSFULL) {
-        printf (" ------------   Results did not Verify - Test Failed !!!!!! -------------------------------------------------\n");
-    } else {
-        printf (" ------------   Results Verified  ---------------------------------------------------------------------------\n");
-    }
 
-    printf ("-----------------------------------------------------\n");
+    printf (" ------------   End  ----------------------------------------------------------------------------------------\n");
 
-    cout << "Results verifcation complete " << endl;
 
     // ------------ Clean -----------------------
-#ifdef LINUX_BUILD
+
     free(a_in_ptr_c_POSIX);
     free(y_out_ptr_c_POSIX);
-#else
-    _aligned_free(a_in_ptr_c_WIN32);
-    _aligned_free(y_out_ptr_c_WIN32);
-#endif
+    free(dag_ptr_c_POSIX);
+
     return 0;
 }

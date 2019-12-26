@@ -44,7 +44,15 @@ clean_all:
 	-cd SDX_ACCL_MATRIX_MULT_6X6/Make_flow; make clean_all 
 	-cd SDX_ACCL_MATRIX_MULT_8X8/Make_flow; make clean_all 
 HLS_passthru:
+	cd SDX_ACCL_KERNEL_PASSTHRU_8GB/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+HLS_passthru_IP_CLEAN:
+	-cd SDX_ACCL_KERNEL_PASSTHRU_8GB/vivado_hls_prj; ./mk_clean
+
+
+
+SOFTWARE_PASS:
 	cd SDX_ACCL_KERNEL_PASSTHRU_8GB/Make_flow; make srai_hw
+
 
 
 

@@ -9,14 +9,18 @@
 /*       These address translations affect the address shown . THese address are  */
 /*       exactly waht is populated on the IPI Address tab                         */
 /* AXI MM Register interfaces */
+
 #define AXI_MM_DDR4_C0         0x1000000000ULL
-#define AXI_MM_DDR4_results_C0 0x1080000000ULL
+#define AXI_MM_DDR4_results_C0 0x1200000000ULL
+
 #define AXI_MM_DDR4_C1         0x0000000000ULL
-#define AXI_MM_DDR4_results_C1 0x0080000000ULL
+#define AXI_MM_DDR4_results_C1 0x0200000000ULL
+
 #define AXI_MM_DDR4_C2         0x1400000000ULL
-#define AXI_MM_DDR4_results_C2 0x1480000000ULL
+#define AXI_MM_DDR4_results_C2 0x1600000000ULL
+
 #define AXI_MM_DDR4_C3         0x1800000000ULL
-#define AXI_MM_DDR4_results_C3 0x1880000000ULL
+#define AXI_MM_DDR4_results_C3 0x1A00000000ULL
 
 
 /* AXI LITE Register interfaces */
