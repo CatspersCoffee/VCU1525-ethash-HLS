@@ -433,7 +433,7 @@ int main(int argc, char** argv) {
     data_t fn_in_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT];  // 16
     data_t fn_out_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT]; // 16
 
-        for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {   // 16
+        for (int i = 0 ; i < 10; i++) {   
 
 
             for (unsigned int k = 0 ; k < 16; k++) {
@@ -442,14 +442,9 @@ int main(int argc, char** argv) {
             y_out_ptr_c++;
 
             for (unsigned int index = 0; index < 16; index++) {
-                if (((i == 0) && (j == 0)) ||   ((i == 1) && (j == 0))   ) { 
-
-                    printf("Index[%d] = %04x \n", index, (fn_out_arg0[index]));
-                    
-                }
-
-                
+                printf("Index[%d] = %04x \n", index, (fn_out_arg0[index])); 
             }
+            printf("----\n");
         }
     }
 

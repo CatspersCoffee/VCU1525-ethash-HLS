@@ -52,6 +52,23 @@ typedef union ethash_full {
 } ethash_full;
 */
 
+
+typedef union hash32 {
+    uint8_t b[32]; 
+} hash32;
+
+typedef union hash64 {
+    uint8_t b[64]; 
+} hash64;
+
+typedef union node {
+    unsigned char cbytes[NODE_WORDS * 4];
+    uint8_t bytes[NODE_WORDS * 4];
+    uint32_t words[NODE_WORDS];
+    uint64_t double_words[NODE_WORDS / 2];
+} node;
+
+
 typedef union ethash_full {
     uint8_t bytes[NODE_WORDS * 4];
     uint32_t words[NODE_WORDS];

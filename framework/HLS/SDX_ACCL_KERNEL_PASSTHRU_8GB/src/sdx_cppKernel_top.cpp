@@ -285,16 +285,31 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
 
         //----------------------------------------------------------------------
         
-        memcpy(node_bufa_val, (const sdx_data_t*)_dag, SDX_BUS_WIDTH_BYTES);
-        _dag += 1;
-        memcpy(y_out, node_bufa_val, SDX_BUS_WIDTH_BYTES);
-        y_out += 1;
+        for (unsigned int itn_num = 0 ; itn_num < 9; itn_num++) {
+            memcpy(node_bufa_val, (const sdx_data_t*)_dag, SDX_BUS_WIDTH_BYTES);
+            _dag += 1;
+            memcpy(y_out, node_bufa_val, SDX_BUS_WIDTH_BYTES);
+            y_out += 1;
+        }
 
+        hash64 hash_out;
+        hash32 hash_in;
+        for(int i = 0; i<32; i++){
+            hash_in.b[i] = 0x00;
+        }
+        hash32* p_hash_in = &hash_in;
+        hash64* p_hash_out = &hash_out;
 
-        memcpy(node_bufa_val, (const sdx_data_t*)_dag, SDX_BUS_WIDTH_BYTES);
-        _dag += 1;
-        memcpy(y_out, node_bufa_val, SDX_BUS_WIDTH_BYTES);
-        y_out += 1;
+	    //SHA3_512(p_hash_out->b, p_hash_in->b, 32);
+
+        uint8_t some_byte = 0x00;
+        for(int i = 0; i<64; i++){
+            hash_out.b[i] = some_byte;
+            some_byte++
+        }
+        memcpy(node_bufa_val, (const sdx_data_t*)hash_out, 64);
+        memcpy(y_out, node_bufa_val, 64);
+
 
 
         /*
