@@ -226,19 +226,30 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
 #pragma HLS INTERFACE m_axi port=y_out offset=slave depth=HLS_AXI_SIM_OUT_DEPTH latency=100 bundle=gmem num_read_outstanding=32 num_write_outstanding=32 max_read_burst_length=16 max_write_burst_length=16
 #pragma HLS INTERFACE s_axilite port=a_in bundle=control
 #pragma HLS INTERFACE s_axilite port=y_out bundle=control
+   
 #pragma HLS INTERFACE s_axilite port=NUMBER_OF_DATA_SETS_t bundle=control
 #pragma HLS INTERFACE s_axilite port=return bundle=control
+
+#pragma HLS INTERFACE m_axi port=_dag offset=slave depth=HLS_AXI_SIM_OUT_DEPTH latency=100 bundle=gmem num_read_outstanding=32 num_write_outstanding=32 max_read_burst_length=16 max_write_burst_length=16
+#pragma HLS INTERFACE s_axilite port=_dag bundle=control 
+
+
 
     static uint32_t i_ker_count = 0;
     sdx_data_t bufa_val[SDX_CU_LOCAL_IN_SIZE];      // bufa_val[16] 16 element array of 512 bit type, 
     sdx_data_t bufy_val[SDX_CU_LOCAL_OUT_SIZE];     // bufy_val[16]
     sdx_pack_unpack<srai_conv> my_pack_unpack;
 
+
+    sdx_data_t node_bufa_val[1];
+    sdx_data_t node_bufy_val[1];
+
     sdx_cppKernel_top_local_data_loop:for (unsigned int i = 0; i < NUMBER_OF_DATA_SETS_t; i++) {
 
     #pragma HLS LOOP_TRIPCOUNT min=HLS_SDX_WRAPPER_TRIP_COUNT max=HLS_SDX_WRAPPER_TRIP_COUNT
     #pragma HLS PIPELINE II=HLS_SDX_WRAPPER_II
 
+        /*
         memcpy(bufa_val, (const sdx_data_t*)a_in, SDX_BUS_WIDTH_BYTES*SDX_CU_LOCAL_IN_SIZE);
         a_in += SDX_CU_LOCAL_IN_SIZE;
 
@@ -254,7 +265,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
                 my_pack_unpack.unpack_sdx_512_data(&bufa_val[(itn_num*NUM_INPUT_KERNEL_FUNCTION_ARGUMENTS)+k], &fn_in_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT*k]);
             }
 
-            kernel_WRAPPER (&fn_in_arg0[0], &fn_out_arg0[0]);
+            kernel_WRAPPER(&fn_in_arg0[0], &fn_out_arg0[0]);
 
             for (unsigned int k = 0 ; k < NUM_OUTPUT_KERNEL_FUNCTION_ARGUMENTS; k++) {
                 my_pack_unpack.pack_sdx_512_data(&bufy_val[(itn_num*NUM_OUTPUT_KERNEL_FUNCTION_ARGUMENTS)+k], &fn_out_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT*k]);
@@ -265,6 +276,76 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         y_out += SDX_CU_LOCAL_OUT_SIZE;
         *ker_count = i_ker_count;
         i_ker_count++;
+        */
+
+
+        
+
+        
+
+        //----------------------------------------------------------------------
+        
+        memcpy(node_bufa_val, (const sdx_data_t*)_dag, SDX_BUS_WIDTH_BYTES);
+        _dag += 1;
+        /*
+            data_t fn_in_arg0[16];
+            #pragma HLS ARRAY_PARTITION variable=fn_in_arg0
+            data_t fn_out_arg0[16];
+            #pragma HLS ARRAY_PARTITION variable=fn_out_arg0
+
+            for (unsigned int k = 0 ; k < NUM_INPUT_KERNEL_FUNCTION_ARGUMENTS; k++) {
+                my_pack_unpack.unpack_sdx_512_data(&node_bufa_val[(NUM_INPUT_KERNEL_FUNCTION_ARGUMENTS)+k], &fn_in_arg0[0]);
+            }
+
+            kernel_WRAPPER(&fn_in_arg0[0], &fn_out_arg0[0]);
+
+            for (unsigned int k = 0 ; k < NUM_OUTPUT_KERNEL_FUNCTION_ARGUMENTS; k++) {
+                my_pack_unpack.pack_sdx_512_data(&bufy_val[(NUM_OUTPUT_KERNEL_FUNCTION_ARGUMENTS)+k], &fn_out_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT*k]);
+            }
+        */
+
+        memcpy(y_out, node_bufa_val, SDX_BUS_WIDTH_BYTES);
+        //memcpy(y_out, bufy_val, SDX_BUS_WIDTH_BYTES*SDX_CU_LOCAL_OUT_SIZE);
+
+
+        y_out += SDX_CU_LOCAL_OUT_SIZE;
+
+        *ker_count = i_ker_count;
+        i_ker_count++;
+        
+        //----------------------------------------------------------------------
+        /*
+        // WORKING KIND OF, Looks like which word it copies is off
+        memcpy(bufa_val, (const sdx_data_t*)_dag, SDX_BUS_WIDTH_BYTES * SDX_CU_LOCAL_IN_SIZE);
+        _dag += SDX_CU_LOCAL_IN_SIZE;
+
+        kernel_WRAPPER_label0:for (unsigned int itn_num = 0 ; itn_num < SDX_CU_LOCAL_SIZE; itn_num++) {
+        #pragma HLS PIPELINE II=1
+
+            data_t fn_in_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT*NUM_INPUT_KERNEL_FUNCTION_ARGUMENTS];
+            #pragma HLS ARRAY_PARTITION variable=fn_in_arg0
+            data_t fn_out_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT*NUM_OUTPUT_KERNEL_FUNCTION_ARGUMENTS];
+            #pragma HLS ARRAY_PARTITION variable=fn_out_arg0
+
+            for (unsigned int k = 0 ; k < NUM_INPUT_KERNEL_FUNCTION_ARGUMENTS; k++) {
+                my_pack_unpack.unpack_sdx_512_data(&bufa_val[(itn_num*NUM_INPUT_KERNEL_FUNCTION_ARGUMENTS)+k], &fn_in_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT*k]);
+            }
+
+            kernel_WRAPPER(&fn_in_arg0[0], &fn_out_arg0[0]);
+
+            for (unsigned int k = 0 ; k < NUM_OUTPUT_KERNEL_FUNCTION_ARGUMENTS; k++) {
+                my_pack_unpack.pack_sdx_512_data(&bufy_val[(itn_num*NUM_OUTPUT_KERNEL_FUNCTION_ARGUMENTS)+k], &fn_out_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT*k]);
+            }
+        }
+
+        memcpy(y_out, bufy_val, SDX_BUS_WIDTH_BYTES*SDX_CU_LOCAL_OUT_SIZE);
+        y_out += SDX_CU_LOCAL_OUT_SIZE;
+        *ker_count = i_ker_count;
+        i_ker_count++;
+        //----------------------------------------------------------------------
+        */
+
+
     }
     return;
 }

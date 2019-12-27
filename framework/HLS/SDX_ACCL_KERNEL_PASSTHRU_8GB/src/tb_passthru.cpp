@@ -6,14 +6,22 @@
 #include <string>
 #include <chrono>
 #include <cmath>
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string>
+#include <vector>
+#include <algorithm>
+//----------------------------------------------------
+
+
 #include "sdx_cppKernel_top.h" 
-#ifdef LINUX_BUILD
 #include "pcie_memio.h" 
 #include "srai_accel_utils.h" 
-#else
-#include "pcie_memio_winx.h"
-#include "srai_accel_utils_winx.h" 
-#endif
+
+
 #define ZERO_f 1.0e-4
 #define ONE_GIG (1024UL*1024UL*1024UL)
 using namespace std;
@@ -21,6 +29,55 @@ using namespace std;
 
 
 
+//------------------------------------------------------------------------------
+// helper routines:
+
+static char nibbleToChar(unsigned nibble)
+{
+	return (char) ((nibble >= 10 ? 'a'-10 : '0') + nibble);
+}
+
+static uint8_t charToNibble(char chr)
+{
+	if (chr >= '0' && chr <= '9')
+	{
+		return (uint8_t) (chr - '0');
+	}
+	if (chr >= 'a' && chr <= 'z')
+	{
+		return (uint8_t) (chr - 'a' + 10);
+	}
+	if (chr >= 'A' && chr <= 'Z')
+	{
+		return (uint8_t) (chr - 'A' + 10);
+	}
+	return 0;
+}
+
+static std::vector<uint8_t> hexStringToBytes(char const* str)
+{
+	std::vector<uint8_t> bytes(strlen(str) >> 1);
+	for (unsigned i = 0; i != bytes.size(); ++i)
+	{
+		bytes[i] = charToNibble(str[i*2 | 0]) << 4;
+		bytes[i] |= charToNibble(str[i*2 | 1]);
+	}
+	return bytes;
+}
+
+static std::string bytesToHexString(uint8_t const* bytes, unsigned size)
+{
+	std::string str;
+	for (unsigned i = 0; i != size; ++i)
+	{
+		str += nibbleToChar(bytes[i] >> 4);
+		str += nibbleToChar(bytes[i] & 0xf);
+	}
+	return str;
+}
+
+
+//------------------------------------------------------------------------------
 
 
 
@@ -31,13 +88,25 @@ using namespace std;
 //------------------------------------------------------------------------------
 void load_dag(ethash_full* _dag_mem, uint64_t _dag_size_in_bytes){
 
-    uint64_t some_word = 0x00;
+    uint64_t some_word = 0x1122334455667788;
     int node_double_words = 8;
+    int node_bytes = 64;
     uint64_t nodes_in_dag = _dag_size_in_bytes / 64;
+
+    uint8_t node_hash[64];
+    //memcpy(input_hash, hexStringToBytes("c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470").data(), 32);
+    memcpy(node_hash, hexStringToBytes("0f6f7226432c21d4dfa2a1538a1fdc72ee1faf405a60e5f408b344a2f5aab2ddff0f9c172b6f7e2259b7929bce06388ecf84a51605bc48cd0b3c51d0eb12e3fa").data(), 64);
 
     cout << "nodes_in_dag  =  " << nodes_in_dag << endl;
 
-    for (uint64_t i = 0 ; i < nodes_in_dag; i++) {
+    for (uint64_t i = 0 ; i < 1; i++) {
+        for (int j = 0 ; j < node_bytes; j++) { 
+            _dag_mem->bytes[j] = node_hash[j];
+        }
+        some_word++;
+        _dag_mem++;
+    }
+    for (uint64_t i = 1 ; i < nodes_in_dag; i++) {
         for (int j = 0 ; j < node_double_words; j++) { 
             //_dag_mem->data->double_words[j] = some_word;
             _dag_mem->double_words[j] = some_word;
@@ -45,7 +114,6 @@ void load_dag(ethash_full* _dag_mem, uint64_t _dag_size_in_bytes){
         some_word++;
         _dag_mem++;
     }
-
 }
 
 //------------------------------------------------------------------------------
@@ -157,19 +225,33 @@ int main(int argc, char** argv) {
     uint64_t size_dag = 1073739904U;
     posix_memalign((void **)&dag_ptr_c_POSIX, 64, size_dag + 64);
     dag_ptr_c = (ethash_full*)dag_ptr_c_POSIX;
+    dag_head_c = dag_ptr_c;
 
     cout << "Load fake-DAG with some node values\n";
     load_dag(dag_ptr_c, size_dag);
+
+    dag_ptr = (sdx_data_t *)dag_head_c;
+    dag_ptr_c = dag_head_c;
+
+    printf("-------------------------------------------------------------\n\n\n");
+
+    cout << "print a few values from fake-DAG: \n";
+    for (unsigned int index = 0; index < 16 ;index++) {
+
+            printf ("dag Index[%d] = %08x \n", index, (dag_ptr_c->double_words[index]));
+
+
+    }  
+
+
 
 
     printf("-------------------------------------------------------------\n\n\n");
 
 
-
-
-    cout << "Srai_ DBG NUMBER_OF_DATA_SETS  =  " << NUMBER_OF_DATA_SETS << endl;
-    cout << "Srai_ DBG GLOBAL_DATA_IN_SIZE  =  " << GLOBAL_DATA_IN_SIZE << endl;
-    cout << "Srai_ DBG GLOBAL_DATA_OUT_SIZE =  " << GLOBAL_DATA_OUT_SIZE << endl;
+    cout << "NUMBER_OF_DATA_SETS  =  " << NUMBER_OF_DATA_SETS << endl;
+    cout << "GLOBAL_DATA_IN_SIZE  =  " << GLOBAL_DATA_IN_SIZE << endl;
+    cout << "GLOBAL_DATA_OUT_SIZE =  " << GLOBAL_DATA_OUT_SIZE << endl;
     if ((GLOBAL_DATA_IN_SIZE_BYTES > ONE_GIG) | (GLOBAL_DATA_OUT_SIZE_BYTES > ONE_GIG)) {
         cout << "Memory reguirement over 1GB .......... exiting\n";
         exit (1);
@@ -178,7 +260,9 @@ int main(int argc, char** argv) {
 
     posix_memalign((void **)&a_in_ptr_c_POSIX, 4096, GLOBAL_DATA_IN_SIZE_BYTES + 4096);
     a_in_ptr_c = (srai_mem_conv_IN0 *)a_in_ptr_c_POSIX;
-    posix_memalign((void **)&y_out_ptr_c_POSIX, 4096, GLOBAL_DATA_OUT_SIZE_BYTES + 4096);
+    //posix_memalign((void **)&y_out_ptr_c_POSIX, 4096, GLOBAL_DATA_OUT_SIZE_BYTES + 4096);
+    //y_out_ptr_c = (srai_mem_conv_OUT0 *)y_out_ptr_c_POSIX;
+    posix_memalign((void **)&y_out_ptr_c_POSIX, 64, size_dag + 64);
     y_out_ptr_c = (srai_mem_conv_OUT0 *)y_out_ptr_c_POSIX;
 
     a_in_head_c = a_in_ptr_c;
@@ -214,9 +298,8 @@ int main(int argc, char** argv) {
     cout << "Memory Initialized with test Data\n";
 
 
-    dag_ptr = (sdx_data_t *)dag_head_c;
-    dag_ptr_c = dag_head_c;
 
+    printf("\n-------------------------------------------------------------\n\n");
 
 
 #ifdef GPP_ONLY_FLOW  
@@ -224,23 +307,23 @@ int main(int argc, char** argv) {
     sdx_cppKernel_top(a_in_ptr, y_out_ptr, dag_ptr, (unsigned int)NUMBER_OF_DATA_SETS, &dbg_ker_count);
 
 #else
-// Compile for SRAI custom HLS accelerator platform 
-    string PR_binFile_name;
 
+    //--------------------------------------------------------------------------
+    // Compile for custom HLS accelerator platform 
+    string PR_binFile_name;
     if (argc != 2) {
         printf("usage: %s fpga_bin_file\n", argv[0]);
         return -1;
     }
-
     PR_binFile_name = argv[1];
 
 
+    printf("\n-------------------------------------------------------------\n\n");
+
     cout << "Initializing FPGA\n";
-#ifdef LINUX_BUILD
+
     fpga_xDMA_linux *my_fpga_xDMA_ptr = new fpga_xDMA_linux;
-#else
-    fpga_xDMA_winX  *my_fpga_xDMA_ptr = new fpga_xDMA_winX;
-#endif
+
     my_fpga_xDMA_ptr->fpga_xDMA_init();
 
     fpga_test_AXIL_LITE_8KSCRATCHPAD_BRAM (my_fpga_xDMA_ptr);
@@ -312,9 +395,10 @@ int main(int argc, char** argv) {
     int MAX_ITERATION_to_print = 1;
 
 
-    cout << "Verifying results ..............\n";
+    cout << "Verifying results .............. [ Big-Endian ]\n\n";
     high_res_elapsed_time =  0.0f;
 
+    /*
     for (int j = 0 ; j < NUMBER_OF_DATA_SETS; j++) {
     data_t fn_in_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT];  // 16
     data_t fn_out_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT]; // 16
@@ -330,16 +414,41 @@ int main(int argc, char** argv) {
             }
             y_out_ptr_c++;
 
-            for (unsigned int index = 0; index < (NUM_ELEMENTS_PER_SDX_DATA_BEAT);index++) {
-                if ( (i == 0) & (j == 0)) { 
+            for (unsigned int index = 0; index <  16; index++) {
+                if (((i == 0) && (j == 0)) ||   ((i == 1) && (j == 0))   ) { 
 
-                    printf ("Index[%d] = %04x \n", index, (fn_out_arg0[index]));
+                    printf("Index[%d] = %04x \n", index, (fn_out_arg0[index]));
+                    
                 }
 
+                
             }
         }
     }
+    */
+    for (int j = 0 ; j < NUMBER_OF_DATA_SETS; j++) {
+    data_t fn_in_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT];  // 16
+    data_t fn_out_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT]; // 16
 
+        for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {   // 16
+
+
+            for (unsigned int k = 0 ; k < 16; k++) {
+                fn_out_arg0[k] = y_out_ptr_c->my_data_t[k];
+            }
+            y_out_ptr_c++;
+
+            for (unsigned int index = 0; index < 16; index++) {
+                if (((i == 0) && (j == 0)) ||   ((i == 1) && (j == 0))   ) { 
+
+                    printf("Index[%d] = %04x \n", index, (fn_out_arg0[index]));
+                    
+                }
+
+                
+            }
+        }
+    }
 
     printf (" ------------   End  ----------------------------------------------------------------------------------------\n");
 

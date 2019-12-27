@@ -68,14 +68,14 @@ typedef union {
 
 
 typedef union {
-    unsigned char my_uint_char[64*NUMBER_OF_SDX_BUS_XFERS_PER_INPUT];
-    data_t my_data_t[NUM_ELEMENTS_PER_SDX_DATA_BEAT];
+    unsigned char my_uint_char[64];
+    uint32_t my_data_t[16];
 } srai_mem_conv_IN0;
 
 
 typedef union {
-    unsigned char my_uint_char[64*NUMBER_OF_SDX_BUS_XFERS_PER_OUTPUT];
-    data_t my_data_t[NUM_ELEMENTS_PER_SDX_DATA_BEAT];
+    unsigned char my_uint_char[64];
+    uint32_t my_data_t[16];
 } srai_mem_conv_OUT0;
 
 
