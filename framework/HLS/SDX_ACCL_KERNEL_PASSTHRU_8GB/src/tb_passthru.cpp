@@ -96,6 +96,11 @@ void load_dag(ethash_full* _dag_mem, uint64_t _dag_size_in_bytes){
     uint8_t node_hash[64];
     //memcpy(input_hash, hexStringToBytes("c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470").data(), 32);
     memcpy(node_hash, hexStringToBytes("0f6f7226432c21d4dfa2a1538a1fdc72ee1faf405a60e5f408b344a2f5aab2ddff0f9c172b6f7e2259b7929bce06388ecf84a51605bc48cd0b3c51d0eb12e3fa").data(), 64);
+    //
+    // 0f6f7226 432c21d4
+    // dfa2a153 8a1fdc72
+
+
 
     cout << "nodes_in_dag  =  " << nodes_in_dag << endl;
 
@@ -103,7 +108,6 @@ void load_dag(ethash_full* _dag_mem, uint64_t _dag_size_in_bytes){
         for (int j = 0 ; j < node_bytes; j++) { 
             _dag_mem->bytes[j] = node_hash[j];
         }
-        some_word++;
         _dag_mem++;
     }
     for (uint64_t i = 1 ; i < nodes_in_dag; i++) {
@@ -236,13 +240,12 @@ int main(int argc, char** argv) {
     printf("-------------------------------------------------------------\n\n\n");
 
     cout << "print a few values from fake-DAG: \n";
-    for (unsigned int index = 0; index < 16 ;index++) {
-
-            printf ("dag Index[%d] = %08x \n", index, (dag_ptr_c->double_words[index]));
-
-
-    }  
-
+    for (unsigned int index = 0; index < 32 ;index++) {
+            printf ("dag Index[%d] = %08x \n", index, (dag_ptr_c->words[index]));
+            if(index == 15){
+                printf("----\n");
+            }
+    } 
 
 
 

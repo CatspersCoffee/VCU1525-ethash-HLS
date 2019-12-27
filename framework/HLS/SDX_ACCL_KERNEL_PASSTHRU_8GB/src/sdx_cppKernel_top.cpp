@@ -287,6 +287,16 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         
         memcpy(node_bufa_val, (const sdx_data_t*)_dag, SDX_BUS_WIDTH_BYTES);
         _dag += 1;
+        memcpy(y_out, node_bufa_val, SDX_BUS_WIDTH_BYTES);
+        y_out += 1;
+
+
+        memcpy(node_bufa_val, (const sdx_data_t*)_dag, SDX_BUS_WIDTH_BYTES);
+        _dag += 1;
+        memcpy(y_out, node_bufa_val, SDX_BUS_WIDTH_BYTES);
+        y_out += 1;
+
+
         /*
             data_t fn_in_arg0[16];
             #pragma HLS ARRAY_PARTITION variable=fn_in_arg0
@@ -304,11 +314,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             }
         */
 
-        memcpy(y_out, node_bufa_val, SDX_BUS_WIDTH_BYTES);
-        //memcpy(y_out, bufy_val, SDX_BUS_WIDTH_BYTES*SDX_CU_LOCAL_OUT_SIZE);
 
-
-        y_out += SDX_CU_LOCAL_OUT_SIZE;
 
         *ker_count = i_ker_count;
         i_ker_count++;
