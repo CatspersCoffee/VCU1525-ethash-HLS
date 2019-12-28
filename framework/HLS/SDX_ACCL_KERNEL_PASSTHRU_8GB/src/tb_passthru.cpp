@@ -395,6 +395,7 @@ int main(int argc, char** argv) {
 
     fpga_clean(my_fpga_xDMA_ptr);
 #endif
+
     int MAX_ITERATION_to_print = 1;
 
 
@@ -435,22 +436,81 @@ int main(int argc, char** argv) {
 
         for (int i = 0 ; i < 10; i++) {   
 
-
+            printf("---- [%02d]\n", i);
             for (unsigned int k = 0 ; k < 16; k++) {
                 fn_out_arg0[k] = y_out_ptr_c->my_data_t[k];
             }
             y_out_ptr_c++;
 
             for (unsigned int index = 0; index < 16; index++) {
-                printf("Index[%d] = %04x \n", index, (fn_out_arg0[index])); 
+                printf("Index[%d] = %08x \n", index, (fn_out_arg0[index])); 
             }
-            printf("----\n");
+            
         }
     }
 
-    printf (" ------------   End  ----------------------------------------------------------------------------------------\n");
+    printf ("\n------------   End  ----------------------------------------------------------------------------------------\n");
+/*
+    printf ("\n----\n");
 
+        hash64 hash_out;
+        hash32 hash_in;
+        hash64_w hash_outW;
 
+        for(int i = 0; i<32; i++){
+            hash_in.b[i] = 0x00;
+        }
+        hash32* p_hash_in = &hash_in;
+        hash64* p_hash_out = &hash_out;
+        hash64_w* p_hash_outW = &hash_outW;
+
+        uint8_t some_byte = 0x00;
+        for(int i = 0; i<64; i++){
+            hash_out.b[i] = some_byte;
+            some_byte++;
+        }
+
+        uint32_t words[16];
+        int bytecount = 0;
+        uint32_t word1, word2, word3, word4, word5;
+        word5 = 0x00000000;
+        for(int i = 0; i<16; i++){
+            word1 = (uint32_t)hash_out.b[bytecount];
+            word1 = word1 << 24; 
+                        printf("%08x \n", word1);
+            bytecount++;
+            word2 = (uint32_t)hash_out.b[bytecount];            
+            word2 = word2 << 16;
+                        printf("%08x \n", word2);
+            bytecount++;
+            word3 = (uint32_t)hash_out.b[bytecount];
+            word3 = word3 << 8;    
+                        printf("%08x \n", word3);                    
+            bytecount++;
+            word4 = (uint32_t)hash_out.b[bytecount];
+            bytecount++;
+            word4 = word4 << 0; 
+                        printf("%08x \n", word4);            
+            word5 = word5 | word1;
+            word5 = word5 | word2;
+            word5 = word5 | word3;
+            word5 = word5 | word4;
+                    printf("--> word5 = %08x \n", word5);
+            hash_outW.words[i] =  word5;   
+            word5 = 0x00000000;    
+        }
+
+        printf("\n hash_out  = ");
+        for(int i = 0; i<64; i++){
+            printf("%02x", hash_out.b[i]);
+        }
+        printf("\n hash_outW = ");
+        for(int i = 0; i<16; i++){
+            printf("%08x", hash_outW.words[i]);
+        }
+
+    printf ("\n----\n");    
+*/    
     // ------------ Clean -----------------------
 
     free(a_in_ptr_c_POSIX);

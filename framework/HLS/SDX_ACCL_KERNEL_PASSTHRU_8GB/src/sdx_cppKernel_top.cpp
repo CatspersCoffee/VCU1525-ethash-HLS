@@ -29,9 +29,15 @@ static inline uint fnv_hash(const uint x, const uint y) {
 	return x*FNV_PRIME ^ y;
 }
 
+
 /*
  * END from fnv.h
  */
+
+
+//---------------------------------------------------------------------------------------------
+
+
 
 /*
  * BEGIN from sha3.h
@@ -148,17 +154,17 @@ void keccakf(void* state) {
 #define _(S) do { S } while (0)
 #define FOR(i, ST, L, S) \
 		_(for (size_t i = 0; i < L; i += ST) { S; })
-#define mkapply_ds(NAME, S)                                          \
-		static inline void NAME(uchar* dst,                              \
+#define mkapply_ds(NAME, S)                              \
+		static inline void NAME(uchar* dst,              \
 				const uchar* src,                        \
-				size_t len) {                              \
-	FOR(i, 1, len, S);                                               \
+				size_t len) {                            \
+	FOR(i, 1, len, S);                                   \
 }
-#define mkapply_sd(NAME, S)                                          \
-		static inline void NAME(const uchar* src,                        \
+#define mkapply_sd(NAME, S)                              \
+		static inline void NAME(const uchar* src,        \
 				uchar* dst,                              \
-				size_t len) {                              \
-	FOR(i, 1, len, S);                                               \
+				size_t len) {                            \
+	FOR(i, 1, len, S);                                   \
 }
 
 mkapply_ds(xorin, dst[i] ^= src[i])  // xorin
@@ -217,6 +223,20 @@ defsha3(512)
  * END from sha3.c
  */
 
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 //-------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -243,6 +263,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
 
     sdx_data_t node_bufa_val[1];
     sdx_data_t node_bufy_val[1];
+    sdx_data_t hash64output[1];
 
     sdx_cppKernel_top_local_data_loop:for (unsigned int i = 0; i < NUMBER_OF_DATA_SETS_t; i++) {
 
@@ -294,22 +315,29 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
 
         hash64 hash_out;
         hash32 hash_in;
+        hash64_w hash_outW;
+        hash32* p_hash_in = &hash_in;
+        hash64* p_hash_out = &hash_out;
+        hash64_w* p_hash_outW = &hash_outW;
+
         for(int i = 0; i<32; i++){
             hash_in.b[i] = 0x00;
         }
-        hash32* p_hash_in = &hash_in;
-        hash64* p_hash_out = &hash_out;
 
-	    //SHA3_512(p_hash_out->b, p_hash_in->b, 32);
-
+	    SHA3_512(p_hash_out->b, p_hash_in->b, 32);
+        /*
         uint8_t some_byte = 0x00;
         for(int i = 0; i<64; i++){
             hash_out.b[i] = some_byte;
-            some_byte++
+            some_byte++;
         }
-        memcpy(node_bufa_val, (const sdx_data_t*)hash_out, 64);
-        memcpy(y_out, node_bufa_val, 64);
+        */
+        my_pack_unpack.rework_hash64(p_hash_out, p_hash_outW);
 
+        
+        my_pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hash_outW);
+        memcpy(y_out, hash64output, 64);
+        
 
 
         /*

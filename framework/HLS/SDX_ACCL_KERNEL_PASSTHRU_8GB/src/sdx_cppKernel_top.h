@@ -61,6 +61,11 @@ typedef union hash64 {
     uint8_t b[64]; 
 } hash64;
 
+typedef union hash64_w {
+    uint32_t words[16];
+} hash64_w;
+
+
 typedef union node {
     unsigned char cbytes[NODE_WORDS * 4];
     uint8_t bytes[NODE_WORDS * 4];
