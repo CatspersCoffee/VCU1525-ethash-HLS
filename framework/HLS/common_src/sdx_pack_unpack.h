@@ -62,26 +62,27 @@ template <class conv_t> class sdx_pack_unpack {
     }
 
     //----------------------
-    void rework_hash64(hash64* _p_hash_out, hash64_w* _p_hash_outW){
-        // rework_hash64(hash64* INPUT, hash64_w* OUTPUT)
-        uint32_t words[16];
+    void rework_hash32(hash32* _p_input, hash32_w* _p_outputW){
+        // call with: rework_hash32(hash32* INPUT, hash32_w* OUTPUT)
+        // description: reworks a a INPUT type as 32 bytes, into OUTPUT type with 8 uin32_t's.
+        uint32_t words[8];
         int bytecount = 0;
         uint32_t word1, word2, word3, word4, word5;
         word5 = 0x00000000;
-        for(int i = 0; i<16; i++){
-            word1 = (uint32_t)_p_hash_out->b[bytecount];
+        for(int i = 0; i<8; i++){
+            word1 = (uint32_t)_p_input->b[bytecount];
             word1 = word1 << 24; 
                         //printf("%08x \n", word1);
             bytecount++;
-            word2 = (uint32_t)_p_hash_out->b[bytecount];            
+            word2 = (uint32_t)_p_input->b[bytecount];            
             word2 = word2 << 16;
                         //printf("%08x \n", word2);
             bytecount++;
-            word3 = (uint32_t)_p_hash_out->b[bytecount];
+            word3 = (uint32_t)_p_input->b[bytecount];
             word3 = word3 << 8;    
                         //printf("%08x \n", word3);                    
             bytecount++;
-            word4 = (uint32_t)_p_hash_out->b[bytecount];
+            word4 = (uint32_t)_p_input->b[bytecount];
             bytecount++;
             word4 = word4 << 0; 
                         //printf("%08x \n", word4);            
@@ -90,16 +91,50 @@ template <class conv_t> class sdx_pack_unpack {
             word5 = word5 | word3;
             word5 = word5 | word4;
                     //printf("--> word5 = %08x \n", word5);
-            _p_hash_outW->words[i] =  word5;   
+            _p_outputW->words[i] =  word5;   
             word5 = 0x00000000;    
         }
     }
 
+    //----------------------
+    void rework_hash64_to_node64(hash64* _p_input, node64_w* _p_outputW){
+        // call with: rework_hash64(hash64* INPUT, hash64_w* OUTPUT)
+        // description: reworks a a INPUT type as 64 bytes, into OUTPUT type with 16 uin32_t's.
+        uint32_t words[16];
+        int bytecount = 0;
+        uint32_t word1, word2, word3, word4, word5;
+        word5 = 0x00000000;
+        for(int i = 0; i<16; i++){
+            word1 = (uint32_t)_p_input->b[bytecount];
+            word1 = word1 << 24; 
+                        //printf("%08x \n", word1);
+            bytecount++;
+            word2 = (uint32_t)_p_input->b[bytecount];            
+            word2 = word2 << 16;
+                        //printf("%08x \n", word2);
+            bytecount++;
+            word3 = (uint32_t)_p_input->b[bytecount];
+            word3 = word3 << 8;    
+                        //printf("%08x \n", word3);                    
+            bytecount++;
+            word4 = (uint32_t)_p_input->b[bytecount];
+            bytecount++;
+            word4 = word4 << 0; 
+                        //printf("%08x \n", word4);            
+            word5 = word5 | word1;
+            word5 = word5 | word2;
+            word5 = word5 | word3;
+            word5 = word5 | word4;
+                    //printf("--> word5 = %08x \n", word5);
+            _p_outputW->words[i] =  word5;   
+            word5 = 0x00000000;    
+        }
+    }
 
-    void pack_hash64_to_sdx_512_data(sdx_data_t* _output, hash64_w* _hash) {
+    void pack_hash64_to_sdx_512_data(sdx_data_t* _output, hash64_w* _input) {
     #pragma HLS INLINE
         for (unsigned int index = 0; index < 16; index++) {
-                pack_conv.my_data_t = _hash->words[index];
+                pack_conv.my_data_t = _input->words[index];
                 ((*_output)(((index*32)+31), (index*32))) =  pack_conv.my_uint32;
             }
     }
@@ -169,6 +204,49 @@ template <class conv_t> class sdx_pack_unpack {
         return ptr_inc;
 
     }
+
+    //----------------------
+    void unpack_header_to_hash32(sdx_data_t* _input, hash32* _output){
+        // call with 
+        uint32_t output32_buff[16];
+        uint32_t* p_output32_buff = &output32_buff[0];
+
+        unpack_sdx_512_data( _input, p_output32_buff);
+
+        uint32_t temp_word, aword;
+        uint8_t temp_char;
+        for (int i = 0 ; i < 8; i++) {   // 8 --> 8 * 32bits = 256bits
+            temp_word = output32_buff[i];
+            for (int j = 0 ; j < 4; j++) {
+                aword = temp_word >> (j*8);
+                aword = 0x000000FF & aword;
+                temp_char = (uint8_t)aword;
+                _output->b[(i*4)+(3-j)] = temp_char;
+            } 
+        }
+    }
+
+    //----------------------
+    void rework_hash64_w(node64_w* _input, hash64* _output){
+        // call with 
+        // take a node64_w type, gives back a hash64 type.
+        // trades words for bytes.
+        uint32_t temp_word, aword;
+        uint8_t temp_char;
+        for (int i = 0 ; i < 16; i++) {   // 16 --> 16 * 32bits = 512bits
+            temp_word = _input->words[i];
+            for (int j = 0 ; j < 4; j++) {
+            aword = temp_word >> (j*8);
+            aword = 0x000000FF & aword;
+            temp_char = (uint8_t)aword;
+            _output->b[(i*4)+(3-j)] = temp_char;
+            }
+        }
+    }
+
+
+
+
 
 };
 #endif // SDX_PACK_UNPACK_H_

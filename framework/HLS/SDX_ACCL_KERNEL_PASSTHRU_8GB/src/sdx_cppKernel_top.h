@@ -40,17 +40,24 @@
 //-----------------------------------------------------------
 
 #define NODE_WORDS (64/4) //16
-/*
-typedef union node {
-    uint8_t bytes[NODE_WORDS * 4];
-    uint32_t words[NODE_WORDS];
-    uint64_t double_words[NODE_WORDS / 2];
-} node;
 
-typedef union ethash_full {
-	node* data;
-} ethash_full;
-*/
+typedef union {
+	unsigned char bytes[32];
+	uint32_t words[8];                          // 256/32 = 8
+	uint64_t double_words[4];
+} hash32_t;
+
+typedef union {
+	unsigned char  bytes[NODE_WORDS * 4];
+	uint32_t words[NODE_WORDS];                 // words[16]        512/32 = 16 = NODE_WORDS
+	uint64_t double_words[NODE_WORDS / 2];      // double_words[8]
+} node64_t;
+
+
+
+
+
+
 
 
 typedef union hash32 {
@@ -61,10 +68,17 @@ typedef union hash64 {
     uint8_t b[64]; 
 } hash64;
 
+typedef union node64 {
+    uint32_t words[16];
+} node64_w;
+
 typedef union hash64_w {
     uint32_t words[16];
 } hash64_w;
 
+typedef union hash32_w {
+    uint32_t words[8];
+} hash32_w;
 
 typedef union node {
     unsigned char cbytes[NODE_WORDS * 4];
@@ -83,6 +97,10 @@ typedef union ethash_full {
 
 //-----------------------------------------------------------
 
+
+
+//-----------------------------------------------------------
+
 typedef union {
     uint32_t my_uint32;
     data_t my_data_t;
@@ -92,13 +110,13 @@ typedef union {
 typedef union {
     unsigned char my_uint_char[64];
     uint32_t my_data_t[16];
-} srai_mem_conv_IN0;
+} INPUT_mem_t;
 
 
 typedef union {
     unsigned char my_uint_char[64];
     uint32_t my_data_t[16];
-} srai_mem_conv_OUT0;
+} OUTPUT_mem_t;
 
 
 const long int HLS_AXI_SIM_IN_DEPTH=(long int)GLOBAL_DATA_IN_SIZE;

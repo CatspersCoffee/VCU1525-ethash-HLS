@@ -75,8 +75,6 @@ static std::string bytesToHexString(uint8_t const* bytes, unsigned size)
 	}
 	return str;
 }
-
-
 //------------------------------------------------------------------------------
 
 
@@ -84,26 +82,63 @@ static std::string bytesToHexString(uint8_t const* bytes, unsigned size)
 
 
 
+
+//------------------------------------------------------------------------------
+
+void load_header(INPUT_mem_t* _input){
+
+    INPUT_mem_t* _input_head = _input;
+    uint32_t header_hash[8];
+    //memcpy(header_hash, hexStringToBytes("0000000100000002000000030000000400000005000000060000000700000008").data(), 32);
+    header_hash[0] = 0x00000001;
+    header_hash[1] = 0x00000002; 
+    header_hash[2] = 0x00000003; 
+    header_hash[3] = 0x00000004; 
+    header_hash[4] = 0x00000005; 
+    header_hash[5] = 0x00000006; 
+    header_hash[6] = 0x00000007; 
+    header_hash[7] = 0x00000008; 
+
+
+    uint8_t temp_byte = 0x00;
+    uint32_t temp_word = 0x00000000;
+    
+    // write sdx_data_t for data [0] with just header has in MS 32 bytes.
+    for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {   // 16 --> 16 * 32bits = 512bits
+        if(i < 8){
+            _input->my_data_t[i] = header_hash[i];
+        } else {
+            _input->my_data_t[i] = 0x00000000;
+        }
+    }
+    _input++;
+    
+    // write sdx_data_t for data [1 through 15] with just zeros
+    for (int j = 1 ; j < GLOBAL_DATA_IN_SIZE; j++) {        // how many sdx_data_t elements are in the input data set.
+        for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {   // 16 --> 16 * 32bits = 512bits
+            _input->my_data_t[i] = 0x00000000;
+        }
+        _input++;
+    }
+
+
+}
 
 //------------------------------------------------------------------------------
 void load_dag(ethash_full* _dag_mem, uint64_t _dag_size_in_bytes){
 
     uint64_t some_word = 0x1122334455667788;
+    uint64_t node_index = 0x00;
     int node_double_words = 8;
     int node_bytes = 64;
     uint64_t nodes_in_dag = _dag_size_in_bytes / 64;
 
-    uint8_t node_hash[64];
-    //memcpy(input_hash, hexStringToBytes("c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470").data(), 32);
-    memcpy(node_hash, hexStringToBytes("0f6f7226432c21d4dfa2a1538a1fdc72ee1faf405a60e5f408b344a2f5aab2ddff0f9c172b6f7e2259b7929bce06388ecf84a51605bc48cd0b3c51d0eb12e3fa").data(), 64);
-    //
-    // 0f6f7226 432c21d4
-    // dfa2a153 8a1fdc72
 
 
 
     cout << "nodes_in_dag  =  " << nodes_in_dag << endl;
 
+    /*
     for (uint64_t i = 0 ; i < 1; i++) {
         for (int j = 0 ; j < node_bytes; j++) { 
             _dag_mem->bytes[j] = node_hash[j];
@@ -118,6 +153,21 @@ void load_dag(ethash_full* _dag_mem, uint64_t _dag_size_in_bytes){
         some_word++;
         _dag_mem++;
     }
+    */
+
+
+    for (uint64_t i = 0 ; i < nodes_in_dag; i++) {
+
+        for(int d = 0; d < node_double_words; d++) {
+            _dag_mem->double_words[d] = 0x00000000000000000000000000000000;
+        }
+        _dag_mem->double_words[0] = node_index;
+        node_index++;
+        _dag_mem++;
+    }
+
+
+
 }
 
 //------------------------------------------------------------------------------
@@ -154,7 +204,7 @@ void read_dag(){
 //------------------------------------------------------------------------------
 
 
-void gen_test_data(srai_mem_conv_IN0 *a) {
+void gen_test_data(INPUT_mem_t *a) {
 
     data_t temp[NUM_ELEMENTS_PER_SDX_DATA_BEAT];
 
@@ -171,13 +221,11 @@ void gen_test_data(srai_mem_conv_IN0 *a) {
             a++;
         }
     }
-    
-
-
 
 }
 
-void print_test_data(srai_mem_conv_IN0 *a) {
+
+void print_test_data(INPUT_mem_t *a) {
 
 printf("\n Input Test Data Set : \n");
 for (int j = 0 ; j < NUMBER_OF_DATA_SETS; j++) {
@@ -206,16 +254,6 @@ int main(int argc, char** argv) {
 
 
     uint32_t dbg_ker_count = 0;
-    sdx_data_t *a_in_ptr;
-
-    char *a_in_ptr_c_POSIX = NULL;
-    char *y_out_ptr_c_POSIX = NULL;
-
-    srai_mem_conv_IN0 *a_in_ptr_c;
-    srai_mem_conv_OUT0 *y_out_ptr_c;
-    srai_mem_conv_IN0 *a_in_head_c;
-    srai_mem_conv_OUT0 *y_out_head_c;
-    sdx_data_t *y_out_ptr;
 
     SysMon_temp_struct sys_temprature;
     bool RESULT_SUCESSFULL;
@@ -231,11 +269,59 @@ int main(int argc, char** argv) {
     dag_ptr_c = (ethash_full*)dag_ptr_c_POSIX;
     dag_head_c = dag_ptr_c;
 
+    //cout << "Load fake-DAG with some node values\n";
+    //load_dag(dag_ptr_c, size_dag);
+    //dag_ptr = (sdx_data_t *)dag_head_c;
+    //dag_ptr_c = dag_head_c;
+
+    printf("-------------------------------------------------------------\n\n\n");
+
+    sdx_data_t* a_in_ptr;
+    sdx_data_t* y_out_ptr;
+
+    char *input_ptr_c_POSIX = NULL;
+    char *output_ptr_c_POSIX = NULL;
+
+    INPUT_mem_t* input_ptr_c;
+    OUTPUT_mem_t* output_ptr_c;
+    INPUT_mem_t* input_head_c;
+    OUTPUT_mem_t* output_head_c;
+
+
+    posix_memalign((void **)&input_ptr_c_POSIX, 4096, GLOBAL_DATA_IN_SIZE_BYTES + 4096);
+    input_ptr_c = (INPUT_mem_t *)input_ptr_c_POSIX;
+
+
+    //posix_memalign((void **)&output_ptr_c_POSIX, 4096, GLOBAL_DATA_OUT_SIZE_BYTES + 4096);
+    //output_ptr_c = (OUTPUT_mem_t *)output_ptr_c_POSIX;
+    posix_memalign((void **)&output_ptr_c_POSIX, 64, size_dag + 64);
+    output_ptr_c = (OUTPUT_mem_t *)output_ptr_c_POSIX;
+
+    input_head_c = input_ptr_c;
+    output_head_c = output_ptr_c;
+
+
+    printf("\n-------------------------------------------------------------\n\n");
+    //Fill ddr4_Memory wr_data_buffer
+    cout << "Initializing Memory with Input args\n";
+
     cout << "Load fake-DAG with some node values\n";
     load_dag(dag_ptr_c, size_dag);
 
     dag_ptr = (sdx_data_t *)dag_head_c;
     dag_ptr_c = dag_head_c;
+
+    cout << "Load INPUT values\n";
+    //gen_test_data(input_ptr_c);
+    load_header(input_ptr_c);
+
+    a_in_ptr = (sdx_data_t *)input_head_c;
+    y_out_ptr = (sdx_data_t *)output_head_c;
+    input_ptr_c = input_head_c;
+
+    cout << "Memory Initialized with test Dataset and Input data\n";
+
+
 
     printf("-------------------------------------------------------------\n\n\n");
 
@@ -247,11 +333,18 @@ int main(int argc, char** argv) {
             }
     } 
 
+    printf("-------------------------------------------------------------\n\n\n");
+
+    cout << "print a few values from INPUT dataset: \n";
+    for (unsigned int index = 0; index < 32 ;index++) {
+            printf ("INPUT Index[%d] = %08x \n", index, (input_ptr_c->my_data_t[index]));
+            if(index == 15){
+                printf("----\n");
+            }
+    } 
 
 
     printf("-------------------------------------------------------------\n\n\n");
-
-
     cout << "NUMBER_OF_DATA_SETS  =  " << NUMBER_OF_DATA_SETS << endl;
     cout << "GLOBAL_DATA_IN_SIZE  =  " << GLOBAL_DATA_IN_SIZE << endl;
     cout << "GLOBAL_DATA_OUT_SIZE =  " << GLOBAL_DATA_OUT_SIZE << endl;
@@ -259,50 +352,26 @@ int main(int argc, char** argv) {
         cout << "Memory reguirement over 1GB .......... exiting\n";
         exit (1);
     }
-
-
-    posix_memalign((void **)&a_in_ptr_c_POSIX, 4096, GLOBAL_DATA_IN_SIZE_BYTES + 4096);
-    a_in_ptr_c = (srai_mem_conv_IN0 *)a_in_ptr_c_POSIX;
-    //posix_memalign((void **)&y_out_ptr_c_POSIX, 4096, GLOBAL_DATA_OUT_SIZE_BYTES + 4096);
-    //y_out_ptr_c = (srai_mem_conv_OUT0 *)y_out_ptr_c_POSIX;
-    posix_memalign((void **)&y_out_ptr_c_POSIX, 64, size_dag + 64);
-    y_out_ptr_c = (srai_mem_conv_OUT0 *)y_out_ptr_c_POSIX;
-
-    a_in_head_c = a_in_ptr_c;
-    y_out_head_c = y_out_ptr_c;
-
-
-    printf("-------------------------------------------------------------\n");
+    //printf("-------------------------------------------------------------\n");
+    printf("\n\n");
     printf("Create Test Data Set\n");
     printf("Note DATA_IN_SIZE (Input Memory size in bytes  ) = %d (%x)\n",(GLOBAL_DATA_IN_SIZE_BYTES),(GLOBAL_DATA_IN_SIZE_BYTES));
     printf("Note DATA_OUT_SIZE(Input Memory size in bytes  ) = %d (%x)\n",(GLOBAL_DATA_OUT_SIZE_BYTES),(GLOBAL_DATA_OUT_SIZE_BYTES));
     cout << "Size of data_t = " << sizeof(data_t) <<  " Bytes" << endl;
     cout << "Number of Input Operands =  " << NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE*NUM_ELEMENTS_PER_SDX_DATA_BEAT<< endl;
     cout << "Number of Output Operands = " << NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_OUT_SIZE*NUM_ELEMENTS_PER_SDX_DATA_BEAT<< endl;
-    cout << "Size of srai_mem_conv_IN0 = " << sizeof(srai_mem_conv_IN0) <<  " Bytes" << endl;
+    cout << "Size of INPUT_mem_t = " << sizeof(INPUT_mem_t) <<  " Bytes" << endl;
     cout << "True Size (in Bytes) of Input Data  = " << sizeof(data_t)*NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE*NUM_ELEMENTS_PER_SDX_DATA_BEAT<< endl;
     cout << "Allocated Size (in Bytes) of a_in_ptr = " <<  GLOBAL_DATA_IN_SIZE_BYTES  << " | 0x"<< hex <<  GLOBAL_DATA_IN_SIZE_BYTES << endl;
     cout << dec;
-    cout << "Allocated Size (in Bytes) of a_in_ptr_c = " << sizeof(srai_mem_conv_IN0)*NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE << " | 0x" << hex << sizeof(srai_mem_conv_IN0)*NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE << endl;
+    cout << "Allocated Size (in Bytes) of input_ptr_c = " << sizeof(INPUT_mem_t)*NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE << " | 0x" << hex << sizeof(INPUT_mem_t)*NUMBER_OF_DATA_SETS*SDX_CU_LOCAL_IN_SIZE << endl;
     cout << dec;
     printf("-------------------------------------------------------------\n\n\n");
 
 
 
-    //Fill ddr4_Memory wr_data_buffer
-    cout << "Initializing Memory with InputA args\n";
-
-    gen_test_data(a_in_ptr_c);
-
-    a_in_ptr = (sdx_data_t *)a_in_head_c;
-    y_out_ptr = (sdx_data_t *)y_out_head_c;
-    a_in_ptr_c = a_in_head_c;
-
-    cout << "Memory Initialized with test Data\n";
 
 
-
-    printf("\n-------------------------------------------------------------\n\n");
 
 
 #ifdef GPP_ONLY_FLOW  
@@ -394,6 +463,8 @@ int main(int argc, char** argv) {
     cout << "KERNEL_Execution_time (sec) =  " <<  dec << (kernel_execution_metric.KERNEL_EXECUTION_TIME) << " \n";
 
     fpga_clean(my_fpga_xDMA_ptr);
+
+
 #endif
 
     int MAX_ITERATION_to_print = 1;
@@ -410,13 +481,13 @@ int main(int argc, char** argv) {
         for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {   // 16
 
             for (unsigned int k = 0 ; k < (NUM_ELEMENTS_PER_SDX_DATA_BEAT); k++) {
-                fn_in_arg0[k] = a_in_ptr_c->my_data_t[k];
+                fn_in_arg0[k] = input_ptr_c->my_data_t[k];
             }
-            a_in_ptr_c++;
+            input_ptr_c++;
             for (unsigned int k = 0 ; k < (NUM_ELEMENTS_PER_SDX_DATA_BEAT); k++) {
-                fn_out_arg0[k] = y_out_ptr_c->my_data_t[k];
+                fn_out_arg0[k] = output_ptr_c->my_data_t[k];
             }
-            y_out_ptr_c++;
+            output_ptr_c++;
 
             for (unsigned int index = 0; index <  16; index++) {
                 if (((i == 0) && (j == 0)) ||   ((i == 1) && (j == 0))   ) { 
@@ -438,9 +509,9 @@ int main(int argc, char** argv) {
 
             printf("---- [%02d]\n", i);
             for (unsigned int k = 0 ; k < 16; k++) {
-                fn_out_arg0[k] = y_out_ptr_c->my_data_t[k];
+                fn_out_arg0[k] = output_ptr_c->my_data_t[k];
             }
-            y_out_ptr_c++;
+            output_ptr_c++;
 
             for (unsigned int index = 0; index < 16; index++) {
                 printf("Index[%d] = %08x \n", index, (fn_out_arg0[index])); 
@@ -511,10 +582,69 @@ int main(int argc, char** argv) {
 
     printf ("\n----\n");    
 */    
+
+/*
+    INPUT_mem_t* _input = input_ptr_c;
+    hash32 hash_in; 
+
+    uint32_t temp_word, aword;
+    uint8_t temp_char;
+    for (int i = 0 ; i < 8; i++) {   // 8 --> 8 * 32bits = 256bits
+        temp_word = _input->my_data_t[i];
+
+        printf("\n temp_word[%02d] = %08x", i, temp_word);
+
+        for (int j = 0 ; j < 4; j++) {
+        aword = temp_word >> (j*8);
+        aword = 0x000000FF & aword;
+        temp_char = (uint8_t)aword;
+        hash_in.b[(i*4)+(3-j)] = temp_char;
+        }
+
+        
+    }
+
+
+    printf("\n hash_in = ");
+    for(int i = 0; i<32; i++){
+        printf("%02x", hash_in.b[i]);
+    }
+
+    printf ("\n----\n");  
+*/
+/*
+    INPUT_mem_t* _input = input_ptr_c;
+    hash64 output; 
+
+    uint32_t temp_word, aword;
+    uint8_t temp_char;
+    for (int i = 0 ; i < 16; i++) {   // 16 --> 16 * 32bits = 512bits
+        temp_word = _input->my_data_t[i];
+
+        printf("\n temp_word[%02d] = %08x", i, temp_word);
+
+        for (int j = 0 ; j < 4; j++) {
+        aword = temp_word >> (j*8);
+        aword = 0x000000FF & aword;
+        temp_char = (uint8_t)aword;
+        output.b[(i*4)+(3-j)] = temp_char;
+        }
+
+        
+    }
+
+
+    printf("\n output = ");
+    for(int i = 0; i<64; i++){
+        printf("%02x", output.b[i]);
+    }
+
+    printf ("\n----\n");  
+*/
     // ------------ Clean -----------------------
 
-    free(a_in_ptr_c_POSIX);
-    free(y_out_ptr_c_POSIX);
+    free(input_ptr_c_POSIX);
+    free(output_ptr_c_POSIX);
     free(dag_ptr_c_POSIX);
 
     return 0;
