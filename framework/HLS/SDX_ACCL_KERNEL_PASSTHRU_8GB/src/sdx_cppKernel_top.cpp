@@ -25,10 +25,16 @@
 
 #define FNV_PRIME 0x01000193
 
+/*
 static inline uint fnv_hash(const uint x, const uint y) {
 	return x*FNV_PRIME ^ y;
 }
+*/
 
+static inline uint32_t fnv_hash(const uint32_t x, const uint32_t y) {
+    #pragma HLS INLINE
+	return x*FNV_PRIME ^ y;
+}
 
 /*
  * END from fnv.h
@@ -329,6 +335,8 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
     sdx_data_t node_bufa_val[1];
     sdx_data_t node_bufy_val[1];
     sdx_data_t hash64output[1];
+    sdx_data_t indexoutput[64];
+    sdx_data_t dag_val[1];
 
     sdx_cppKernel_top_local_data_loop:for (unsigned int i = 0; i < NUMBER_OF_DATA_SETS_t; i++) {
 
@@ -413,7 +421,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         */
         //----------------------------------------------------------------------
         // TESTING   
-
+        /*
         _dag = _dag_head + 0x005b54c8; 
         y_out = _output_head + 0;  
         memcpy(node_bufa_val, (const sdx_data_t*)_dag, SDX_BUS_WIDTH_BYTES);
@@ -423,9 +431,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         y_out = _output_head + 1;
         memcpy(node_bufa_val, (const sdx_data_t*)_dag, SDX_BUS_WIDTH_BYTES);
         memcpy(y_out, node_bufa_val, SDX_BUS_WIDTH_BYTES);
-
-
-
+        */
 
 
         //----------------------------------------------------------------------
@@ -476,7 +482,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
 		node64* full_nodes;                     // dag .. pointer to dag node
 		hash32_w header_hash;
         hash32_w* p_header_hash = &header_hash;  // header_hash is type hash64_w --> only accepts uint32_t for elements.
-        uint64_t DAG_SIZE;
+        uint32_t DAG_SIZE;
         uint64_t numhashs = 0;
         uint32_t nonce[2];
 
@@ -491,15 +497,11 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         //----------------------------------------------------------------------
         // setup a nonce value for testing:
 
-
-        //nonce[0] = 0x00000000ULL;
-        //nonce[1] = 0x00000000ULL;
-
-        nonce[0] = 0xAABBCCDDULL;
-        nonce[1] = 0x00000000ULL;        
+        nonce[0] = 0x00000000ULL;
+        nonce[1] = 0x00000000ULL;     
         //----------------------------------------------------------------------
 
-        for(numhashs = 0; numhashs < 1; numhashs++){
+        //for(numhashs = 0; numhashs < 1; numhashs++){
 
             node64_w s_mix[MIX_NODES + 1];              // s_mix[3]
             node64_w* p_s_mix = &s_mix[0];
@@ -525,9 +527,29 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
 
             // compute sha3-512 hash and replicate across mix
             pack_unpack.rework_hash64_w(p_s_mix, p_s_mix_temp);
-            //SHA3_512(s_mix->bytes, s_mix->bytes, 40);
+            //SHA3_512(s_mix->bytes, s_mix->bytes, 40); //old original
             //SHA3_512(p_s_mix_temp->b, p_s_mix_temp->b, 40);
+            //--------------------- testing
+            // artificially setup the mix with known values:  
+            s_mix_temp.b[0]=0x35; s_mix_temp.b[1]=0xad; s_mix_temp.b[2]=0xe1; s_mix_temp.b[3]=0xc6;
+            s_mix_temp.b[4]=0x43; s_mix_temp.b[5]=0xe7; s_mix_temp.b[6]=0x73; s_mix_temp.b[7]=0xf1;
+            s_mix_temp.b[8]=0x00; s_mix_temp.b[9]=0x2a; s_mix_temp.b[10]=0xf1; s_mix_temp.b[11]=0x08;
+            s_mix_temp.b[12]=0xdf; s_mix_temp.b[13]=0x78; s_mix_temp.b[14]=0xd3; s_mix_temp.b[15]=0xcf;
+            s_mix_temp.b[16]=0x3c; s_mix_temp.b[17]=0x6d; s_mix_temp.b[18]=0x06; s_mix_temp.b[19]=0x9c;
+            s_mix_temp.b[20]=0x93; s_mix_temp.b[21]=0xee; s_mix_temp.b[22]=0x14; s_mix_temp.b[23]=0xc2;
+            s_mix_temp.b[24]=0x1e; s_mix_temp.b[25]=0x86; s_mix_temp.b[26]=0xd5; s_mix_temp.b[27]=0xc5;
+            s_mix_temp.b[28]=0xb9; s_mix_temp.b[29]=0xd8; s_mix_temp.b[30]=0x3c; s_mix_temp.b[31]=0xa4;
+            s_mix_temp.b[32]=0xc8; s_mix_temp.b[33]=0xba; s_mix_temp.b[34]=0xf1; s_mix_temp.b[35]=0xf1;
+            s_mix_temp.b[36]=0x04; s_mix_temp.b[37]=0x73; s_mix_temp.b[38]=0x7a; s_mix_temp.b[39]=0xa3;
+            s_mix_temp.b[40]=0xc2; s_mix_temp.b[41]=0x77; s_mix_temp.b[42]=0x68; s_mix_temp.b[43]=0x20;
+            s_mix_temp.b[44]=0x6c; s_mix_temp.b[45]=0xbc; s_mix_temp.b[46]=0x7d; s_mix_temp.b[47]=0x3e;
+            s_mix_temp.b[48]=0x63; s_mix_temp.b[49]=0xea; s_mix_temp.b[50]=0xa9; s_mix_temp.b[51]=0x70;
+            s_mix_temp.b[52]=0x7f; s_mix_temp.b[53]=0xb1; s_mix_temp.b[54]=0x49; s_mix_temp.b[55]=0xaa;
+            s_mix_temp.b[56]=0xaa; s_mix_temp.b[57]=0x0b; s_mix_temp.b[58]=0xd2; s_mix_temp.b[59]=0x64;
+            s_mix_temp.b[60]=0x3c; s_mix_temp.b[61]=0xc2; s_mix_temp.b[62]=0xad; s_mix_temp.b[63]=0xef;
+            //---------------------^^
             pack_unpack.rework_hash64_to_node64(p_s_mix_temp, p_s_mix);
+            pack_unpack.swap_wordbytes_in_node64_w(p_s_mix, p_s_mix);
 
             node64_w* mix = s_mix + 1;
             for (unsigned w = 0; w != MIX_WORDS; ++w) {
@@ -540,45 +562,143 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
                 hashAW.words[i] = s_mix[0].words[i];
             }
             pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
-            y_out = _output_head + 2;
+            y_out = _output_head + 0;
             memcpy(y_out, hash64output, 64); 
             // s_mix[1]  
             for(int i = 0; i<16; i++){
                 hashAW.words[i] = s_mix[1].words[i];
             }
             pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
-            y_out = _output_head + 3;
+            y_out = _output_head + 1;
             memcpy(y_out, hash64output, 64);       
             // s_mix[2]
             for(int i = 0; i<16; i++){
                 hashAW.words[i] = s_mix[2].words[i];
             }
             pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
+            y_out = _output_head + 2;
+            memcpy(y_out, hash64output, 64);                                
+            //---------------------^^
+            /*
+            //--------------------- testing
+            // artificially setup the mix with known values:
+            s_mix[1].words[0] = 0xc6e1ad35;
+            s_mix[1].words[1] = 0xf173e743;
+            s_mix[1].words[2] = 0x08f12a00;
+            s_mix[1].words[3] = 0xcfd378df; 
+            s_mix[1].words[4] = 0x9c066d3c; 
+            s_mix[1].words[5] = 0xc214ee93; 
+            s_mix[1].words[6] = 0xc5d5861e; 
+            s_mix[1].words[7] = 0xa43cd8b9; 
+            s_mix[1].words[8] = 0xf1f1bac8; 
+            s_mix[1].words[9] = 0xa37a7304; 
+            s_mix[1].words[10] = 0x206877c2; 
+            s_mix[1].words[11] = 0x3e7dbc6c; 
+            s_mix[1].words[12] = 0x70a9ea63; 
+            s_mix[1].words[13] = 0xaa49b17f; 
+            s_mix[1].words[14] = 0x64d20baa; 
+            s_mix[1].words[15] = 0xefadc23c;
+
+            s_mix[2].words[0] = 0xc6e1ad35;
+            s_mix[2].words[1] = 0xf173e743;
+            s_mix[2].words[2] = 0x08f12a00; 
+            s_mix[2].words[3] = 0xcfd378df; 
+            s_mix[2].words[4] = 0x9c066d3c; 
+            s_mix[2].words[5] = 0xc214ee93; 
+            s_mix[2].words[6] = 0xc5d5861e; 
+            s_mix[2].words[7] = 0xa43cd8b9; 
+            s_mix[2].words[8] = 0xf1f1bac8; 
+            s_mix[2].words[9] = 0xa37a7304; 
+            s_mix[2].words[10] = 0x206877c2; 
+            s_mix[2].words[11] = 0x3e7dbc6c; 
+            s_mix[2].words[12] = 0x70a9ea63; 
+            s_mix[2].words[13] = 0xaa49b17f; 
+            s_mix[2].words[14] = 0x64d20baa; 
+            s_mix[2].words[15] = 0xefadc23c;
+            //---------------------^^
+            */
+            DAG_SIZE = 1073739904U;
+            uint32_t full_size = DAG_SIZE;
+            uint32_t num_full_pages = (uint32_t) (full_size / MIX_BYTES);
+
+            uint32_t index;
+            node64_w dag_node;
+            node64_w* p_dag_node = &dag_node;
+
+            hash64_w indexval;                  // testing
+            hash64_w* p_indexval = &indexval;   // testing
+
+            node64_w mixnoden; 
+
+            for (uint8_t i = 0; i != ACCESSES; ++i) {  // ACCESSES = 64
+            //for (uint8_t i = 0; i != 1; ++i) {  // testing
+                index = ((s_mix->words[0] ^ i) * FNV_PRIME ^ mix->words[i % MIX_WORDS]) % num_full_pages;
+
+                /*
+                //--------------------- testing
+                indexval.words[0] = index;
+                pack_unpack.pack_hash64_to_sdx_512_data(&indexoutput[0], p_indexval);
+                y_out++;
+                memcpy(y_out, indexoutput, 64);  
+                //---------------------^^
+                */
+                
+                for (unsigned n = 0; n != MIX_NODES; ++n) { // MIX_NODES = 2
+                    //dag_node = full_nodes[MIX_NODES * index + n];     // Original
+
+                    _dag = _dag_head + (MIX_NODES * index + n); 
+                    memcpy(dag_val, (const sdx_data_t*)_dag, SDX_BUS_WIDTH_BYTES);
+                    pack_unpack.unpack_sdx_512_data_to_node64_w(&dag_val[0], p_dag_node);
+
+                    /*
+                    //--------------------- testing
+                    // dag_node
+                    for(int i = 0; i<16; i++){
+                        hashAW.words[i] = dag_node.words[i];
+                    }
+                    pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
+                    y_out = _output_head + 3;
+                    memcpy(y_out, hash64output, 64); 
+                    //---------------------^^
+                    */
+
+                    for (unsigned w = 0; w != NODE_WORDS; ++w) { // NODE_WORDS = 16
+                        //mix[n].words[w] = fnv_hash(mix[n].words[w], dag_node.words[w]); //original
+                        //mix[n].words[w] = fnv_hash(mix[n].words[w], dag_node.words[w]);
+                        mixnoden.words[0] = fnv_hash(mix[n].words[w], dag_node.words[w]);
+                        mix[n].words[w] = mixnoden.words[0];
+                    }
+                }
+                
+            }
+
+
+            //--------------------- testing
+            // copy final s_mix to output memory index[4 through 6]
+            // s_mix[0]
+            for(int i = 0; i<16; i++){
+                hashAW.words[i] = s_mix[0].words[i];
+            }
+            pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
             y_out = _output_head + 4;
+            memcpy(y_out, hash64output, 64); 
+            // s_mix[1]  
+            for(int i = 0; i<16; i++){
+                hashAW.words[i] = s_mix[1].words[i];
+            }
+            pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
+            y_out = _output_head + 5;
+            memcpy(y_out, hash64output, 64);       
+            // s_mix[2]
+            for(int i = 0; i<16; i++){
+                hashAW.words[i] = s_mix[2].words[i];
+            }
+            pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
+            y_out = _output_head + 6;
             memcpy(y_out, hash64output, 64);                                
             //---------------------^^
 
-
-
-
-            unsigned const full_size = (unsigned) DAG_SIZE;
-            unsigned const num_full_pages = (unsigned) (full_size / MIX_BYTES);
-
-            uint index;
-            node64_t dag_node;
 /*
-            for (unsigned i = 0; i != ACCESSES; ++i) {
-                index = ((s_mix->words[0] ^ i) * FNV_PRIME ^ mix->words[i % MIX_WORDS]) % num_full_pages;
-
-                for (unsigned n = 0; n != MIX_NODES; ++n) {
-                    dag_node = full_nodes[MIX_NODES * index + n];
-
-                    for (unsigned w = 0; w != NODE_WORDS; ++w) {
-                        mix[n].words[w] = fnv_hash(mix[n].words[w], dag_node.words[w]);
-                    }
-                }
-            }
-
             // compress mix (length reduced from 128 to 32 bytes)
             for (unsigned w = 0; w != MIX_WORDS; w += 4) {
                 uint reduction = mix->words[w + 0];
@@ -601,7 +721,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             }
 */
 
-        }
+    //} // for numhashs loop end
 
 
 

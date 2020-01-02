@@ -131,6 +131,32 @@ template <class conv_t> class sdx_pack_unpack {
         }
     }
 
+    //----------------------
+    void swap_wordbytes_in_node64_w(node64_w* _input, node64_w* _output){
+        // take a node64_w and swaps the bytes in each word
+        // word[0] = AABBCCDD --> word[0] = DDCCBBAA
+        // 
+        node64_w outputtemp;
+        uint32_t temp_word, aword, bword, cword;
+        uint8_t temp_char;
+        for (int i = 0 ; i < 16; i++) {   // 16 --> 16 * 32bits = 512bits
+            temp_word = _input->words[i];
+            cword = 0x00000000;
+            for (int j = 0 ; j < 4; j++) {
+            bword = 0x00000000;
+            aword = temp_word >> (j*8);
+            aword = 0x000000FF & aword;
+            bword = aword << ((3-j)*8);
+            cword = cword | bword;
+            }
+            outputtemp.words[i] = cword;
+        }
+        for (int w = 0 ; w < 16; w++) {
+            _output->words[w] = outputtemp.words[w];
+        }
+    }
+
+    //----------------------
     void pack_hash64_to_sdx_512_data(sdx_data_t* _output, hash64_w* _input) {
     #pragma HLS INLINE
         for (unsigned int index = 0; index < 16; index++) {
@@ -138,6 +164,21 @@ template <class conv_t> class sdx_pack_unpack {
                 ((*_output)(((index*32)+31), (index*32))) =  pack_conv.my_uint32;
             }
     }
+
+    //----------------------
+    void unpack_sdx_512_data_to_node64_w(sdx_data_t *a, node64_w* _output) {
+    #pragma HLS INLINE
+        for (unsigned int index = 0; index < 16; index++) {
+            unpack_conv.my_uint32 = ((*a)(((index*32)+31), (index*32)));
+            _output->words[index] = unpack_conv.my_data_t;
+        }
+
+    }
+
+
+
+
+
 
 
     void pack_sdx_512_data(sdx_data_t *a, data_t my_t[NUM_ELEMENTS_PER_SDX_DATA_BEAT]) {

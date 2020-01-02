@@ -641,6 +641,56 @@ int main(int argc, char** argv) {
 
     printf ("\n----\n");  
 */
+/*
+    hash64_w input;
+    hash64_w output; 
+
+    input.words[0] = 0x35ade1c6;
+    input.words[1] = 0x43e773f1; 
+    input.words[2] = 0x002af108; 
+    input.words[3] = 0xdf78d3cf; 
+    input.words[4] = 0x3c6d069c; 
+    input.words[5] = 0x93ee14c2; 
+    input.words[6] = 0x1e86d5c5; 
+    input.words[7] = 0xb9d83ca4; 
+    input.words[8] = 0xc8baf1f1; 
+    input.words[9] = 0x04737aa3; 
+    input.words[10] = 0xc2776820; 
+    input.words[11] = 0x6cbc7d3e; 
+    input.words[12] = 0x63eaa970; 
+    input.words[13] = 0x7fb149aa; 
+    input.words[14] = 0xaa0bd264; 
+    input.words[15] = 0x3cc2adef; 
+
+    uint32_t temp_word, aword, bword, cword;
+    uint8_t temp_char;
+    for (int i = 0 ; i < 16; i++) {   // 16 --> 16 * 32bits = 512bits
+        temp_word = input.words[i];
+        printf("\n temp_word[%02d] = %08x", i, temp_word);
+
+        cword = 0x00000000;
+        for (int j = 0 ; j < 4; j++) {
+        bword = 0x00000000;
+        aword = temp_word >> (j*8);
+        aword = 0x000000FF & aword;
+        bword = aword << ((3-j)*8);
+        cword = cword | bword;
+        }
+        printf("\n cword[%02d] = %08x", i, cword);
+        output.words[i] = cword;
+    }
+
+
+    printf("\n output = ");
+    for(int i = 0; i<16; i++){
+        printf("%08x", output.words[i]);
+    }
+    // s_mix  = 35ade1c643e773f1002af108df78d3cf3c6d069c93ee14c21e86d5c5b9d83ca4c8baf1f104737aa3c27768206cbc7d3e63eaa9707fb149aaaa0bd2643cc2adef
+    //          c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+    // output = c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+    printf ("\n----\n");  
+*/
+
     // ------------ Clean -----------------------
 
     free(input_ptr_c_POSIX);
