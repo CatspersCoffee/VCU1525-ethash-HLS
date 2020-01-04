@@ -39,6 +39,17 @@
 
 //-----------------------------------------------------------
 
+#define INDEX_IN_header         0x00000000UL        // header_hash      --> index 0
+#define INDEX_IN_target         0x00000001UL        // header_hash      --> index 1
+#define INDEX_IN_nonces         0x00000002UL        // nonce values     --> index 2-33 (32 values, start[CU], end[CU])
+#define INDEX_IN_rem_dat        0x00000022UL        // remaining data   --> index 34+
+
+#define INDEX_OUT_header        0x00000001UL
+#define INDEX_OUT_target        0x00000002UL
+
+
+//-----------------------------------------------------------
+
 #define NODE_WORDS (64/4) //16
 
 typedef union {
@@ -56,7 +67,9 @@ typedef union {
 
 
 
-
+typedef union mix96 {
+    uint8_t b[64+32]; 
+} mix96;
 
 
 

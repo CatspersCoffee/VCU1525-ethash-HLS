@@ -85,9 +85,9 @@ static std::string bytesToHexString(uint8_t const* bytes, unsigned size)
 
 //------------------------------------------------------------------------------
 
-void load_header(INPUT_mem_t* _input){
-
+void load_header(INPUT_mem_t* _input, uint32_t _index_start){
     INPUT_mem_t* _input_head = _input;
+    uint32_t index = _index_start;
     uint32_t header_hash[8];
     //memcpy(header_hash, hexStringToBytes("0000000100000002000000030000000400000005000000060000000700000008").data(), 32);
     header_hash[0] = 0x00000001;
@@ -99,10 +99,11 @@ void load_header(INPUT_mem_t* _input){
     header_hash[6] = 0x00000007; 
     header_hash[7] = 0x00000008; 
 
-
     uint8_t temp_byte = 0x00;
     uint32_t temp_word = 0x00000000;
     
+    _input = _input_head + (index + 0);
+
     // write sdx_data_t for data [0] with just header has in MS 32 bytes.
     for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {   // 16 --> 16 * 32bits = 512bits
         if(i < 8){
@@ -111,17 +112,121 @@ void load_header(INPUT_mem_t* _input){
             _input->my_data_t[i] = 0x00000000;
         }
     }
-    _input++;
+
+}
+
+//------------------------------------------------------------------------------
+
+void load_target(INPUT_mem_t* _input, uint32_t _index_start){
+    INPUT_mem_t* _input_head = _input;
+    uint32_t index = _index_start;
+    uint32_t target[8];
+    //memcpy(header_hash, hexStringToBytes("0000000100000002000000030000000400000005000000060000000700000008").data(), 32);
+    target[0] = 0x80000000;
+    target[1] = 0x00000000; 
+    target[2] = 0x00000000; 
+    target[3] = 0x00000000; 
+    target[4] = 0x00000000; 
+    target[5] = 0x00000000; 
+    target[6] = 0x00000000; 
+    target[7] = 0x00000000; 
+
+    uint8_t temp_byte = 0x00;
+    uint32_t temp_word = 0x00000000;
     
-    // write sdx_data_t for data [1 through 15] with just zeros
-    for (int j = 1 ; j < GLOBAL_DATA_IN_SIZE; j++) {        // how many sdx_data_t elements are in the input data set.
+    _input = _input_head + (index + 0);
+
+    // write sdx_data_t for data [0] with just header has in MS 32 bytes.
+    for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {   // 16 --> 16 * 32bits = 512bits
+        if(i < 8){
+            _input->my_data_t[i] = target[i];
+        } else {
+            _input->my_data_t[i] = 0x00000000;
+        }
+    }
+
+}
+
+//------------------------------------------------------------------------------
+
+void load_nonce(INPUT_mem_t* _input, uint64_t _start_nonce, uint64_t _end_nonce, uint64_t _CUs, uint32_t _index_start){
+    INPUT_mem_t* _input_head = _input;
+    uint32_t index = _index_start;
+    uint32_t start_nonce[16];
+    uint32_t end_nonce[16];
+    uint64_t buffer, startforCU, endforCU;
+
+    printf("\n _end_nonce  = %016llx --> dec %llu", _end_nonce, _end_nonce);
+
+    uint64_t noncesperCU = ((_end_nonce - _start_nonce) / _CUs) + 0;
+    printf("\n noncesperCU = %016llx --> dec %llu", noncesperCU, noncesperCU);
+
+    for(uint32_t cu = 0; cu < _CUs; cu++){
+        startforCU = _start_nonce + (noncesperCU * cu);
+        if(cu == 0 ){
+            startforCU = startforCU + 0;
+        } else if ( cu != 0 || cu != (_CUs - 1)){
+            startforCU = startforCU + (cu * 1);
+        } else if (cu == (_CUs - 1)){
+            startforCU = startforCU + (cu * 1) - 1;
+        }
+        endforCU = startforCU + noncesperCU;
+
+        printf("\n startforCU[%u]  = %016llx --> dec %llu", cu, startforCU, startforCU);
+        printf("\n endforCU[%u]    = %016llx --> dec %llu", cu, endforCU, endforCU);
+
+        // get the start_nonce high 4 bytes:
+        buffer = startforCU >> (8*4);
+        buffer = buffer & 0x00000000FFFFFFFF;
+        start_nonce[0] = (uint32_t)buffer;
+        // get the start_nonce low 4 bytes:
+        buffer = startforCU & 0x00000000FFFFFFFF;
+        start_nonce[1] = (uint32_t)buffer;
+        for( uint8_t i = 2; i < 16; i++){
+            start_nonce[i] = 0x00000000; 
+        }
+
+        // get the end_nonce high 4 bytes:
+        buffer = endforCU >> (8*4);
+        buffer = buffer & 0x00000000FFFFFFFF;
+        end_nonce[0] = (uint32_t)buffer;
+        // get the end_nonce low 4 bytes:
+        buffer = endforCU & 0x00000000FFFFFFFF;
+        end_nonce[1] = (uint32_t)buffer;  
+        for( uint8_t i = 2; i < 16; i++){
+            end_nonce[i] = 0x00000000; 
+        }  
+
+        _input = _input_head + (index + ((cu*2) + 0));
+        printf("\n _input forCU[%u]  nonce_HIGH index = %llu", cu, (index + ((cu*2) + 0)));
+        for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {   // 16
+                _input->my_data_t[i] = start_nonce[i];
+        }
+        _input = _input_head + (index + ((cu*2) + 1));
+        printf("\n _input forCU[%u]  nonce_LOW index  = %llu", cu, (index + ((cu*2) + 1)));
+        for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {   // 16
+                _input->my_data_t[i] = end_nonce[i];
+        }
+
+    }
+    
+
+    printf("\n\n");
+}
+
+//------------------------------------------------------------------------------
+
+void load_remaining_input_data(INPUT_mem_t* _input, uint32_t _index_start){
+    INPUT_mem_t* _input_head = _input;
+    uint32_t index = _index_start;
+    _input = _input_head + (index + 0);
+    // write sdx_data_t for data [3 through 15] with just zeros
+    for (int j = 3 ; j < GLOBAL_DATA_IN_SIZE; j++) {        // how many sdx_data_t elements are in the input data set.
         for (int i = 0 ; i < SDX_CU_LOCAL_IN_SIZE; i++) {   // 16 --> 16 * 32bits = 512bits
             _input->my_data_t[i] = 0x00000000;
         }
         _input++;
     }
-
-
 }
 
 //------------------------------------------------------------------------------
@@ -312,8 +417,16 @@ int main(int argc, char** argv) {
     dag_ptr_c = dag_head_c;
 
     cout << "Load INPUT values\n";
+    // header_hash      --> index 0
+    // nonce values     --> index 1-32 (32 values total, 16 for each CU --> nonce_start[CU], nonce_end[CU])
+    // remaining data   --> index 33+
     //gen_test_data(input_ptr_c);
-    load_header(input_ptr_c);
+    load_header(input_ptr_c, INDEX_IN_header);  
+    load_target(input_ptr_c, INDEX_IN_target);  
+    load_nonce(input_ptr_c, 0x0000000000000000ULL, 0xFFFFFFFFFFFFFFFFULL, 0x4ULL, INDEX_IN_nonces);    // input_data_ptr, start_nonce, end_nonce, compute units
+    //load_nonce(input_ptr_c, 0x0000000000000000ULL, 0x00000000FFFFFFFFULL, 0x4ULL, INDEX_IN_nonces);      // testing
+    //load_nonce(input_ptr_c, 0x0000000000000000ULL, 0x0000000000000001ULL, 0x1ULL, , INDEX_IN_nonces);  //  testing
+    load_remaining_input_data(input_ptr_c, INDEX_IN_rem_dat);
 
     a_in_ptr = (sdx_data_t *)input_head_c;
     y_out_ptr = (sdx_data_t *)output_head_c;
@@ -379,7 +492,7 @@ int main(int argc, char** argv) {
     sdx_cppKernel_top(a_in_ptr, y_out_ptr, dag_ptr, (unsigned int)NUMBER_OF_DATA_SETS, &dbg_ker_count);
 
 #else
-
+/*
     //--------------------------------------------------------------------------
     // Compile for custom HLS accelerator platform 
     string PR_binFile_name;
@@ -464,7 +577,7 @@ int main(int argc, char** argv) {
 
     fpga_clean(my_fpga_xDMA_ptr);
 
-
+*/
 #endif
 
     int MAX_ITERATION_to_print = 1;
@@ -505,16 +618,48 @@ int main(int argc, char** argv) {
     data_t fn_in_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT];  // 16
     data_t fn_out_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT]; // 16
 
-        for (int i = 0 ; i < 10; i++) {   
+        for (int i = 0 ; i < 27; i++) {   
 
-            printf("---- [%02d]\n", i);
+            printf("\n---- [%02d] ", i);
+            switch (i) {
+                case 0: printf("\n"); break;
+                case 1: printf("----> header:\n"); break;
+                case 2: printf("----> target:\n"); break;
+                case 3: printf("\n"); break;    
+                case 4: printf("----> s_mix[0] start:\n"); break;
+                case 5: printf("----> s_mix[1] start:\n"); break;
+                case 6: printf("----> s_mix[2] start:\n"); break;
+                case 7: printf("\n"); break;
+                case 8: printf("----> s_mix[0] final:\n"); break;
+                case 9: printf("----> s_mix[1] final:\n"); break;
+                case 10: printf("----> s_mix[2] final:\n"); break;
+                case 11: printf("----> s_mix[0] final including compression:\n"); break;
+                case 12: printf("----> s_mix[1] final including compression:\n"); break;
+                case 13: printf("----> s_mix[2] final including compression:\n"); break;
+                case 14: printf("\n"); break;      
+                case 15: printf("----> start_nonce:\n"); break;
+                case 16: printf("----> end_nonce: \n"); break;
+                case 17: printf("\n"); break;
+                case 18: printf("----> mix96 bytes 0-63 before:\n"); break;
+                case 19: printf("----> mix96 bytes 64-96 before:\n"); break;
+                case 20: printf("\n"); break;
+                case 21: printf("----> ret_hash bytes 0-32 after SHA3-256 before byteSwap:\n"); break;
+                case 22: printf("\n"); break;                 
+                case 23: printf("----> final compressed mix (32byte):\n"); break;
+                case 24: printf("----> final mix hash (output hash)(32byte):\n"); break;
+                case 25: printf("----> cmp: HI=1, EQ=0, LO=2:\n"); break; 
+                case 26: printf("\n"); break;
+                default: printf("\n");                  
+            }
+
             for (unsigned int k = 0 ; k < 16; k++) {
                 fn_out_arg0[k] = output_ptr_c->my_data_t[k];
             }
             output_ptr_c++;
 
             for (unsigned int index = 0; index < 16; index++) {
-                printf("Index[%d] = %08x \n", index, (fn_out_arg0[index])); 
+                //printf("Index[%d] = %08x \n", index, (fn_out_arg0[index])); 
+                printf("%08x ",  fn_out_arg0[index]); 
             }
             
         }

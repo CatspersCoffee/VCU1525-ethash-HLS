@@ -97,6 +97,45 @@ template <class conv_t> class sdx_pack_unpack {
     }
 
     //----------------------
+    void rework_hash32_to_hash64w(hash32* _p_input, hash64_w* _p_outputW){
+        // call with: rework_hash64(hash64* INPUT, hash64_w* OUTPUT)
+        // description: reworks a a INPUT type as 32 bytes, into OUTPUT type with 16 uin32_t's.
+        // 8 uint32_t in position 0-7 as the 32 bytes, 8 uint32_t in position 8-15 as 0x00000000;
+        uint32_t words[16];
+        int bytecount = 0;
+        uint32_t word1, word2, word3, word4, word5;
+        word5 = 0x00000000;
+        for(int i = 0; i<8; i++){
+            word1 = (uint32_t)_p_input->b[bytecount];
+            word1 = word1 << 24; 
+                        //printf("%08x \n", word1);
+            bytecount++;
+            word2 = (uint32_t)_p_input->b[bytecount];            
+            word2 = word2 << 16;
+                        //printf("%08x \n", word2);
+            bytecount++;
+            word3 = (uint32_t)_p_input->b[bytecount];
+            word3 = word3 << 8;    
+                        //printf("%08x \n", word3);                    
+            bytecount++;
+            word4 = (uint32_t)_p_input->b[bytecount];
+            bytecount++;
+            word4 = word4 << 0; 
+                        //printf("%08x \n", word4);            
+            word5 = word5 | word1;
+            word5 = word5 | word2;
+            word5 = word5 | word3;
+            word5 = word5 | word4;
+                    //printf("--> word5 = %08x \n", word5);
+            _p_outputW->words[i] = word5;   
+            word5 = 0x00000000;    
+        }
+        for(int i = 8; i<16; i++){
+            _p_outputW->words[i] = 0x00000000; 
+        }
+    }
+
+    //----------------------
     void rework_hash64_to_node64(hash64* _p_input, node64_w* _p_outputW){
         // call with: rework_hash64(hash64* INPUT, hash64_w* OUTPUT)
         // description: reworks a a INPUT type as 64 bytes, into OUTPUT type with 16 uin32_t's.
@@ -132,11 +171,150 @@ template <class conv_t> class sdx_pack_unpack {
     }
 
     //----------------------
+    void rework_hash64_to_hash64w(hash64* _p_input, hash64_w* _p_outputW){
+        // call with: rework_hash64_to_hash64(hash64* INPUT, hash64_w* OUTPUT)
+        // description: reworks a a INPUT type as 64 bytes, into OUTPUT type with 16 uin32_t's.
+        uint32_t words[16];
+        int bytecount = 0;
+        uint32_t word1, word2, word3, word4, word5;
+        word5 = 0x00000000;
+        for(int i = 0; i<16; i++){
+            word1 = (uint32_t)_p_input->b[bytecount];
+            word1 = word1 << 24; 
+                        //printf("%08x \n", word1);
+            bytecount++;
+            word2 = (uint32_t)_p_input->b[bytecount];            
+            word2 = word2 << 16;
+                        //printf("%08x \n", word2);
+            bytecount++;
+            word3 = (uint32_t)_p_input->b[bytecount];
+            word3 = word3 << 8;    
+                        //printf("%08x \n", word3);                    
+            bytecount++;
+            word4 = (uint32_t)_p_input->b[bytecount];
+            bytecount++;
+            word4 = word4 << 0; 
+                        //printf("%08x \n", word4);            
+            word5 = word5 | word1;
+            word5 = word5 | word2;
+            word5 = word5 | word3;
+            word5 = word5 | word4;
+                    //printf("--> word5 = %08x \n", word5);
+            _p_outputW->words[i] =  word5;   
+            word5 = 0x00000000;    
+        }
+    }
+
+    //----------------------
+    void rework_mix96pointer_to_hash64w(mix96* _p_input, hash64_w* _p_outputW, uint32_t _bytes, int _advance){
+        // call with: rework_hash64_to_hash64(hash64* INPUT, hash64_w* OUTPUT, how many bytes to copy in mix96.b array, where to start in byte array)
+        // description: reworks an INPUT type as 64 bytes, into OUTPUT type with 16 uin32_t's.
+        uint32_t words[16];
+        int bytecount = 0 + _advance;
+        uint32_t word1, word2, word3, word4, word5;
+        word5 = 0x00000000;
+        for(int i = 0; i<(_bytes/4); i++){
+            word1 = (uint32_t)_p_input->b[bytecount];
+            word1 = word1 << 24; 
+                        //printf("%08x \n", word1);
+            bytecount++;
+            word2 = (uint32_t)_p_input->b[bytecount];            
+            word2 = word2 << 16;
+                        //printf("%08x \n", word2);
+            bytecount++;
+            word3 = (uint32_t)_p_input->b[bytecount];
+            word3 = word3 << 8;    
+                        //printf("%08x \n", word3);                    
+            bytecount++;
+            word4 = (uint32_t)_p_input->b[bytecount];
+            bytecount++;
+            word4 = word4 << 0; 
+                        //printf("%08x \n", word4);            
+            word5 = word5 | word1;
+            word5 = word5 | word2;
+            word5 = word5 | word3;
+            word5 = word5 | word4;
+                    //printf("--> word5 = %08x \n", word5);
+            _p_outputW->words[i] =  word5;   
+            word5 = 0x00000000;    
+        }
+        if(_bytes == 32){
+            for(int i = 8; i<16; i++){
+                _p_outputW->words[i] =  0x00000000; 
+            } 
+        }
+    }
+    //----------------------
+    void rework_hash32pointer_to_hash64w(hash32* _p_input, hash64_w* _p_outputW, uint32_t _bytes, int _advance){
+        // call with: rework_hash64_to_hash64(hash64* INPUT, hash64_w* OUTPUT, how many bytes to copy in mix96.b array, where to start in byte array)
+        // description: reworks an INPUT type as 64 bytes, into OUTPUT type with 16 uin32_t's.
+        uint32_t words[16];
+        int bytecount = 0 + _advance;
+        uint32_t word1, word2, word3, word4, word5;
+        word5 = 0x00000000;
+        for(int i = 0; i<(_bytes/4); i++){
+            word1 = (uint32_t)_p_input->b[bytecount];
+            word1 = word1 << 24; 
+                        //printf("%08x \n", word1);
+            bytecount++;
+            word2 = (uint32_t)_p_input->b[bytecount];            
+            word2 = word2 << 16;
+                        //printf("%08x \n", word2);
+            bytecount++;
+            word3 = (uint32_t)_p_input->b[bytecount];
+            word3 = word3 << 8;    
+                        //printf("%08x \n", word3);                    
+            bytecount++;
+            word4 = (uint32_t)_p_input->b[bytecount];
+            bytecount++;
+            word4 = word4 << 0; 
+                        //printf("%08x \n", word4);            
+            word5 = word5 | word1;
+            word5 = word5 | word2;
+            word5 = word5 | word3;
+            word5 = word5 | word4;
+                    //printf("--> word5 = %08x \n", word5);
+            _p_outputW->words[i] =  word5;   
+            word5 = 0x00000000;    
+        }
+        if(_bytes == 32){
+            for(int i = 8; i<16; i++){
+                _p_outputW->words[i] =  0x00000000; 
+            } 
+        }
+    }    
+
+    //----------------------
     void swap_wordbytes_in_node64_w(node64_w* _input, node64_w* _output){
         // take a node64_w and swaps the bytes in each word
         // word[0] = AABBCCDD --> word[0] = DDCCBBAA
         // 
         node64_w outputtemp;
+        uint32_t temp_word, aword, bword, cword;
+        uint8_t temp_char;
+        for (int i = 0 ; i < 16; i++) {   // 16 --> 16 * 32bits = 512bits
+            temp_word = _input->words[i];
+            cword = 0x00000000;
+            for (int j = 0 ; j < 4; j++) {
+            bword = 0x00000000;
+            aword = temp_word >> (j*8);
+            aword = 0x000000FF & aword;
+            bword = aword << ((3-j)*8);
+            cword = cword | bword;
+            }
+            outputtemp.words[i] = cword;
+        }
+        for (int w = 0 ; w < 16; w++) {
+            _output->words[w] = outputtemp.words[w];
+        }
+    }
+
+    //----------------------
+    void swap_wordbytes_in_hash64_w(hash64_w* _input, hash64_w* _output){
+        // take a hash64_w and swaps the bytes in each word
+        // word[0] = AABBCCDD --> word[0] = DDCCBBAA
+        // 
+        hash64_w outputtemp;
         uint32_t temp_word, aword, bword, cword;
         uint8_t temp_char;
         for (int i = 0 ; i < 16; i++) {   // 16 --> 16 * 32bits = 512bits
@@ -172,8 +350,37 @@ template <class conv_t> class sdx_pack_unpack {
             unpack_conv.my_uint32 = ((*a)(((index*32)+31), (index*32)));
             _output->words[index] = unpack_conv.my_data_t;
         }
+    }
+
+    //----------------------
+    void unpack_sdx_512_data_to_hash32_w(sdx_data_t *a, hash32_w* _output) {
+    #pragma HLS INLINE
+        for (unsigned int index = 0; index < 8; index++) {
+            unpack_conv.my_uint32 = ((*a)(((index*32)+31), (index*32)));
+            _output->words[index] = unpack_conv.my_data_t;
+        }
+    }
+
+    //----------------------
+    void unpack_sdx_512_data_to_hash64_w(sdx_data_t *a, hash64_w* _output) {
+    #pragma HLS INLINE
+        for (unsigned int index = 0; index < 16; index++) {
+            unpack_conv.my_uint32 = ((*a)(((index*32)+31), (index*32)));
+            _output->words[index] = unpack_conv.my_data_t;
+        }
 
     }
+
+    //----------------------
+    void pack_hash32_w_into_hash64_w(hash32_w* _input, hash64_w* _output){
+        for(int i = 0; i<8; i++){
+            _output->words[i] = _input->words[i];
+        }
+        for(int i = 8; i<16; i++){
+            _output->words[i] = 0x00000000;
+        }
+    }
+
 
 
 
@@ -270,7 +477,7 @@ template <class conv_t> class sdx_pack_unpack {
     //----------------------
     void rework_hash64_w(node64_w* _input, hash64* _output){
         // call with 
-        // take a node64_w type, gives back a hash64 type.
+        // take a node64_w type (words), gives back a hash64 type (bytes).
         // trades words for bytes.
         uint32_t temp_word, aword;
         uint8_t temp_char;
@@ -285,6 +492,43 @@ template <class conv_t> class sdx_pack_unpack {
         }
     }
 
+    //----------------------
+    void rework_mix_to_bytes(node64_w* _input, mix96* _output){
+        // call with 
+        // take a pointer to node64_w type (words), gives back a 96 bytes (bytes).
+        // trades words for bytes.
+        uint32_t temp_word, aword;
+        uint8_t temp_char;
+        for (int i = 0 ; i < 24; i++) {   // 16+8 words --> 24 words--> (16*4) + (8*4) = 96 bytes
+            temp_word = _input->words[i];
+            for (int j = 0 ; j < 4; j++) {
+            aword = temp_word >> (j*8);
+            aword = 0x000000FF & aword;
+            temp_char = (uint8_t)aword;
+            _output->b[(i*4)+(3-j)] = temp_char;
+            }
+        }
+    }
+
+
+
+    uint8_t bignum_cmp(hash32_w* _a, hash32_w* _b){
+    //require(a, "a is null");
+    //require(b, "b is null");
+
+    uint8_t i = 8;  // how many uin32_t's are in a hash32_w, 256 bit / 32 bit = 8
+    do{
+        i -= 1; /* Decrement first, to start with last array element */
+        if (_a->words[i] > _b->words[i]){
+            return 1;    //LARGER
+        }
+        else if (_a->words[i] < _b->words[i]){
+            return 2;  //SMALLER
+        }
+    } while (i != 0);
+
+    return 0;   //EQUAL
+    }
 
 
 

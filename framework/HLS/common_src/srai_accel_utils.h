@@ -23,6 +23,18 @@
 #define AXI_MM_DDR4_C3          0x1800000000ULL
 #define AXI_MM_DDR4_results_C3  0x1A00000000ULL
 
+#define INDEX_IN_header         0x00000000UL        // header_hash      --> index 0
+#define INDEX_IN_target         0x00000001UL        // header_hash      --> index 1
+#define INDEX_IN_nonces         0x00000002UL        // nonce values     --> index 2-33 (32 values, start[CU], end[CU])
+#define INDEX_IN_rem_dat        0x00000022UL        // remaining data   --> index 34+
+
+
+#define INDEX_OUT_header        0x00000001UL
+#define INDEX_OUT_target        0x00000002UL
+
+
+
+
 
 /* AXI LITE Register interfaces */
 #define AXI_LITE_GPIO_BASE             0x00010000UL
