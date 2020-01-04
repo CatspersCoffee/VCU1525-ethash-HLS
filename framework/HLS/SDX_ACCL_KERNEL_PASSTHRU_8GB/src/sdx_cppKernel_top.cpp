@@ -543,11 +543,12 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         //nonce[1] = 0x00000000ULL;     
 
         //----------------------------------------------------------------------
-        /*
+        
         // tesing target comparison
         hash32_w hash32w_A, hash32w_B;
         hash32_w* p_hash32w_A = &hash32w_A;
         hash32_w* p_hash32w_B = &hash32w_B;
+        /*
         hash32w_A.words[0] = 0x00000000;
         hash32w_A.words[1] = 0x00000000;
         hash32w_A.words[2] = 0x00000000;
@@ -556,7 +557,16 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         hash32w_A.words[5] = 0x00000000;
         hash32w_A.words[6] = 0x00000000;
         hash32w_A.words[7] = 0x00000000;
-
+        */
+        hash32w_A.words[0] = 0x06064a8a;
+        hash32w_A.words[1] = 0xc954d9d3;
+        hash32w_A.words[2] = 0x6a3dd9d4;
+        hash32w_A.words[3] = 0x4f5817a1;
+        hash32w_A.words[4] = 0x6bcf94e0; 
+        hash32w_A.words[5] = 0x8d80f504;
+        hash32w_A.words[6] = 0x67bec333;
+        hash32w_A.words[7] = 0x9b4f224e;    
+       
         hash32w_B.words[0] = 0x80000000;
         hash32w_B.words[1] = 0x00000000;
         hash32w_B.words[2] = 0x00000000;
@@ -575,9 +585,9 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             hashAW.words[i] = 0x00000000; 
         }
         pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
-        y_out = _output_head + 22;
+        y_out = _output_head + 25;
         memcpy(y_out, hash64output, 64); 
-        */
+        
 
         //----------------------------------------------------------------------
 
@@ -596,19 +606,19 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             s_mix[0].words[9] = start_nonce[1];
 
             //--------------------- testing
-            //for(int i = 0; i<64; i++){
-            //    hashA.b[i] = s_mix[0].bytes[i];
-            //}
-            //pack_unpack.rework_hash64(p_hashA, p_hashAW);
-            //pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
-            //y_out = _output_head + 2;
-            //memcpy(y_out, hash64output, 64);            
+            for(int i = 0; i<64; i++){
+                hashA.b[i] = s_mix[0].bytes[i];
+            }
+            pack_unpack.rework_hash64(p_hashA, p_hashAW);
+            pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
+            y_out = _output_head + 3;
+            memcpy(y_out, hash64output, 64);            
             //---------------------^^
 
             // compute sha3-512 hash and replicate across mix
             pack_unpack.rework_hash64_w(p_s_mix, p_s_mix_temp);
             //SHA3_512(s_mix->bytes, s_mix->bytes, 40); //old original
-            SHA3_512(p_s_mix_temp->b, p_s_mix_temp->b, 40);
+            //SHA3_512(p_s_mix_temp->b, p_s_mix_temp->b, 40);
 
             /*
             //--------------------- testing
@@ -723,8 +733,8 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
 
             node64_w mixnoden; 
 
-            for (uint8_t i = 0; i != ACCESSES; ++i) {  // ACCESSES = 64
-            //for (uint8_t i = 0; i != 1; ++i) {  // testing
+            //for (uint8_t i = 0; i != ACCESSES; ++i) {  // ACCESSES = 64
+            for (uint8_t i = 0; i != 1; ++i) {  // testing
                 index = ((s_mix->words[0] ^ i) * FNV_PRIME ^ mix->words[i % MIX_WORDS]) % num_full_pages;
 
                 //--------------------- testing
@@ -937,7 +947,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
 
             // call SHA3(output is hash32 (bytes), input is hash64 bytes (p_s_mix_96b .. the s_mix byte pointer), 96 bytes)
             //SHA3_256(hash.bytes, s_mix->bytes, 64 + 32); // Keccak-256(s + compressed_mix)    //original
-            SHA3_256(p_ret_hash_32b->b, p_mix_96b->b, 64 + 32); // Keccak-256(s_mix[0] + compressed_mix)
+            //SHA3_256(p_ret_hash_32b->b, p_mix_96b->b, 64 + 32); // Keccak-256(s_mix[0] + compressed_mix)
 
             //for(uint8_t i = 0; i<32; i++){  // debug
             //    p_ret_hash_32b->b[i] = p_mix_96b->b[i];
@@ -986,7 +996,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             y_out = _output_head + 24;
             memcpy(y_out, hash64output, 64); 
            
-
+            /*
             //---- target comparison:
             //uint8_t cmp_res = pack_unpack.bignum_cmp(p_hash32w_A, p_hash32w_B);
             hash32_w ret_hash_32w;
@@ -1003,9 +1013,9 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
                 hashAW.words[i] = 0x00000000; 
             }
             pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
-            y_out = _output_head + 22;
+            y_out = _output_head + 25;
             memcpy(y_out, hash64output, 64);             
-
+            */
 
 
     //} // for numhashs loop end
@@ -1085,7 +1095,65 @@ result   = 46700b4d40ac5c35af2c22dda2787a91eb567b06c924a8fb8ae9a05b20c08c21
 
 
 
+/*
 
+---- [00] 
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [01] ----> header:
+00000001 00000002 00000003 00000004 00000005 00000006 00000007 00000008 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [02] ----> target:
+80000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [03] 
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [04] ----> s_mix[0] start:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c 
+---- [05] ----> s_mix[1] start:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c 
+---- [06] ----> s_mix[2] start:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c 
+---- [07] 
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [08] ----> s_mix[0] final:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c 
+---- [09] ----> s_mix[1] final:
+ed77892f 1a226243 8b2b2a00 0e4aefdf b764093c 4b833993 081fd41e 5fdcb9b9 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c 
+---- [10] ----> s_mix[2] final:
+df721607 1a226243 8b2b2a00 0e4aefdf b764093c 4b833993 081fd41e 5fdcb9b9 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c 
+---- [11] ----> s_mix[0] final including compression:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c 
+---- [12] ----> s_mix[1] final including compression:
+a7bca231 68c21ad8 60db764e 3d35be54 938cee69 68c21ad8 60db764e 3d35be54 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c 
+---- [13] ----> s_mix[2] final including compression:
+df721607 1a226243 8b2b2a00 0e4aefdf b764093c 4b833993 081fd41e 5fdcb9b9 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c 
+---- [14] 
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [15] ----> start_nonce:
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [16] ----> end_nonce: 
+3fffffff ffffffff 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [17] 
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [18] ----> mix96 bytes 0-63 before:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c 
+---- [19] ----> mix96 bytes 64-96 before:
+a7bca231 68c21ad8 60db764e 3d35be54 938cee69 68c21ad8 60db764e 3d35be54 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [20] 
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [21] ----> ret_hash bytes 0-32 after SHA3-256 before byteSwap:
+8a4a0606 d3d954c9 d4d93d6a a117584f e094cf6b 04f5808d 33c3be67 4e224f9b 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [22] 
+00000001 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [23] ----> final compressed mix (32byte):
+a7bca231 68c21ad8 60db764e 3d35be54 938cee69 68c21ad8 60db764e 3d35be54 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [24] ----> final mix hash (output hash)(32byte):
+06064a8a c954d9d3 6a3dd9d4 4f5817a1 6bcf94e0 8d80f504 67bec333 9b4f224e 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [25] ----> cmp: HI=1, EQ=0, LO=2:
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+---- [26] 
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+------------   End  ----------------------------------------------------------------------------------------
+
+*/
 
 
 

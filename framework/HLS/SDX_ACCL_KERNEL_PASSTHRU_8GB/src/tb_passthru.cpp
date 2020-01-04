@@ -625,7 +625,7 @@ int main(int argc, char** argv) {
                 case 0: printf("\n"); break;
                 case 1: printf("----> header:\n"); break;
                 case 2: printf("----> target:\n"); break;
-                case 3: printf("\n"); break;    
+                case 3: printf("----> s_mix[0] 40byte input (header + nonce):\n"); break;    
                 case 4: printf("----> s_mix[0] start:\n"); break;
                 case 5: printf("----> s_mix[1] start:\n"); break;
                 case 6: printf("----> s_mix[2] start:\n"); break;
