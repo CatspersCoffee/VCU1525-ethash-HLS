@@ -23,14 +23,25 @@
 #define AXI_MM_DDR4_C3          0x1800000000ULL
 #define AXI_MM_DDR4_results_C3  0x1A00000000ULL
 
-#define INDEX_IN_header         0x00000000UL        // header_hash      --> index 0
-#define INDEX_IN_target         0x00000001UL        // header_hash      --> index 1
-#define INDEX_IN_nonces         0x00000002UL        // nonce values     --> index 2-33 (32 values, start[CU], end[CU])
-#define INDEX_IN_rem_dat        0x00000022UL        // remaining data   --> index 34+
 
 
-#define INDEX_OUT_header        0x00000001UL
-#define INDEX_OUT_target        0x00000002UL
+#define INDEX_IN_header                 0x00000000UL        // header_hash      --> index 0
+#define INDEX_IN_target                 0x00000001UL        // header_hash      --> index 1
+#define INDEX_IN_nonces                 0x00000002UL        // nonce values     --> index 2-33 (32 values, start[CU], end[CU])
+#define INDEX_IN_num_full_pages         0x00000022UL        // nonce values     --> index 34
+#define INDEX_IN_rem_dat                0x00000040UL        // remaining data   --> index 64+
+
+
+#define INDEX_OUT_num_full_pages        0x00000000UL
+#define INDEX_OUT_header                0x00000001UL
+#define INDEX_OUT_target                0x00000002UL
+
+#define INDEX_OUT_soln_nonce            0x00000100UL        // solution nonce      --> index 256
+#define INDEX_OUT_soln_mixhash          0x00000101UL        // solution mix hash   --> index 257
+
+
+
+
 
 
 

@@ -335,6 +335,8 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
     sdx_data_t output_buff_val[1];
     sdx_data_t header_input_val[1];
     sdx_data_t target_input_val[1];
+    sdx_data_t nfp_input_val[1];
+
     sdx_data_t node_bufa_val[1];
     sdx_data_t node_bufy_val[1];
     sdx_data_t hash64output[1];
@@ -468,14 +470,35 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         uint32_t nonce[2];
         uint32_t start_nonce[2];
         uint32_t end_nonce[2];
+        uint32_t current_nonce[2];
 
         hash64 s_mix_temp;
         hash64* p_s_mix_temp = &s_mix_temp;
 
+        uint32_t num_full_pages;
+        uint32_t index;
+        node64_w dag_node;
+        node64_w* p_dag_node = &dag_node;
+
+        hash64_w indexval;                  // testing
+        hash64_w* p_indexval = &indexval;   // testing
+
+        node64_w mixnoden; 
+
+        uint32_t cmp_res;
+
+        hash64_w soln_nonce;
+        hash64_w* p_soln_nonce = &soln_nonce;  
+        hash64_w soln_mixhash;
+        hash64_w* p_soln_mixhash = &soln_mixhash;  
+        
         //----
         // TESTING VARIABLES:
         hash64_w hashAW;
         hash64_w* p_hashAW = &hashAW;
+
+        hash64_w temp64wA;
+        hash64_w* p_temp64wA = &temp64wA;
 
 
         //----------------------------------------------------------------------
@@ -501,6 +524,19 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         pack_unpack.pack_hash32_w_into_hash64_w(p_target, p_hashAW);
         pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
         y_out = _output_head + INDEX_OUT_target;
+        memcpy(y_out, hash64output, 64); 
+        //----------------------------------------------------------------------
+        // --> read number of full pages in dag as 512 bit sdx_data_t, only take 32bit as uin32_t, put it in num_full_pages.
+        hash32_w nfp;
+        hash32_w* p_nfp = &nfp;
+        a_in = _input_head + INDEX_IN_num_full_pages;
+        memcpy(nfp_input_val, (const sdx_data_t*)a_in, SDX_BUS_WIDTH_BYTES);
+        pack_unpack.unpack_sdx_512_data_to_hash32_w(nfp_input_val, p_nfp);      //
+        num_full_pages = nfp.words[1];
+        //num_full_pages = 8388593;
+        pack_unpack.pack_hash32_w_into_hash64_w(p_nfp, p_hashAW);
+        pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
+        y_out = _output_head + INDEX_OUT_num_full_pages;
         memcpy(y_out, hash64output, 64); 
         //----------------------------------------------------------------------
 
@@ -543,12 +579,12 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         //nonce[1] = 0x00000000ULL;     
 
         //----------------------------------------------------------------------
-        
+        /*
         // tesing target comparison
         hash32_w hash32w_A, hash32w_B;
         hash32_w* p_hash32w_A = &hash32w_A;
         hash32_w* p_hash32w_B = &hash32w_B;
-        /*
+        
         hash32w_A.words[0] = 0x00000000;
         hash32w_A.words[1] = 0x00000000;
         hash32w_A.words[2] = 0x00000000;
@@ -557,7 +593,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         hash32w_A.words[5] = 0x00000000;
         hash32w_A.words[6] = 0x00000000;
         hash32w_A.words[7] = 0x00000000;
-        */
+        
         hash32w_A.words[0] = 0x06064a8a;
         hash32w_A.words[1] = 0xc954d9d3;
         hash32w_A.words[2] = 0x6a3dd9d4;
@@ -577,19 +613,18 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         hash32w_B.words[7] = 0x00000000;
 
         //uint8_t cmp_res = pack_unpack.bignum_cmp(p_hash32w_A, p_hash32w_B);
-        uint8_t cmp_res = pack_unpack.bignum_cmp(p_hash32w_A, p_target);
-        uint32_t cmp_res32 = (uint32_t)cmp_res;
-
-        hashAW.words[i] = cmp_res32;
+        hashAW.words[i] = pack_unpack.bignum_cmp(p_hash32w_A, p_target);
         for(int i = 1; i<16; i++){
             hashAW.words[i] = 0x00000000; 
         }
         pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
         y_out = _output_head + 25;
-        memcpy(y_out, hash64output, 64); 
-        
-
+        memcpy(y_out, hash64output, 64);
+        */
         //----------------------------------------------------------------------
+
+        current_nonce[0] = start_nonce[0];
+        current_nonce[1] = start_nonce[1];
 
         //for(numhashs = 0; numhashs < 1; numhashs++){
 
@@ -602,23 +637,22 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
                 s_mix[0].words[i] = header_hash.words[i];      // header_hash is type hash32_w, s_mix is type node64_w
             }
 
-            s_mix[0].words[8] = start_nonce[0];
-            s_mix[0].words[9] = start_nonce[1];
+            s_mix[0].words[8] = current_nonce[0];
+            s_mix[0].words[9] = current_nonce[1];
 
             //--------------------- testing
-            for(int i = 0; i<64; i++){
-                hashA.b[i] = s_mix[0].bytes[i];
+            for(int i = 0; i<16; i++){ // put header + nonce in OUT index[3]
+                temp64wA.words[i] = s_mix[0].words[i];
             }
-            pack_unpack.rework_hash64(p_hashA, p_hashAW);
-            pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
+            pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_temp64wA);
             y_out = _output_head + 3;
             memcpy(y_out, hash64output, 64);            
             //---------------------^^
 
-            // compute sha3-512 hash and replicate across mix
+            //----> compute sha3-512 hash and replicate across mix
             pack_unpack.rework_hash64_w(p_s_mix, p_s_mix_temp);
             //SHA3_512(s_mix->bytes, s_mix->bytes, 40); //old original
-            //SHA3_512(p_s_mix_temp->b, p_s_mix_temp->b, 40);
+            SHA3_512(p_s_mix_temp->b, p_s_mix_temp->b, 40);
 
             /*
             //--------------------- testing
@@ -690,6 +724,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             pack_unpack.rework_hash64_to_node64(p_s_mix_temp, p_s_mix);
             pack_unpack.swap_wordbytes_in_node64_w(p_s_mix, p_s_mix);
 
+            //----> replicate across mix
             node64_w* mix = s_mix + 1;
             for (unsigned w = 0; w != MIX_WORDS; ++w) {
                 mix->words[w] = s_mix[0].words[w % NODE_WORDS];     // NODE_WORDS = 16. 
@@ -720,21 +755,12 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             //---------------------^^
 
 
-            DAG_SIZE = 1073739904U;
-            uint32_t full_size = DAG_SIZE;
-            uint32_t num_full_pages = (uint32_t) (full_size / MIX_BYTES);
 
-            uint32_t index;
-            node64_w dag_node;
-            node64_w* p_dag_node = &dag_node;
 
-            hash64_w indexval;                  // testing
-            hash64_w* p_indexval = &indexval;   // testing
 
-            node64_w mixnoden; 
 
-            //for (uint8_t i = 0; i != ACCESSES; ++i) {  // ACCESSES = 64
-            for (uint8_t i = 0; i != 1; ++i) {  // testing
+            for (uint8_t i = 0; i != ACCESSES; ++i) {  // ACCESSES = 64
+            //for (uint8_t i = 0; i != 1; ++i) {  // testing
                 index = ((s_mix->words[0] ^ i) * FNV_PRIME ^ mix->words[i % MIX_WORDS]) % num_full_pages;
 
                 //--------------------- testing
@@ -798,7 +824,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             //---------------------^^
 
 
-            // compress mix (length reduced from 128 to 32 bytes)
+            //----> compress mix (length reduced from 128 to 32 bytes)
             for (uint8_t w = 0; w != MIX_WORDS; w += 4) {
                 uint32_t reduction = mix->words[w + 0];
                 reduction = reduction * FNV_PRIME ^ mix->words[w + 1];
@@ -843,78 +869,28 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
                 ret_mix_64w.words[i] = mix->words[i];
             }
 
+            //--------------------- testing
             // copy final compressed mix (32byte) to output memory index[23]
             // s_mix[0]
             for(int i = 0; i<16; i++){
                 hashAW.words[i] = ret_mix_64w.words[i];
             }
             pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
-            y_out = _output_head + 23;
+            y_out = _output_head + 26;
             memcpy(y_out, hash64output, 64); 
-
+            //---------------------^^
 
             /*
             //--------------------- testing
-            // artificially setup the s_mix + compression with known values (16 + 32 words)::
-            // c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
-            s_mix[0].words[0] = 0xc6e1ad35;
-            s_mix[0].words[1] = 0xf173e743;
-            s_mix[0].words[2] = 0x08f12a00;
-            s_mix[0].words[3] = 0xcfd378df; 
-            s_mix[0].words[4] = 0x9c066d3c; 
-            s_mix[0].words[5] = 0xc214ee93; 
-            s_mix[0].words[6] = 0xc5d5861e; 
-            s_mix[0].words[7] = 0xa43cd8b9; 
-            s_mix[0].words[8] = 0xf1f1bac8; 
-            s_mix[0].words[9] = 0xa37a7304; 
-            s_mix[0].words[10] = 0x206877c2; 
-            s_mix[0].words[11] = 0x3e7dbc6c; 
-            s_mix[0].words[12] = 0x70a9ea63; 
-            s_mix[0].words[13] = 0xaa49b17f; 
-            s_mix[0].words[14] = 0x64d20baa; 
-            s_mix[0].words[15] = 0xefadc23c;
-            // a7bca231 68c21ad8 60db764e 3d35be54 938cee69 68c21ad8 60db764e 3d35be54 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c
-            s_mix[1].words[0] = 0xa7bca231;
-            s_mix[1].words[1] = 0x68c21ad8;
-            s_mix[1].words[2] = 0x60db764e;
-            s_mix[1].words[3] = 0x3d35be54; 
-            s_mix[1].words[4] = 0x938cee69; 
-            s_mix[1].words[5] = 0x68c21ad8;
-            s_mix[1].words[6] = 0x60db764e;
-            s_mix[1].words[7] = 0x3d35be54;
-            s_mix[1].words[8] = 0x996dc2c8;
-            s_mix[1].words[9] = 0x8b171704;
-            s_mix[1].words[10] = 0x3fbf09c2;
-            s_mix[1].words[11] = 0xaa96086c;
-            s_mix[1].words[12] = 0x68208563;
-            s_mix[1].words[13] = 0xa77ac87f;
-            s_mix[1].words[14] = 0x6332c5aa;
-            s_mix[1].words[15] = 0x78e85e3c;
-            // df721607 1a226243 8b2b2a00 0e4aefdf b764093c 4b833993 081fd41e 5fdcb9b9 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c
-            s_mix[2].words[0] = 0xdf721607;
-            s_mix[2].words[1] = 0x1a226243;
-            s_mix[2].words[2] = 0x8b2b2a00;
-            s_mix[2].words[3] = 0x0e4aefdf;
-            s_mix[2].words[4] = 0xb764093c; 
-            s_mix[2].words[5] = 0x4b833993;
-            s_mix[2].words[6] = 0x081fd41e; 
-            s_mix[2].words[7] = 0x5fdcb9b9;
-            s_mix[2].words[8] = 0x996dc2c8;
-            s_mix[2].words[9] = 0x8b171704; 
-            s_mix[2].words[10] = 0x3fbf09c2; 
-            s_mix[2].words[11] = 0xaa96086c;
-            s_mix[2].words[12] = 0x68208563; 
-            s_mix[2].words[13] = 0xa77ac87f; 
-            s_mix[2].words[14] = 0x6332c5aa;
-            s_mix[2].words[15] = 0x78e85e3c;
+            // artificially setup the s_mix + compression with known values (16 + 32 words):
             //---------------------^^
             */
 
 
 
-            //---- final Keccak hash:
+            //----> final Keccak hash:
 
-            //---- turns first 96 bytes for s_mix from word data into byte data 
+            //----> turns first 96 bytes for s_mix from word data into byte data 
             mix96  mix_96b;
             mix96* p_mix_96b = &mix_96b;
             //use function that turns node64_w into hash64 --> rework_mix96_w(node64_w* _input, mix96* _output)
@@ -922,6 +898,7 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
 
 
             //--------------------- debug
+            // 96 byte mix before byte swapping at 32bit boundary:
             mix96* bytepointer = p_mix_96b;
             hash64_w testwords;
             hash64_w* p_testwords = &testwords;
@@ -937,6 +914,22 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             memcpy(y_out, hash64output, 64); 
             //---------------------^^
 
+            pack_unpack.byte_swap_mix96_at_32b_boundary(p_mix_96b, p_mix_96b);
+
+            //--------------------- debug
+            // 96 byte mix after byte swapping at 32bit boundary:
+            pack_unpack.rework_mix96pointer_to_hash64w(bytepointer, p_testwords, 64, 0);
+            pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_testwords);
+            y_out = _output_head + 21;
+            memcpy(y_out, hash64output, 64); 
+        
+            bytepointer = p_mix_96b;
+            pack_unpack.rework_mix96pointer_to_hash64w(bytepointer, p_testwords, 32, 64);
+            pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_testwords);
+            y_out = _output_head + 22;
+            memcpy(y_out, hash64output, 64); 
+            //---------------------^^
+
             /*
             uint8_t somesdfdf = 0x00;   // testing set 96 mix bytes to 0x00
             for(uint8_t i = 0; i<96; i++){
@@ -945,9 +938,9 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             }
             */
 
-            // call SHA3(output is hash32 (bytes), input is hash64 bytes (p_s_mix_96b .. the s_mix byte pointer), 96 bytes)
+            //----> call SHA3(output is hash32 (bytes), input is hash64 bytes (p_s_mix_96b .. the s_mix byte pointer), 96 bytes)
             //SHA3_256(hash.bytes, s_mix->bytes, 64 + 32); // Keccak-256(s + compressed_mix)    //original
-            //SHA3_256(p_ret_hash_32b->b, p_mix_96b->b, 64 + 32); // Keccak-256(s_mix[0] + compressed_mix)
+            SHA3_256(p_ret_hash_32b->b, p_mix_96b->b, 64 + 32); // Keccak-256(s_mix[0] + compressed_mix)
 
             //for(uint8_t i = 0; i<32; i++){  // debug
             //    p_ret_hash_32b->b[i] = p_mix_96b->b[i];
@@ -959,14 +952,13 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             hash64_w* p_testwords32 = &testwords32;
             pack_unpack.rework_hash32pointer_to_hash64w(bytepointer32, p_testwords32, 32, 0);
             pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_testwords32);
-            y_out = _output_head + 21;
+            y_out = _output_head + 24;
             memcpy(y_out, hash64output, 64); 
-        
             //---------------------^^
 
 
 
-            //---- unpack the 32 bytes to a hash64_w .. have to write WRITE:  pack_unpack.rework_hash32_to_hash64(p_ret_hash_32b, p_ret_hash_64w);
+            //----> unpack the 32 bytes to a hash64_w .. have to write WRITE:  pack_unpack.rework_hash32_to_hash64(p_ret_hash_32b, p_ret_hash_64w);
             pack_unpack.rework_hash32_to_hash64w(p_ret_hash_32b, p_ret_hash_64w);
             /*
             //--------------------- testing
@@ -987,17 +979,17 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             //    ret_hash->words[i] = hash.words[i];
             //}
 
-            
-            //---- copy final hash (32bytes, incapsulated in hash64_w type) to output memory index[15]
+            //--------------------- testing            
+            //----> copy final hash (32bytes, incapsulated in hash64_w type) to output memory index[15]
             for(uint8_t i = 0; i<16; i++){
                 hashAW.words[i] = ret_hash_64w.words[i];
             }
             pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
-            y_out = _output_head + 24;
+            y_out = _output_head + 27;
             memcpy(y_out, hash64output, 64); 
-           
-            /*
-            //---- target comparison:
+            //---------------------^^           
+            
+            //----> target comparison:
             //uint8_t cmp_res = pack_unpack.bignum_cmp(p_hash32w_A, p_hash32w_B);
             hash32_w ret_hash_32w;
             hash32_w* p_ret_hash_32w = &ret_hash_32w;
@@ -1005,17 +997,43 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
                 ret_hash_32w.words[i] = ret_hash_64w.words[i];
             }
             
-            uint8_t cmp_res = pack_unpack.bignum_cmp(p_ret_hash_32w, p_target);
-            uint32_t cmp_res32 = (uint32_t)cmp_res;
-
-            hashAW.words[i] = cmp_res32;
+            cmp_res = pack_unpack.bignum_cmp(p_ret_hash_32w, p_target);
+            hashAW.words[i] = cmp_res;
             for(int i = 1; i<16; i++){
                 hashAW.words[i] = 0x00000000; 
             }
             pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
-            y_out = _output_head + 25;
+            y_out = _output_head + 28;
             memcpy(y_out, hash64output, 64);             
-            */
+            
+            //----> if comparison hash is < target, then:
+            if(cmp_res == 0x00000002){
+                // solution:
+                // to submit a solution we need --> nonce, mix hash, 
+                // write the solutions nonce to OUT index[INDEX_OUT_soln_nonce]
+                soln_nonce.words[1] = current_nonce[0];
+                soln_nonce.words[0] = current_nonce[1]; // arranges in hash64_w as: current_nonce[1]:current_nonce[0]:00000000:00...
+                for(int i = 2; i<16; i++){
+                    soln_nonce.words[i] = 0x00000000; 
+                }
+                pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_soln_nonce);
+                y_out = _output_head + INDEX_OUT_soln_nonce;
+                memcpy(y_out, hash64output, 64);   
+
+                // write the solutions mix hash to OUT index[INDEX_OUT_soln_mixhash]
+                for(uint8_t i = 0; i<16; i++){
+                    soln_mixhash.words[i] = ret_hash_64w.words[i];
+                }
+                pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_soln_mixhash);
+                y_out = _output_head + INDEX_OUT_soln_mixhash;
+                memcpy(y_out, hash64output, 64);  
+
+
+
+
+            }
+
+
 
 
     //} // for numhashs loop end
@@ -1226,3 +1244,62 @@ a7bca231 68c21ad8 60db764e 3d35be54 938cee69 68c21ad8 60db764e 3d35be54 00000000
 
 */
 
+/*
+
+            //--------------------- testing
+            // artificially setup the s_mix + compression with known values (16 + 32 words)::
+            // c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+            s_mix[0].words[0] = 0xc6e1ad35;
+            s_mix[0].words[1] = 0xf173e743;
+            s_mix[0].words[2] = 0x08f12a00;
+            s_mix[0].words[3] = 0xcfd378df; 
+            s_mix[0].words[4] = 0x9c066d3c; 
+            s_mix[0].words[5] = 0xc214ee93; 
+            s_mix[0].words[6] = 0xc5d5861e; 
+            s_mix[0].words[7] = 0xa43cd8b9; 
+            s_mix[0].words[8] = 0xf1f1bac8; 
+            s_mix[0].words[9] = 0xa37a7304; 
+            s_mix[0].words[10] = 0x206877c2; 
+            s_mix[0].words[11] = 0x3e7dbc6c; 
+            s_mix[0].words[12] = 0x70a9ea63; 
+            s_mix[0].words[13] = 0xaa49b17f; 
+            s_mix[0].words[14] = 0x64d20baa; 
+            s_mix[0].words[15] = 0xefadc23c;
+            // a7bca231 68c21ad8 60db764e 3d35be54 938cee69 68c21ad8 60db764e 3d35be54 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c
+            s_mix[1].words[0] = 0xa7bca231;
+            s_mix[1].words[1] = 0x68c21ad8;
+            s_mix[1].words[2] = 0x60db764e;
+            s_mix[1].words[3] = 0x3d35be54; 
+            s_mix[1].words[4] = 0x938cee69; 
+            s_mix[1].words[5] = 0x68c21ad8;
+            s_mix[1].words[6] = 0x60db764e;
+            s_mix[1].words[7] = 0x3d35be54;
+            s_mix[1].words[8] = 0x996dc2c8;
+            s_mix[1].words[9] = 0x8b171704;
+            s_mix[1].words[10] = 0x3fbf09c2;
+            s_mix[1].words[11] = 0xaa96086c;
+            s_mix[1].words[12] = 0x68208563;
+            s_mix[1].words[13] = 0xa77ac87f;
+            s_mix[1].words[14] = 0x6332c5aa;
+            s_mix[1].words[15] = 0x78e85e3c;
+            // df721607 1a226243 8b2b2a00 0e4aefdf b764093c 4b833993 081fd41e 5fdcb9b9 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c
+            s_mix[2].words[0] = 0xdf721607;
+            s_mix[2].words[1] = 0x1a226243;
+            s_mix[2].words[2] = 0x8b2b2a00;
+            s_mix[2].words[3] = 0x0e4aefdf;
+            s_mix[2].words[4] = 0xb764093c; 
+            s_mix[2].words[5] = 0x4b833993;
+            s_mix[2].words[6] = 0x081fd41e; 
+            s_mix[2].words[7] = 0x5fdcb9b9;
+            s_mix[2].words[8] = 0x996dc2c8;
+            s_mix[2].words[9] = 0x8b171704; 
+            s_mix[2].words[10] = 0x3fbf09c2; 
+            s_mix[2].words[11] = 0xaa96086c;
+            s_mix[2].words[12] = 0x68208563; 
+            s_mix[2].words[13] = 0xa77ac87f; 
+            s_mix[2].words[14] = 0x6332c5aa;
+            s_mix[2].words[15] = 0x78e85e3c;
+            //---------------------^^
+
+
+*/

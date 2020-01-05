@@ -510,26 +510,71 @@ template <class conv_t> class sdx_pack_unpack {
         }
     }
 
+    //----------------------
+    void byte_swap_mix96_at_32b_boundary(mix96* _input, mix96* _output){
+        // take a mix96 and swaps the bytes at a 32bit boundary
+        // e.g.,
+        // mix96.b[0] = AA
+        // mix96.b[1] = BB
+        // mix96.b[2] = CC
+        // mix96.b[3] = DD
+        // --> mix96.b[0] = DD
+        // --> mix96.b[1] = CC
+        // --> mix96.b[2] = BB
+        // --> mix96.b[3] = AA
+        mix96 outputtemp;
+        uint8_t temp_byte;
 
+        for (int i = 0 ; i < (96/4); i++) {   // 24 * 32bit words
 
-    uint8_t bignum_cmp(hash32_w* _a, hash32_w* _b){
-    //require(a, "a is null");
-    //require(b, "b is null");
-
-    uint8_t i = 8;  // how many uin32_t's are in a hash32_w, 256 bit / 32 bit = 8
-    do{
-        i -= 1; /* Decrement first, to start with last array element */
-        if (_a->words[i] > _b->words[i]){
-            return 1;    //LARGER
+            outputtemp.b[(i*4)+3] = _input->b[(i*4)+0];     // [3] --> [0]
+            outputtemp.b[(i*4)+2] = _input->b[(i*4)+1];     // [2] --> [1]
+            outputtemp.b[(i*4)+1] = _input->b[(i*4)+2];     // [1] --> [2]
+            outputtemp.b[(i*4)+0] = _input->b[(i*4)+3];     // [0] --> [3]
         }
-        else if (_a->words[i] < _b->words[i]){
-            return 2;  //SMALLER
+        for (int w = 0 ; w < 96; w++) {
+            _output->b[w] = outputtemp.b[w];
         }
-    } while (i != 0);
-
-    return 0;   //EQUAL
     }
 
+    //----------------------
+    uint32_t bignum_cmp(hash32_w* _a, hash32_w* _b){
+        uint8_t i = 0;  // how many uin32_t's are in a hash32_w, 256 bit / 32 bit = 8
+        uint8_t imax = 8;
+        do{
+            if (_a->words[i] > _b->words[i]){
+                return 0x00000001;    //LARGER
+            }
+            else if (_a->words[i] < _b->words[i]){
+                return 0x00000002;  //SMALLER
+            }
+            i++;
+        } while (i != imax);
+        return 0x00000000;   //EQUAL
+    }
+
+    //----------------------
+    void inc_nonce(uint32_t* _input, uint32_t* _output){
+        uint64_t buffer, upper, lower;
+        uint64_t bufferB;
+        // get the _input low 4 bytes:
+        lower = *_input & 0x00000000FFFFFFFF;  
+        // get the _input high 4 bytes:
+        _input++;
+        upper = *_input;
+        upper = upper << (8*4);
+        buffer = upper & lower;  
+        buffer++;
+
+        // get the buffer high 4 bytes:
+        bufferB = buffer >> (8*4);
+        bufferB = bufferB & 0x00000000FFFFFFFF;
+        *_output = (uint32_t)bufferB;
+        // get the buffer low 4 bytes:
+        bufferB = buffer & 0x00000000FFFFFFFF;
+        _output++;
+        *_output = (uint32_t)bufferB;   
+    }
 
 
 

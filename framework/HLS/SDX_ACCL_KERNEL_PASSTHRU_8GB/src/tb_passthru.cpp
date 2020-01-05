@@ -121,8 +121,7 @@ void load_target(INPUT_mem_t* _input, uint32_t _index_start){
     INPUT_mem_t* _input_head = _input;
     uint32_t index = _index_start;
     uint32_t target[8];
-    //memcpy(header_hash, hexStringToBytes("0000000100000002000000030000000400000005000000060000000700000008").data(), 32);
-    target[0] = 0x80000000;
+    target[0] = 0xF0000000;
     target[1] = 0x00000000; 
     target[2] = 0x00000000; 
     target[3] = 0x00000000; 
@@ -230,18 +229,44 @@ void load_remaining_input_data(INPUT_mem_t* _input, uint32_t _index_start){
 }
 
 //------------------------------------------------------------------------------
-void load_dag(ethash_full* _dag_mem, uint64_t _dag_size_in_bytes){
+void load_dag(ethash_full* _dag_mem, uint64_t _dag_size_in_bytes, INPUT_mem_t* _input, uint32_t _index_dag){
+    INPUT_mem_t* _input_head = _input;
 
-    uint64_t some_word = 0x1122334455667788;
     uint64_t node_index = 0x00;
     int node_double_words = 8;
+    uint64_t buffer;
+
+    uint32_t nid[16];
     int node_bytes = 64;
-    uint64_t nodes_in_dag = _dag_size_in_bytes / 64;
+    uint64_t nodes_in_dag = _dag_size_in_bytes / node_bytes;
+    //cout << "nodes_in_dag  =  " << nodes_in_dag << endl;
+    printf("\n nodes_in_dag = %016llx  --> dec %llu", nodes_in_dag, nodes_in_dag);
+
+    uint32_t nfp[16];
+    uint8_t page_size = 128;
+    uint64_t num_full_pages = _dag_size_in_bytes / page_size;
+    //cout << "nodes_in_dag  =  " << nodes_in_dag << endl;
+    printf("\n num_full_pages = %016llx  --> dec %llu", num_full_pages, num_full_pages);
 
 
+    // get the num_full_pages high 4 bytes:
+    buffer = num_full_pages >> (8*4);
+    buffer = buffer & 0x00000000FFFFFFFF;
+    nfp[0] = (uint32_t)buffer;
+    // get the num_full_pages low 4 bytes:
+    buffer = num_full_pages & 0x00000000FFFFFFFF;
+    nfp[1] = (uint32_t)buffer;  
+    for( uint8_t i = 2; i < 16; i++){
+        nfp[i] = 0x00000000; 
+    }
+    // write the number of nodes in dag to INPUT memory posistion:
+    _input = _input_head + _index_dag;
+    for (int i = 0 ; i < 16; i++) {   // 16
+            _input->my_data_t[i] = nfp[i];
+            printf("\n nfp[%02d] = %016llx", i, nfp[i]);
+    }
 
 
-    cout << "nodes_in_dag  =  " << nodes_in_dag << endl;
 
     /*
     for (uint64_t i = 0 ; i < 1; i++) {
@@ -411,7 +436,7 @@ int main(int argc, char** argv) {
     cout << "Initializing Memory with Input args\n";
 
     cout << "Load fake-DAG with some node values\n";
-    load_dag(dag_ptr_c, size_dag);
+    load_dag(dag_ptr_c, size_dag, input_ptr_c, INDEX_IN_num_full_pages);
 
     dag_ptr = (sdx_data_t *)dag_head_c;
     dag_ptr_c = dag_head_c;
@@ -618,11 +643,11 @@ int main(int argc, char** argv) {
     data_t fn_in_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT];  // 16
     data_t fn_out_arg0[NUM_ELEMENTS_PER_SDX_DATA_BEAT]; // 16
 
-        for (int i = 0 ; i < 27; i++) {   
+        for (int i = 0 ; i < 30; i++) {   
 
             printf("\n---- [%02d] ", i);
             switch (i) {
-                case 0: printf("\n"); break;
+                case 0: printf("----> num_full_pages:\n"); break;
                 case 1: printf("----> header:\n"); break;
                 case 2: printf("----> target:\n"); break;
                 case 3: printf("----> s_mix[0] 40byte input (header + nonce):\n"); break;    
@@ -640,15 +665,18 @@ int main(int argc, char** argv) {
                 case 15: printf("----> start_nonce:\n"); break;
                 case 16: printf("----> end_nonce: \n"); break;
                 case 17: printf("\n"); break;
-                case 18: printf("----> mix96 bytes 0-63 before:\n"); break;
-                case 19: printf("----> mix96 bytes 64-96 before:\n"); break;
+                case 18: printf("----> mix96 bytes 0-63 before byteSwap:\n"); break;
+                case 19: printf("----> mix96 bytes 64-96 before byteSwap:\n"); break;
                 case 20: printf("\n"); break;
-                case 21: printf("----> ret_hash bytes 0-32 after SHA3-256 before byteSwap:\n"); break;
-                case 22: printf("\n"); break;                 
-                case 23: printf("----> final compressed mix (32byte):\n"); break;
-                case 24: printf("----> final mix hash (output hash)(32byte):\n"); break;
-                case 25: printf("----> cmp: HI=1, EQ=0, LO=2:\n"); break; 
-                case 26: printf("\n"); break;
+                case 21: printf("----> mix96 bytes 0-63 after byteSwap:\n"); break;
+                case 22: printf("----> mix96 bytes 64-96 after byteSwap:\n"); break;
+                case 23: printf("\n"); break;   
+                case 24: printf("----> ret_hash bytes 0-32 after SHA3-256 before byteSwap:\n"); break;
+                case 25: printf("\n"); break;                 
+                case 26: printf("----> final compressed mix (32byte):\n"); break;
+                case 27: printf("----> final mix hash (output hash)(32byte):\n"); break;
+                case 28: printf("----> cmp: HI=1, EQ=0, LO=2:\n"); break; 
+                case 29: printf("\n"); break;
                 default: printf("\n");                  
             }
 
@@ -663,6 +691,38 @@ int main(int argc, char** argv) {
             }
             
         }
+
+        printf("\n\n");
+
+        output_ptr_c = output_head_c + 0xFF;
+        for (int i = 255 ; i < 260; i++) {   
+
+            printf("\n---- [%02d] ", i);
+            switch (i) {
+                case 255: printf("\n"); break;
+                case 256: printf("----> soln nonce:\n"); break;
+                case 257: printf("----> soln mix_hash:\n"); break;
+                case 258: printf("\n"); break;
+                case 259: printf("\n"); break;
+                case 260: printf("\n"); break;
+                case 261: printf("\n"); break;
+                default: printf("\n");                  
+            }
+
+            for (unsigned int k = 0 ; k < 16; k++) {
+                fn_out_arg0[k] = output_ptr_c->my_data_t[k];
+            }
+            output_ptr_c++;
+
+            for (unsigned int index = 0; index < 16; index++) {
+                //printf("Index[%d] = %08x \n", index, (fn_out_arg0[index])); 
+                printf("%08x ",  fn_out_arg0[index]); 
+            }
+            
+        }
+
+
+
     }
 
     printf ("\n------------   End  ----------------------------------------------------------------------------------------\n");
