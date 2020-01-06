@@ -448,9 +448,10 @@ int main(int argc, char** argv) {
     //gen_test_data(input_ptr_c);
     load_header(input_ptr_c, INDEX_IN_header);  
     load_target(input_ptr_c, INDEX_IN_target);  
-    load_nonce(input_ptr_c, 0x0000000000000000ULL, 0xFFFFFFFFFFFFFFFFULL, 0x4ULL, INDEX_IN_nonces);    // input_data_ptr, start_nonce, end_nonce, compute units
+    //load_nonce(input_ptr_c, 0x0000000000000001ULL, 0xFFFFFFFFFFFFFFFFULL, 0x4ULL, INDEX_IN_nonces);    // input_data_ptr, start_nonce, end_nonce, compute units
     //load_nonce(input_ptr_c, 0x0000000000000000ULL, 0x00000000FFFFFFFFULL, 0x4ULL, INDEX_IN_nonces);      // testing
     //load_nonce(input_ptr_c, 0x0000000000000000ULL, 0x0000000000000001ULL, 0x1ULL, , INDEX_IN_nonces);  //  testing
+    load_nonce(input_ptr_c, 0x0000000000000000ULL, 0x0000000000000001ULL, 0x1ULL, INDEX_IN_nonces);  //  testing
     load_remaining_input_data(input_ptr_c, INDEX_IN_rem_dat);
 
     a_in_ptr = (sdx_data_t *)input_head_c;
@@ -671,7 +672,7 @@ int main(int argc, char** argv) {
                 case 21: printf("----> mix96 bytes 0-63 after byteSwap:\n"); break;
                 case 22: printf("----> mix96 bytes 64-96 after byteSwap:\n"); break;
                 case 23: printf("\n"); break;   
-                case 24: printf("----> ret_hash bytes 0-32 after SHA3-256 before byteSwap:\n"); break;
+                case 24: printf("----> ret_hash bytes 0-32 after SHA3-256:\n"); break;
                 case 25: printf("\n"); break;                 
                 case 26: printf("----> final compressed mix (32byte):\n"); break;
                 case 27: printf("----> final mix hash (output hash)(32byte):\n"); break;
@@ -700,9 +701,9 @@ int main(int argc, char** argv) {
             printf("\n---- [%02d] ", i);
             switch (i) {
                 case 255: printf("\n"); break;
-                case 256: printf("----> soln nonce:\n"); break;
-                case 257: printf("----> soln mix_hash:\n"); break;
-                case 258: printf("\n"); break;
+                case 256: printf("----> number of solutions:\n"); break;
+                case 257: printf("----> soln nonce:\n"); break;
+                case 258: printf("----> soln mix_hash:\n"); break;
                 case 259: printf("\n"); break;
                 case 260: printf("\n"); break;
                 case 261: printf("\n"); break;

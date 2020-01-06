@@ -555,27 +555,45 @@ template <class conv_t> class sdx_pack_unpack {
 
     //----------------------
     void inc_nonce(uint32_t* _input, uint32_t* _output){
+        uint32_t* _input_head = _input;
+        uint32_t* _output_head = _output;
         uint64_t buffer, upper, lower;
-        uint64_t bufferB;
+        uint64_t bufferB, bufferC;
         // get the _input low 4 bytes:
-        lower = *_input & 0x00000000FFFFFFFF;  
+        lower = (uint64_t)*(_input_head + 1);  
         // get the _input high 4 bytes:
-        _input++;
-        upper = *_input;
+        upper = (uint64_t)*_input_head;
         upper = upper << (8*4);
-        buffer = upper & lower;  
+        buffer = upper | lower;   
         buffer++;
 
         // get the buffer high 4 bytes:
         bufferB = buffer >> (8*4);
         bufferB = bufferB & 0x00000000FFFFFFFF;
-        *_output = (uint32_t)bufferB;
+        *(_output_head + 0) = (uint32_t)bufferB;
         // get the buffer low 4 bytes:
-        bufferB = buffer & 0x00000000FFFFFFFF;
-        _output++;
-        *_output = (uint32_t)bufferB;   
+        bufferC = buffer & 0x00000000FFFFFFFF;
+        *(_output_head + 1) = (uint32_t)bufferC;  
     }
 
+    //----------------------
+    void nonce32_to_nonce64(uint32_t* _input, uint64_t* _output){
+        uint32_t* _input_head = _input;
+        uint64_t buffer, upper, lower;
+
+        // current_nonce[0]:current_nonce[1]
+        //         upper   : lower
+
+        // get the _input low 4 bytes:
+        upper = (uint64_t)*(_input_head + 0);
+        upper = upper << (8*4);
+        upper =  upper & 0xFFFFFFFF00000000;  
+        // get the _input low 4 bytes:
+        lower = (uint64_t)*(_input_head + 1);
+        buffer = upper | lower;  
+        _input_head++;
+        *_output = buffer;  
+    }
 
 
 };

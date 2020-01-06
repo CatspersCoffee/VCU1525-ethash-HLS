@@ -462,15 +462,18 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
 
 		hash64_w ret_mix_64w;
 
-		node64* full_nodes;                     // dag .. pointer to dag node
+		node64* full_nodes;                         // dag .. pointer to dag node
 		hash32_w header_hash;
-        hash32_w* p_header_hash = &header_hash;  // header_hash is type hash64_w --> only accepts uint32_t for elements.
+        hash32_w* p_header_hash = &header_hash;     // header_hash is type hash64_w --> only accepts uint32_t for elements.
         uint32_t DAG_SIZE;
         uint64_t numhashs = 0;
+        uint64_t nontt;                             // number of nonces to try.
         uint32_t nonce[2];
         uint32_t start_nonce[2];
         uint32_t end_nonce[2];
         uint32_t current_nonce[2];
+        uint64_t currentnonce64;
+        uint64_t endnonce64;
 
         hash64 s_mix_temp;
         hash64* p_s_mix_temp = &s_mix_temp;
@@ -480,18 +483,21 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         node64_w dag_node;
         node64_w* p_dag_node = &dag_node;
 
-        hash64_w indexval;                  // testing
-        hash64_w* p_indexval = &indexval;   // testing
+        hash64_w indexval;                          // testing
+        hash64_w* p_indexval = &indexval;           // testing
 
         node64_w mixnoden; 
 
         uint32_t cmp_res;
 
-        hash64_w soln_nonce;
+        hash64_w soln_nonce;                        // solution nonce hash64_w variable
         hash64_w* p_soln_nonce = &soln_nonce;  
-        hash64_w soln_mixhash;
+        hash64_w soln_mixhash;                      // solution mixhash hash64_w variable
         hash64_w* p_soln_mixhash = &soln_mixhash;  
-        
+    
+        uint32_t number_of_solutions;               // number of solutions (for this start/end nonce)
+        hash64_w soln_numofsolns;                      // number of solutions hash64_w variable
+        hash64_w* p_soln_numofsolns = &soln_numofsolns;          
         //----
         // TESTING VARIABLES:
         hash64_w hashAW;
@@ -622,11 +628,22 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
         memcpy(y_out, hash64output, 64);
         */
         //----------------------------------------------------------------------
-
+        /*
+                soln_nonce.words[1] = current_nonce[0];
+                soln_nonce.words[0] = current_nonce[1]; // arranges in hash64_w as: current_nonce[1]:current_nonce[0]:00000000:00...
+        */
         current_nonce[0] = start_nonce[0];
         current_nonce[1] = start_nonce[1];
 
-        //for(numhashs = 0; numhashs < 1; numhashs++){
+        pack_unpack.nonce32_to_nonce64(&current_nonce[0], &currentnonce64);
+        pack_unpack.nonce32_to_nonce64(&end_nonce[0], &endnonce64);
+
+        nontt = endnonce64 - currentnonce64;        // currentnonce = startnonce here, endnonce - start nonce = total number of nonces to try.
+        numhashs = 0x0000000000000000;              // e.g., end = 1, start = 0, nonntt = 1 - 0 = 1
+
+        number_of_solutions = 0x00000000;
+
+        while(numhashs != nontt){
 
             node64_w s_mix[MIX_NODES + 1];              // s_mix[3]
             node64_w* p_s_mix = &s_mix[0];
@@ -796,6 +813,9 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
                 }
                 
             }
+
+
+
 
 
             //--------------------- testing
@@ -972,7 +992,8 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             //---------------------^^
             */
             // run: pack_unpack.swap_wordbytes_in_node64_w(p_ret_hash_64w, p_ret_hash_64w);
-            pack_unpack.swap_wordbytes_in_hash64_w(p_ret_hash_64w, p_ret_hash_64w);
+            //pack_unpack.swap_wordbytes_in_hash64_w(p_ret_hash_64w, p_ret_hash_64w);
+
 
             // copy from local mem to global
             //for (unsigned i = 0; i < 32/4; i++) {   // original
@@ -1010,33 +1031,57 @@ void sdx_cppKernel_top(sdx_data_t *a_in, sdx_data_t *y_out, sdx_data_t* _dag, un
             if(cmp_res == 0x00000002){
                 // solution:
                 // to submit a solution we need --> nonce, mix hash, 
-                // write the solutions nonce to OUT index[INDEX_OUT_soln_nonce]
-                soln_nonce.words[1] = current_nonce[0];
-                soln_nonce.words[0] = current_nonce[1]; // arranges in hash64_w as: current_nonce[1]:current_nonce[0]:00000000:00...
+                number_of_solutions++;
+                // write the solutions nonce to OUT index[INDEX_OUT_soln_start + (number_of_solutions * 2) + INDEX_OUT_soln_nonce]
+                soln_nonce.words[0] = current_nonce[0];
+                soln_nonce.words[1] = current_nonce[1]; // arranges in hash64_w as: current_nonce[0]:current_nonce[1]:00000000:00...
                 for(int i = 2; i<16; i++){
                     soln_nonce.words[i] = 0x00000000; 
                 }
                 pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_soln_nonce);
-                y_out = _output_head + INDEX_OUT_soln_nonce;
+                y_out = _output_head + INDEX_OUT_soln_start + (number_of_solutions * 2) + INDEX_OUT_soln_nonce;
                 memcpy(y_out, hash64output, 64);   
 
-                // write the solutions mix hash to OUT index[INDEX_OUT_soln_mixhash]
+                // write the solutions mix hash to OUT index[INDEX_OUT_soln_start + (number_of_solutions * 2) + INDEX_OUT_soln_mixhash]
                 for(uint8_t i = 0; i<16; i++){
                     soln_mixhash.words[i] = ret_hash_64w.words[i];
                 }
                 pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_soln_mixhash);
-                y_out = _output_head + INDEX_OUT_soln_mixhash;
+                y_out = _output_head + INDEX_OUT_soln_start + (number_of_solutions * 2) + INDEX_OUT_soln_mixhash;
                 memcpy(y_out, hash64output, 64);  
 
-
-
+                // write the solutions mix hash to OUT index[INDEX_OUT_soln_mixhash]
+                soln_numofsolns.words[0] = number_of_solutions;
+                for(int i = 1; i<16; i++){
+                    soln_numofsolns.words[i] = 0x00000000; 
+                }
+                pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_soln_numofsolns);
+                y_out = _output_head + INDEX_OUT_soln_num;
+                memcpy(y_out, hash64output, 64);  
 
             }
 
+            pack_unpack.inc_nonce(&current_nonce[0], &current_nonce[0]);
 
 
+            //--------------------- debug
+                hashAW.words[0] = current_nonce[0];
+                hashAW.words[1] = current_nonce[1]; // arranges in hash64_w as: current_nonce[0]:current_nonce[1]:00000000:00...
+                for(int i = 2; i<16; i++){
+                    hashAW.words[i] = 0x00000000; 
+                }
+                pack_unpack.pack_hash64_to_sdx_512_data(&hash64output[0], p_hashAW);
+                y_out = _output_head + 29;
+                memcpy(y_out, hash64output, 64);  
+            //---------------------^^
 
-    //} // for numhashs loop end
+        numhashs++;
+    } // while loop number of nonces to try end
+
+    //---> could record the number of hashs done in this round.
+    // write to INDEX_OUT_numberofhashs
+    // TODO write uint64_t to hash64_w to convert numhashs
+
 
 
 
