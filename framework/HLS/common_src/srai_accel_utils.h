@@ -40,8 +40,8 @@
 #define INDEX_OUT_numberofhashs         0x000000FFUL        // number of hashes done this round     --> index 255
 #define INDEX_OUT_soln_num              0x00000100UL        // solution number of solutions         --> index 256
 #define INDEX_OUT_soln_nonce            0x00000000UL        // solution nonce                       --> would start from 255 + (1*2)   = index 257
-#define INDEX_OUT_soln_mixhash          0x00000001UL        // solution mix hash                    --> would start from 255 + (1*2)+1 = index 258
-
+#define INDEX_OUT_soln_mix              0x00000001UL        // solution mix                         --> would start from 255 + (1*2)+1 = index 258
+#define INDEX_OUT_soln_mixhash          0x00000002UL        // solution mix hash                    --> would start from 255 + (1*2)+2 = index 259
 
 
 

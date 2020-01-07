@@ -43,7 +43,7 @@ clean_all:
 	-cd SDX_ACCL_MATRIX_INVERT_5X5_CPP_KERNEL/Make_flow; make clean_all 
 	-cd SDX_ACCL_MATRIX_MULT_6X6/Make_flow; make clean_all 
 	-cd SDX_ACCL_MATRIX_MULT_8X8/Make_flow; make clean_all 
-HLS_passthru:
+HLS_passthru8gb:
 	cd SDX_ACCL_KERNEL_PASSTHRU_8GB/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
 HLS_passthru_IP_CLEAN:
 	-cd SDX_ACCL_KERNEL_PASSTHRU_8GB/vivado_hls_prj; ./mk_clean

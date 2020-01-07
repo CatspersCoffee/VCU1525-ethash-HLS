@@ -1,11 +1,11 @@
 # Created : 9:31:38, Tue Jun 21, 2016 : Sanjay Rai
-# Modified: 1200, 7th August 2019 : Catsper
+# Modified: 0943, 8th January 2020 : Catsper
 
 source ../device_type.tcl
 
 set TOP_module VU9P_AXI_ICAP_PR_DESIGN_top
 set ROLE_CLK_PERIOD 4.000
-set NORTH_ROLE_NAME IP_SDX_ACCL_KERNEL_PASSTHRU 
+set NORTH_ROLE_NAME IP_SDX_ACCL_KERNEL_PASSTHRU_8GB 
 proc synth_hls_pr_NORTH {ARGV_0} { 
 
 upvar 1 $ARGV_0 ROLE_NAME
@@ -13,7 +13,7 @@ upvar 1 $ARGV_0 ROLE_NAME
     #create_project -in_memory -part [DEVICE_TYPE] 
 
     # Set the project name
-    set _xil_proj_name_ "project_42_north_PASSTHRU"
+    set _xil_proj_name_ "project_44_north_PASSTHRU"
     create_project ${_xil_proj_name_} ./${_xil_proj_name_} -part [DEVICE_TYPE] 
 
 
@@ -46,7 +46,7 @@ upvar 1 $ARGV_2 ROLE_CLK_PERIOD
     #create_project -in_memory -part [DEVICE_TYPE] 
 
     # Set the project name
-    set _xil_proj_name_ "project_42_shell_PASSTHRU"
+    set _xil_proj_name_ "project_44_shell_PASSTHRU"
     #create_project -in_memory -part [DEVICE_TYPE] 
     create_project ${_xil_proj_name_} ./${_xil_proj_name_} -part [DEVICE_TYPE] 
 

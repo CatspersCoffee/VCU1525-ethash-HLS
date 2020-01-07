@@ -577,6 +577,29 @@ template <class conv_t> class sdx_pack_unpack {
     }
 
     //----------------------
+    void dec_nonce(uint32_t* _input, uint32_t* _output){
+        uint32_t* _input_head = _input;
+        uint32_t* _output_head = _output;
+        uint64_t buffer, upper, lower;
+        uint64_t bufferB, bufferC;
+        // get the _input low 4 bytes:
+        lower = (uint64_t)*(_input_head + 1);  
+        // get the _input high 4 bytes:
+        upper = (uint64_t)*_input_head;
+        upper = upper << (8*4);
+        buffer = upper | lower;   
+        buffer--;
+
+        // get the buffer high 4 bytes:
+        bufferB = buffer >> (8*4);
+        bufferB = bufferB & 0x00000000FFFFFFFF;
+        *(_output_head + 0) = (uint32_t)bufferB;
+        // get the buffer low 4 bytes:
+        bufferC = buffer & 0x00000000FFFFFFFF;
+        *(_output_head + 1) = (uint32_t)bufferC;  
+    }
+
+    //----------------------
     void nonce32_to_nonce64(uint32_t* _input, uint64_t* _output){
         uint32_t* _input_head = _input;
         uint64_t buffer, upper, lower;

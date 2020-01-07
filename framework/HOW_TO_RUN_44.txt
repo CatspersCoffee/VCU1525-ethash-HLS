@@ -48,6 +48,10 @@ or by running each .tcl script individually.
 	cd SDX_ACCL_MATRIX_MULT_8X8/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
 
 
+To run SDX_ACCL_KERNEL_PASSTHRU_8GB
+cd into HLS/
+run in tcl command line:
+make HLS_passthru8gb
 
 
 --- make the role ------------------------------------------------------------------------------------------
@@ -66,6 +70,11 @@ use the makefile located in "42/IP/role" and running "make create_all_ip" OR ind
 cd into any one of the cores, e.g., the PASSTHRU and create role from there.
 change the directory to: 
 cd IP/role/SDX_ACCL_KERNEL_PASSTHRU
+
+cd IP/role/IP_SDX_ACCL_KERNEL_PASSTHRU; vivado -mode batch -source inital_hls_sdx_import.tcl
+
+cd IP/role/SDX_ACCL_KERNEL_PASSTHRU_8GB
+cd IP/role/IP_SDX_ACCL_KERNEL_PASSTHRU_8GB; vivado -mode batch -source inital_hls_sdx_import.tcl
 
 Note this directory cannot have any of the following files present:
 /SDX_ACCL_KERNEL_PASSTHRU
@@ -86,20 +95,26 @@ want to build the PR .bin file for is required for building each of the reconfig
 
 change directory to 42/IP/shell
 run the script:
-source ./PCIe_Bridge_ICAP_complex_bd_42.tcl
+source ./PCIe_Bridge_ICAP_complex_bd_44.tcl
 
-This will create "PCIe_Bridge_ICAP_complex" directory in /42/IP/shell as "/IP/shell/PCIe_Bridge_ICAP_complex"
+This will create "PCIe_Bridge_ICAP_complex" directory in /44/IP/shell as "/IP/shell/PCIe_Bridge_ICAP_complex"
+
+close_project
 
 
+change directory to "/44/vivado_batch_shell" and run 
 
-change directory to "/42/vivado_batch_shell" and run 
+source ./vivado_batch_44_shell2.tcl
 
-source ./vivado_batch_40_shell2.tcl
+after this completes run:
+source ./vivado_batch_44_shell3.tcl
 
 this will run vivado and attempt to create the batch shell, it will fail at some point with an error about IP.
 you will need to manually from the design flow window, synthesize the design. once the design synthesizes.
 
-source ./vivado_batch_40_shell3.tcl
+after this completes run:
+source ./vivado_batch_44_shell3.tcl
+
 
 This will finish with sucess.
 

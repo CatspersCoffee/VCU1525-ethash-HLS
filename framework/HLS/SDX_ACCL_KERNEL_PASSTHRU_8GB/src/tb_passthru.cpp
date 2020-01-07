@@ -98,6 +98,17 @@ void load_header(INPUT_mem_t* _input, uint32_t _index_start){
     header_hash[5] = 0x00000006; 
     header_hash[6] = 0x00000007; 
     header_hash[7] = 0x00000008; 
+    /*
+    // 07613b4c 05fb8afe a7327f25 20c74237 33a0a0be 093d5571 0abda329 acd38fd8
+    header_hash[0] = 0x07613b4c;
+    header_hash[1] = 0x05fb8afe; 
+    header_hash[2] = 0x00000003; 
+    header_hash[3] = 0x00000004; 
+    header_hash[4] = 0x00000005; 
+    header_hash[5] = 0x00000006; 
+    header_hash[6] = 0x00000007; 
+    header_hash[7] = 0x00000008; 
+    */
 
     uint8_t temp_byte = 0x00;
     uint32_t temp_word = 0x00000000;
@@ -173,6 +184,7 @@ void load_nonce(INPUT_mem_t* _input, uint64_t _start_nonce, uint64_t _end_nonce,
 
         printf("\n startforCU[%u]  = %016llx --> dec %llu", cu, startforCU, startforCU);
         printf("\n endforCU[%u]    = %016llx --> dec %llu", cu, endforCU, endforCU);
+
 
         // get the start_nonce high 4 bytes:
         buffer = startforCU >> (8*4);
@@ -263,7 +275,7 @@ void load_dag(ethash_full* _dag_mem, uint64_t _dag_size_in_bytes, INPUT_mem_t* _
     _input = _input_head + _index_dag;
     for (int i = 0 ; i < 16; i++) {   // 16
             _input->my_data_t[i] = nfp[i];
-            printf("\n nfp[%02d] = %016llx", i, nfp[i]);
+            //printf("\n nfp[%02d] = %016llx", i, nfp[i]);
     }
 
 
@@ -451,7 +463,7 @@ int main(int argc, char** argv) {
     //load_nonce(input_ptr_c, 0x0000000000000001ULL, 0xFFFFFFFFFFFFFFFFULL, 0x4ULL, INDEX_IN_nonces);    // input_data_ptr, start_nonce, end_nonce, compute units
     //load_nonce(input_ptr_c, 0x0000000000000000ULL, 0x00000000FFFFFFFFULL, 0x4ULL, INDEX_IN_nonces);      // testing
     //load_nonce(input_ptr_c, 0x0000000000000000ULL, 0x0000000000000001ULL, 0x1ULL, , INDEX_IN_nonces);  //  testing
-    load_nonce(input_ptr_c, 0x0000000000000000ULL, 0x0000000000000001ULL, 0x1ULL, INDEX_IN_nonces);  //  testing
+    load_nonce(input_ptr_c, 0x0000000000000001ULL, 0x0000000000000000ULL, 0x1ULL, INDEX_IN_nonces);  //  testing
     load_remaining_input_data(input_ptr_c, INDEX_IN_rem_dat);
 
     a_in_ptr = (sdx_data_t *)input_head_c;
@@ -696,17 +708,20 @@ int main(int argc, char** argv) {
         printf("\n\n");
 
         output_ptr_c = output_head_c + 0xFF;
-        for (int i = 255 ; i < 260; i++) {   
+        for (int i = 255 ; i < 265; i++) {   
 
             printf("\n---- [%02d] ", i);
             switch (i) {
                 case 255: printf("\n"); break;
                 case 256: printf("----> number of solutions:\n"); break;
-                case 257: printf("----> soln nonce:\n"); break;
-                case 258: printf("----> soln mix_hash:\n"); break;
-                case 259: printf("\n"); break;
-                case 260: printf("\n"); break;
-                case 261: printf("\n"); break;
+                case 257: printf("\n"); break;
+                case 258: printf("----> soln nonce:\n"); break;
+                case 259: printf("----> soln mix:\n"); break;
+                case 260: printf("----> soln mix_hash:\n"); break;
+                case 261: printf("----> soln nonce:\n"); break;
+                case 262: printf("----> soln mix:\n"); break;
+                case 263: printf("----> soln mix_hash:\n"); break;
+                case 264: printf("\n"); break;
                 default: printf("\n");                  
             }
 
