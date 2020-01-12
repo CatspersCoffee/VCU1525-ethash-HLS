@@ -108,14 +108,11 @@ build_H:
 	#cd HLS; make HLS_PASSTHRU 
 	#cd IP/role; create_PASSTHUR_blah4
 	cd IP/role; create_all_42
-	#cd vivado_batch_shell;vivado -mode batch -source vivado_batch_42_shell.tcl;cp *_partial*.bin; cp *.bi* ../bitfiles/shell; cp *.ltx ../bitfiles/shell; cp *.mcs ../bitfiles/shell; cp *.prm ../bitfiles/shell  
-	#cd vivado_batch_shell;cp *_partial*.bin; cp *.bi* ../bitfiles/shell; cp *.ltx ../bitfiles/shell; cp *.mcs ../bitfiles/shell; cp *.prm ../bitfiles/shell 
-	#
+	cd vivado_batch_shell;vivado -mode batch -source vivado_batch_3.tcl;cp *_partial*.bin; cp *.bi* ../bitfiles/shell; cp *.ltx ../bitfiles/shell; cp *.mcs ../bitfiles/shell; cp *.prm ../bitfiles/shell  
+	cd vivado_batch_shell;cp *_partial*.bin; cp *.bi* ../bitfiles/shell; cp *.ltx ../bitfiles/shell; cp *.mcs ../bitfiles/shell; cp *.prm ../bitfiles/shell 
 	#cd vivado_batch_SDX_ACCL_KERNEL_PASSTHRU;vivado -mode batch -source vivado_batch.tcl; cp *_partial*.bin ../bitfiles/role
 
-build_R:
-	cd vivado_batch_shell;vivado -mode batch -source vivado_batch_42_shell.tcl;cp *_partial*.bin; cp *.bi* ../bitfiles/shell; cp *.ltx ../bitfiles/shell; cp *.mcs ../bitfiles/shell; cp *.prm ../bitfiles/shell  
-	cd vivado_batch_shell;cp *_partial*.bin; cp *.bi* ../bitfiles/shell; cp *.ltx ../bitfiles/shell; cp *.mcs ../bitfiles/shell; cp *.prm ../bitfiles/shell  
+
 
 
 

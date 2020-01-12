@@ -3,7 +3,7 @@
 source ../device_type.tcl
 create_project -force project_X project_X -part [DEVICE_TYPE] 
 
-set_property  ip_repo_paths  ../HLS/SDX_ACCL_KERNEL_PASSTHRU_8GB/vivado_hls_prj/vhls_prj/solution1/impl/ip [current_project]
+set_property  ip_repo_paths  ../HLS/SDX_ACCL_KERNEL_FP_VECTOR_MULT/vivado_hls_prj/vhls_prj/solution1/impl/ip [current_project]
 update_ip_catalog
 
 add_files -fileset sources_1 -norecurse {

@@ -9,40 +9,14 @@
 /*       These address translations affect the address shown . THese address are  */
 /*       exactly waht is populated on the IPI Address tab                         */
 /* AXI MM Register interfaces */
-
-#define AXI_MM_DDR4_C0          0x1000000000ULL
-#define AXI_MM_DDR4_results_C0  0x1200000000ULL
-
-#define AXI_MM_DDR4_dag_C1      0x0000000000ULL     // 0  - 8 GB
-#define AXI_MM_DDR4_input_C1    0x0200000000ULL     // 8  - 12 GB
-#define AXI_MM_DDR4_results_C1  0x0300000000ULL     // 12 - 16 GB
-
-#define AXI_MM_DDR4_C2          0x1400000000ULL
-#define AXI_MM_DDR4_results_C2  0x1600000000ULL
-
-#define AXI_MM_DDR4_C3          0x1800000000ULL
-#define AXI_MM_DDR4_results_C3  0x1A00000000ULL
-
-
-
-#define INDEX_IN_header                 0x00000000UL        // header_hash      --> index 0
-#define INDEX_IN_target                 0x00000001UL        // header_hash      --> index 1
-#define INDEX_IN_nonces                 0x00000002UL        // nonce values     --> index 2-33 (32 values, start[CU], end[CU])
-#define INDEX_IN_num_full_pages         0x00000022UL        // nonce values     --> index 34
-#define INDEX_IN_rem_dat                0x00000040UL        // remaining data   --> index 64+
-
-
-#define INDEX_OUT_num_full_pages        0x00000000UL
-#define INDEX_OUT_header                0x00000001UL
-#define INDEX_OUT_target                0x00000002UL
-
-#define INDEX_OUT_soln_start            0x000000FFUL        // solution start                       --> index 255
-#define INDEX_OUT_numberofhashs         0x000000FFUL        // number of hashes done this round     --> index 255
-#define INDEX_OUT_soln_num              0x00000100UL        // solution number of solutions         --> index 256
-#define INDEX_OUT_soln_nonce            0x00000000UL        // solution nonce                       --> would start from 255 + (1*2)   = index 257
-#define INDEX_OUT_soln_mix              0x00000001UL        // solution mix                         --> would start from 255 + (1*2)+1 = index 258
-#define INDEX_OUT_soln_mixhash          0x00000002UL        // solution mix hash                    --> would start from 255 + (1*2)+2 = index 259
-
+#define AXI_MM_DDR4_C0         0x1000000000ULL
+#define AXI_MM_DDR4_results_C0 0x1080000000ULL
+#define AXI_MM_DDR4_C1         0x0000000000ULL
+#define AXI_MM_DDR4_results_C1 0x0080000000ULL
+#define AXI_MM_DDR4_C2         0x1400000000ULL
+#define AXI_MM_DDR4_results_C2 0x1480000000ULL
+#define AXI_MM_DDR4_C3         0x1800000000ULL
+#define AXI_MM_DDR4_results_C3 0x1880000000ULL
 
 
 /* AXI LITE Register interfaces */

@@ -43,8 +43,37 @@ clean_all:
 	-cd SDX_ACCL_MATRIX_INVERT_5X5_CPP_KERNEL/Make_flow; make clean_all 
 	-cd SDX_ACCL_MATRIX_MULT_6X6/Make_flow; make clean_all 
 	-cd SDX_ACCL_MATRIX_MULT_8X8/Make_flow; make clean_all 
-HLS_passthru8gb:
-	cd SDX_ACCL_KERNEL_PASSTHRU_8GB/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+HLS_t1:
+	cd SDX_ACCL_KERNEL_T1/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+HLS_t2:
+	cd SDX_ACCL_KERNEL_T2/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+HLS_t3:
+	cd SDX_ACCL_KERNEL_T3/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+HLS_t4:
+	cd SDX_ACCL_KERNEL_T4/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+HLS_t5:
+	cd SDX_ACCL_KERNEL_T5/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+HLS_t6:
+	cd SDX_ACCL_KERNEL_T6/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+HLS_t7:
+	cd SDX_ACCL_KERNEL_T7/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+HLS_t8:
+	cd SDX_ACCL_KERNEL_T8/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+HLS_t9:
+	cd SDX_ACCL_KERNEL_T9/vivado_hls_prj;vivado_hls -f vivado_hls_project.tcl
+
+
+
+#----------------------------------------------------------------------------------------
+
 HLS_passthru_IP_CLEAN:
 	-cd SDX_ACCL_KERNEL_PASSTHRU_8GB/vivado_hls_prj; ./mk_clean
 

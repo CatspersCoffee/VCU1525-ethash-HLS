@@ -34,8 +34,8 @@ create_oneonly_ip:
 	#cd IP_SDX_ACCL_KERNEL_PASSTHRU; vivado -mode batch -source inital_hls_sdx_import.tcl
 	cd IP_SDX_ACCL_KERNEL_PASSTHRU; vivado -mode batch -source blah4.tcl
 
-create_PASSTHRU_8GB:
-	cd IP_SDX_ACCL_KERNEL_PASSTHRU_8GB; vivado -mode batch -source blah4.tcl
+create_PASSTHRU_blah4:
+	cd IP_SDX_ACCL_KERNEL_PASSTHRU; vivado -mode batch -source blah4.tcl
 
 
 create_all_42:
