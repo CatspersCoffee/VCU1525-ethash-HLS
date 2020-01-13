@@ -1,0 +1,33 @@
+
+0x00
+
+0x10	16			= 16
+0x1B	16+11			= 27	+ 11
+0x20	16+11+5 		= 32	+ 5
+0x2B	16+11+5+11		= 43	+ 11
+0x30	16+11+5+11+5		= 48	+ 5
+
+
+
+a_in_V_1			0x10 = 16 = 16
+a_in_V_2			0x14 = 20 = 16+4
+y_out_V_1			0x1C = 28 = 16+4+8
+y_out_V_2			0x20 = 32 = 16+4+8+4
+p_dag_V_1			0x28 = 40 = 16+4+8+4+8
+p_dag_V_2			0x2C = 44 = 16+4+8+4+8+4
+NUMBER_OF_DATA_SETS_t		0x34 = 52 = 16+4+8+4+8+4+8
+
+
+
+
+#define AXI_MM_DDR4_C0         0x0000001000000000	--> 68719476736
+#define AXI_MM_DDR4_results_C0 0x0000001080000000	--> 70866960384 = 2147483648 = 2GB
+#define AXI_MM_DDR4_C1         0x0000000000000000	--> 0
+#define AXI_MM_DDR4_results_C1 0x0000000080000000	--> 2147483648  = 2147483648 = 2GB
+#define AXI_MM_DDR4_C2         0x0000001400000000
+#define AXI_MM_DDR4_results_C2 0x0000001480000000
+#define AXI_MM_DDR4_C3         0x0000001800000000
+#define AXI_MM_DDR4_results_C3 0x0000001880000000
+
+
+
