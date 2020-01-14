@@ -1,0 +1,1089 @@
+
+
+ Test a hash:
+ Header hash = 0000000100000002000000030000000400000005000000060000000700000008
+
+-- START -- ethash_hash_debug()
+
+
+(1.0) s_mix = 000000010000000200000003000000040000000500000006000000070000000800000000000000001789560e9f7f00001800000030000000605040a2ff7f0000
+      s_mix[0]  = 000000010000000200000003000000040000000500000006000000070000000800000000000000001789560e9f7f00001800000030000000605040a2ff7f0000
+      s_mix[1]  = a04f40a2ff7f00000080bb80487a52bfd04f40a2ff7f00004000a50c9f7f0000080000000000000000000000000000000000000000000000374f40a2ff7f0000
+      s_mix[2]  = 956041d513cf7d90415d7701987851aa6d199e5d7bb41999e1c4b71a9de8607fccea6b4df781350f2000000000000000305040a2ff7f0000e676560e9f7f0000
+(2.0) s_mix = 35ade1c643e773f1002af108df78d3cf3c6d069c93ee14c21e86d5c5b9d83ca4c8baf1f104737aa3c27768206cbc7d3e63eaa9707fb149aaaa0bd2643cc2adef
+      s_mix[0]  = 35ade1c643e773f1002af108df78d3cf3c6d069c93ee14c21e86d5c5b9d83ca4c8baf1f104737aa3c27768206cbc7d3e63eaa9707fb149aaaa0bd2643cc2adef
+      s_mix[1]  = a04f40a2ff7f00000080bb80487a52bfd04f40a2ff7f00004000a50c9f7f0000080000000000000000000000000000000000000000000000374f40a2ff7f0000
+      s_mix[2]  = 956041d513cf7d90415d7701987851aa6d199e5d7bb41999e1c4b71a9de8607fccea6b4df781350f2000000000000000305040a2ff7f0000e676560e9f7f0000
+(3.0) mix      = 35ade1c643e773f1002af108df78d3cf3c6d069c93ee14c21e86d5c5b9d83ca4c8baf1f104737aa3c27768206cbc7d3e63eaa9707fb149aaaa0bd2643cc2adef
+(3.1) s_mix[0] = 35ade1c643e773f1002af108df78d3cf3c6d069c93ee14c21e86d5c5b9d83ca4c8baf1f104737aa3c27768206cbc7d3e63eaa9707fb149aaaa0bd2643cc2adef
+(3.1) s_mix[1] = 35ade1c643e773f1002af108df78d3cf3c6d069c93ee14c21e86d5c5b9d83ca4c8baf1f104737aa3c27768206cbc7d3e63eaa9707fb149aaaa0bd2643cc2adef
+(3.1) s_mix[2] = 35ade1c643e773f1002af108df78d3cf3c6d069c93ee14c21e86d5c5b9d83ca4c8baf1f104737aa3c27768206cbc7d3e63eaa9707fb149aaaa0bd2643cc2adef
+--------
+
+
+ page_size (bytes)     = 128
+ num_full_pages        = 8388593
+ nodes in full dataset = 00ffffe2 --> dec 16777186
+ MIX_WORDS             = d32
+ FNV_PRIME             = 0x01000193
+--------
+mix[00]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(00)                                                   = c6e1ad35
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4a43aa6f
+ mix->words[00]                                                                     = c6e1ad35
+ ((s_mix->words[0] XOR ACCESSES(00)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 8ca2075a --> dec 2359428954
+ (above) MOD num_full_pages                                                         = 002217d1
+ index[00] = 002217d1
+ 2 * index + 0 = 00442fa2 --> dec 4468642
+ dag_node[00442fa2] = 00442fa2 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00442fa3 --> dec 4468643
+ dag_node[00442fa3] = 00442fa3 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[01]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+4a0785cd 5c750e79 13a51e00 08e7470d da1df574 19f39169 8d22213a 44c92b3b a78908d8 5dc30f4c c6748666 cbef9e04 be7bf9d9 91026aed 60a85c9e 8a88c474
+4a0785cc 5c750e79 13a51e00 08e7470d da1df574 19f39169 8d22213a 44c92b3b a78908d8 5dc30f4c c6748666 cbef9e04 be7bf9d9 91026aed 60a85c9e 8a88c474
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(01)                                                   = c6e1ad34
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4943a8dc
+ mix->words[01]                                                                     = 5c750e79
+ ((s_mix->words[0] XOR ACCESSES(01)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 1536a6a5 --> dec 355903141
+ (above) MOD num_full_pages                                                         = 0036a91b
+ index[01] = 0036a91b
+ 2 * index + 0 = 006d5236 --> dec 7164470
+ dag_node[006d5236] = 006d5236 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 006d5237 --> dec 7164471
+ dag_node[006d5237] = 006d5237 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[02]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+56baf381 0545c87b ecee3a00 1114d977 d129659c 436de84b 66ba4e4e 83af0de1 94b8ec08 e61114a4 cf6f9292 0e35c04c b62a509b 33ce5317 c709ccba 894d429c
+55baf213 0545c87b ecee3a00 1114d977 d129659c 436de84b 66ba4e4e 83af0de1 94b8ec08 e61114a4 cf6f9292 0e35c04c b62a509b 33ce5317 c709ccba 894d429c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(02)                                                   = c6e1ad37
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4c43ad95
+ mix->words[02]                                                                     = ecee3a00
+ ((s_mix->words[0] XOR ACCESSES(02)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = a0ad9795 --> dec 2695731093
+ (above) MOD num_full_pages                                                         = 002daa64
+ index[02] = 002daa64
+ 2 * index + 0 = 005b54c8 --> dec 5985480
+ dag_node[005b54c8] = 005b54c8 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 005b54c9 --> dec 5985481
+ dag_node[005b54c9] = 005b54c9 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[03]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+091600db c7da99a1 fb054e00 5ad25655 e02af494 7104ae11 054944ca 2d92d933 271b9098 d0e37e2c 1ea3bbd6 aa9db7a4 5f9ce401 a4cccd35 0e6d48ce c09fdb94
+08104720 c7da99a1 fb054e00 5ad25655 e02af494 7104ae11 054944ca 2d92d933 271b9098 d0e37e2c 1ea3bbd6 aa9db7a4 5f9ce401 a4cccd35 0e6d48ce c09fdb94
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(03)                                                   = c6e1ad36
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4b43ac02
+ mix->words[03]                                                                     = 5ad25655
+ ((s_mix->words[0] XOR ACCESSES(03)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 1191fa57 --> dec 294779479
+ (above) MOD num_full_pages                                                         = 0011fc64
+ index[03] = 0011fc64
+ 2 * index + 0 = 0023f8c8 --> dec 2357448
+ dag_node[0023f8c8] = 0023f8c8 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0023f8c9 --> dec 2357449
+ dag_node[0023f8c9] = 0023f8c9 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[04]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+2880a009 3e1fd873 2959ca00 4e1de7cf 779f04fc fb5e04c3 1c5749fe f12beb49 28649f48 021f9f44 11c0b1e2 3a48172c 84faed93 a3670a6f 84099c4a cfa6a9fc
+d1bc0fa9 3e1fd873 2959ca00 4e1de7cf 779f04fc fb5e04c3 1c5749fe f12beb49 28649f48 021f9f44 11c0b1e2 3a48172c 84faed93 a3670a6f 84099c4a cfa6a9fc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(04)                                                   = c6e1ad31
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4643a423
+ mix->words[04]                                                                     = 779f04fc
+ ((s_mix->words[0] XOR ACCESSES(04)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 31dca0df --> dec 836542687
+ (above) MOD num_full_pages                                                         = 005ca6ac
+ index[04] = 005ca6ac
+ 2 * index + 0 = 00b94d58 --> dec 12143960
+ dag_node[00b94d58] = 00b94d58 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00b94d59 --> dec 12143961
+ dag_node[00b94d59] = 00b94d59 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[05]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+cbc2a373 3f21bd09 1858fe00 c813eadd 4b54d8b4 78017ef9 9b697ada f12363eb de66be58 9bc7b80c d45806c6 eb7c7a44 ea03fe69 aa356cbd 2521087e df5d97b4
+d4b5ea52 3f21bd09 1858fe00 c813eadd 4b54d8b4 78017ef9 9b697ada f12363eb de66be58 9bc7b80c d45806c6 eb7c7a44 ea03fe69 aa356cbd 2521087e df5d97b4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(05)                                                   = c6e1ad30
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4543a290
+ mix->words[05]                                                                     = 78017ef9
+ ((s_mix->words[0] XOR ACCESSES(05)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 3d42dc69 --> dec 1027791977
+ (above) MOD num_full_pages                                                         = 0042e38f
+ index[05] = 0042e38f
+ 2 * index + 0 = 0085c71e --> dec 8767262
+ dag_node[0085c71e] = 0085c71e 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0085c71f --> dec 8767263
+ dag_node[0085c71f] = 0085c71f 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[06]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+36e28917 6b1c952b 5417da00 d45ab9e7 4a91235c e35ae1fb 810c652e 85b64af1 73bda488 4766bae4 0c92a9b2 f8f4790c cd497f4b af1a2d87 f1005e5a 5455d05c
+2cda1809 6b1c952b 5417da00 d45ab9e7 4a91235c e35ae1fb 810c652e 85b64af1 73bda488 4766bae4 0c92a9b2 f8f4790c cd497f4b af1a2d87 f1005e5a 5455d05c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(06)                                                   = c6e1ad33
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4843a749
+ mix->words[06]                                                                     = 810c652e
+ ((s_mix->words[0] XOR ACCESSES(06)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = c94fc267 --> dec 3377447527
+ (above) MOD num_full_pages                                                         = 004fd9f5
+ index[06] = 004fd9f5
+ 2 * index + 0 = 009fb3ea --> dec 10466282
+ dag_node[009fb3ea] = 009fb3ea 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 009fb3eb --> dec 10466283
+ dag_node[009fb3eb] = 009fb3eb 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[07]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+7d027cdf c8fed2b1 618c2e00 31d2a6a5 be7aa9d4 e311be21 5483476a 6ef7f963 bb8a0218 4ab834ec 7ce12336 f4da8de4 75b36311 2d35ab85 bd9487ae 1f1700d4
+a4cc65c0 c8fed2b1 618c2e00 31d2a6a5 be7aa9d4 e311be21 5483476a 6ef7f963 bb8a0218 4ab834ec 7ce12336 f4da8de4 75b36311 2d35ab85 bd9487ae 1f1700d4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(07)                                                   = c6e1ad32
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4743a5b6
+ mix->words[07]                                                                     = 6ef7f963
+ ((s_mix->words[0] XOR ACCESSES(07)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 29b45cd5 --> dec 699686101
+ (above) MOD num_full_pages                                                         = 003461b2
+ index[07] = 003461b2
+ 2 * index + 0 = 0068c364 --> dec 6865764
+ dag_node[0068c364] = 0068c364 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0068c365 --> dec 6865765
+ dag_node[0068c365] = 0068c365 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[08]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+a9825069 1a25aca3 8fac6a00 139c55bf af1958bc 95ee4df3 74a96bde 135d96d9 52414bc8 8bfb4f84 cc6a6e02 580d5dec 5a64f3c3 b07d025f 1ed196ea c5364dbc
+2dacee25 1a25aca3 8fac6a00 139c55bf af1958bc 95ee4df3 74a96bde 135d96d9 52414bc8 8bfb4f84 cc6a6e02 580d5dec 5a64f3c3 b07d025f 1ed196ea c5364dbc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(08)                                                   = c6e1ad3d
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 5243b707
+ mix->words[08]                                                                     = 52414bc8
+ ((s_mix->words[0] XOR ACCESSES(08)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 0002fccf --> dec 195791
+ (above) MOD num_full_pages                                                         = 0002fccf
+ index[08] = 0002fccf
+ 2 * index + 0 = 0005f99e --> dec 391582
+ dag_node[0005f99e] = 0005f99e 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0005f99f --> dec 391583
+ dag_node[0005f99f] = 0005f99f 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[09]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+41216cd5 cc4ec499 2c6ade00 9e1afbad 60e6aff4 f924b589 84b4ce7a 5554779b 44ca4bd8 e09e2ccc cd8b2d26 890ada84 0febbbf9 33cabb8d 6df0925e 307c5ef4
+0c3f1da0 cc4ec499 2c6ade00 9e1afbad 60e6aff4 f924b589 84b4ce7a 5554779b 44ca4bd8 e09e2ccc cd8b2d26 890ada84 0febbbf9 33cabb8d 6df0925e 307c5ef4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(09)                                                   = c6e1ad3c
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 5143b574
+ mix->words[09]                                                                     = e09e2ccc
+ ((s_mix->words[0] XOR ACCESSES(09)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = b1dd99b8 --> dec 2984090040
+ (above) MOD num_full_pages                                                         = 005dae85
+ index[09] = 005dae85
+ 2 * index + 0 = 00bb5d0a --> dec 12279050
+ dag_node[00bb5d0a] = 00bb5d0a 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00bb5d0b --> dec 12279051
+ dag_node[00bb5d0b] = 00bb5d0b 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[10]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+5c250e45 38ff7cdb ec3b7a00 917a3157 7f26fd1c bdc9c6ab 62a10a0e eef84901 22756508 65008524 b81812d2 4015fdcc 0918e8fb 15253ef7 6fb669fa 47c97a1c
+e7e0ffeb 38ff7cdb ec3b7a00 917a3157 7f26fd1c bdc9c6ab 62a10a0e eef84901 22756508 65008524 b81812d2 4015fdcc 0918e8fb 15253ef7 6fb669fa 47c97a1c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(10)                                                   = c6e1ad3f
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 5443ba2d
+ mix->words[10]                                                                     = b81812d2
+ ((s_mix->words[0] XOR ACCESSES(10)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = ec5ba8ff --> dec 3965430015
+ (above) MOD num_full_pages                                                         = 005bc4a7
+ index[10] = 005bc4a7
+ 2 * index + 0 = 00b7894e --> dec 12028238
+ dag_node[00b7894e] = 00b7894e 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00b7894f --> dec 12028239
+ dag_node[00b7894f] = 00b7894f 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[11]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+53e2ffd1 95318cc1 e1a10e00 5a5babf5 46607314 6fa3bf31 5182d40a 31daec93 46ce0b98 23d197ac 9fe5a096 ae9e8824 4d36c321 40a21ed5 d628d48e 1e2b3a14
+f28557be 95318cc1 e1a10e00 5a5babf5 46607314 6fa3bf31 5182d40a 31daec93 46ce0b98 23d197ac 9fe5a096 ae9e8824 4d36c321 40a21ed5 d628d48e 1e2b3a14
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(11)                                                   = c6e1ad3e
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 5343b89a
+ mix->words[11]                                                                     = ae9e8824
+ ((s_mix->words[0] XOR ACCESSES(11)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = fddd30be --> dec 4259131582
+ (above) MOD num_full_pages                                                         = 005d4e73
+ index[11] = 005d4e73
+ 2 * index + 0 = 00ba9ce6 --> dec 12229862
+ dag_node[00ba9ce6] = 00ba9ce6 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00ba9ce7 --> dec 12229863
+ dag_node[00ba9ce7] = 00ba9ce7 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[12]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+dfe22ae5 9e0093d3 30890a00 334fb2af ddd5287c efc5fa23 5af3cbbe 0ea26b69 0e5c4048 0ef1c3c4 4c7bcc22 079050ac ae352cf3 9436894f b0469b8a 920c6d7c
+8553bcfd 9e0093d3 30890a00 334fb2af ddd5287c efc5fa23 5af3cbbe 0ea26b69 0e5c4048 0ef1c3c4 4c7bcc22 079050ac ae352cf3 9436894f b0469b8a 920c6d7c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(12)                                                   = c6e1ad39
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4e43b0bb
+ mix->words[12]                                                                     = ae352cf3
+ ((s_mix->words[0] XOR ACCESSES(12)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = e0769c48 --> dec 3765869640
+ (above) MOD num_full_pages                                                         = 0076b688
+ index[12] = 0076b688
+ 2 * index + 0 = 00ed6d10 --> dec 15559952
+ dag_node[00ed6d10] = 00ed6d10 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00ed6d11 --> dec 15559953
+ dag_node[00ed6d11] = 00ed6d11 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[13]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+56e4eb6f 8de8b529 67babe00 7576497d b28ebb34 97a8c519 ebc9bc1a 72af164b e3393158 4a972d8c 88e25986 942efec4 30b5c289 a0da275d 0926da3e 65905a34
+df3fef56 8de8b529 67babe00 7576497d b28ebb34 97a8c519 ebc9bc1a 72af164b e3393158 4a972d8c 88e25986 942efec4 30b5c289 a0da275d 0926da3e 65905a34
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(13)                                                   = c6e1ad38
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4d43af28
+ mix->words[13]                                                                     = a0da275d
+ ((s_mix->words[0] XOR ACCESSES(13)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = ed998875 --> dec 3986262133
+ (above) MOD num_full_pages                                                         = 0019a44a
+ index[13] = 0019a44a
+ 2 * index + 0 = 00334894 --> dec 3360916
+ dag_node[00334894] = 00334894 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00334895 --> dec 3360917
+ dag_node[00334895] = 00334895 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[14]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+396dd729 8e552f8b 4af91a00 6635afc7 4ab0b2dc d7ae465b 48931cee d4a01811 0b08ad88 f7fcb364 0252edf2 09fb0e8c 37213dab 946bf767 a6298f9a 163dffdc
+c7968cf7 8e552f8b 4af91a00 6635afc7 4ab0b2dc d7ae465b 48931cee d4a01811 0b08ad88 f7fcb364 0252edf2 09fb0e8c 37213dab 946bf767 a6298f9a 163dffdc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(14)                                                   = c6e1ad3b
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 5043b3e1
+ mix->words[14]                                                                     = a6298f9a
+ ((s_mix->words[0] XOR ACCESSES(14)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = f66a3c7b --> dec 4134157435
+ (above) MOD num_full_pages                                                         = 006a594f
+ index[14] = 006a594f
+ 2 * index + 0 = 00d4b29e --> dec 13939358
+ dag_node[00d4b29e] = 00d4b29e 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00d4b29f --> dec 13939359
+ dag_node[00d4b29f] = 00d4b29f 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[15]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+903d0715 9b19d7d1 0623ee00 ad83b645 70299054 e258c141 2d968aaa c905e2c3 e6a92d18 c6ce666c 9a8c93f6 4237e664 74541431 0cf67725 2d6d0f6e df99c754
+282b5a4a 9b19d7d1 0623ee00 ad83b645 70299054 e258c141 2d968aaa c905e2c3 e6a92d18 c6ce666c 9a8c93f6 4237e664 74541431 0cf67725 2d6d0f6e df99c754
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(15)                                                   = c6e1ad3a
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4f43b24e
+ mix->words[15]                                                                     = df99c754
+ ((s_mix->words[0] XOR ACCESSES(15)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 90da751a --> dec 2430235930
+ (above) MOD num_full_pages                                                         = 005a8609
+ index[15] = 005a8609
+ 2 * index + 0 = 00b50c12 --> dec 11865106
+ dag_node[00b50c12] = 00b50c12 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00b50c13 --> dec 11865107
+ dag_node[00b50c13] = 00b50c13 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[16]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+25a72a1d faaebe03 aa8faa00 6b57ee9f e56e343c 92b83953 6dfc499e 3743f8f9 3451fcc8 62eb3c04 414cec42 a1ffaf6c 515bc923 8cfd8f3f f0af4a2a 5314c93c
+868a2e6d faaebe03 aa8faa00 6b57ee9f e56e343c 92b83953 6dfc499e 3743f8f9 3451fcc8 62eb3c04 414cec42 a1ffaf6c 515bc923 8cfd8f3f f0af4a2a 5314c93c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(16)                                                   = c6e1ad25
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 3a43913f
+ mix->words[16]                                                                     = 868a2e6d
+ ((s_mix->words[0] XOR ACCESSES(16)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = bcc9bf52 --> dec 3167338322
+ (above) MOD num_full_pages                                                         = 0049d569
+ index[16] = 0049d569
+ 2 * index + 0 = 0093aad2 --> dec 9677522
+ dag_node[0093aad2] = 0093aad2 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0093aad3 --> dec 9677523
+ dag_node[0093aad3] = 0093aad3 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[17]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+63b4e175 a4151eb9 80289e00 9a6ca44d 687c3a74 4b023da9 c227e3ba f900effb 2510eed8 bc4f7a4c 0e17ebe6 71812704 367da219 3228802d 0df1c01e 05b8c974
+3814bf44 a4151eb9 80289e00 9a6ca44d 687c3a74 4b023da9 c227e3ba f900effb 2510eed8 bc4f7a4c 0e17ebe6 71812704 367da219 3228802d 0df1c01e 05b8c974
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(17)                                                   = c6e1ad24
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 39438fac
+ mix->words[17]                                                                     = a4151eb9
+ ((s_mix->words[0] XOR ACCESSES(17)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 9d569115 --> dec 2639696149
+ (above) MOD num_full_pages                                                         = 0056a37b
+ index[17] = 0056a37b
+ 2 * index + 0 = 00ad46f6 --> dec 11355894
+ dag_node[00ad46f6] = 00ad46f6 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00ad46f7 --> dec 11355895
+ dag_node[00ad46f7] = 00ad46f7 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[18]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+6a13add9 063f5d3b bff0ba00 6606a537 ef90049c bd87110b 5ecb7dce f779c821 31a7fe08 bd1d85a4 15a85b12 b2506b4c e0c62d5b 22c1c6d7 11916f3a 75e5219c
+8c045efb 063f5d3b bff0ba00 6606a537 ef90049c bd87110b 5ecb7dce f779c821 31a7fe08 bd1d85a4 15a85b12 b2506b4c e0c62d5b 22c1c6d7 11916f3a 75e5219c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(18)                                                   = c6e1ad27
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 3c439465
+ mix->words[18]                                                                     = bff0ba00
+ ((s_mix->words[0] XOR ACCESSES(18)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 83b32e65 --> dec 2209558117
+ (above) MOD num_full_pages                                                         = 00333dce
+ index[18] = 00333dce
+ 2 * index + 0 = 00667b9c --> dec 6716316
+ dag_node[00667b9c] = 00667b9c 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00667b9d --> dec 6716317
+ dag_node[00667b9d] = 00667b9d 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[19]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+d59cd707 10bfc3e1 27f4ce00 d3761595 bbb74194 669fd451 08570b4a b5b60bf3 3374e698 5979612c 2a075d56 0098e8a4 32f96641 8e0c0475 e1f2184e 33b3e894
+6587febc 10bfc3e1 27f4ce00 d3761595 bbb74194 669fd451 08570b4a b5b60bf3 3374e698 5979612c 2a075d56 0098e8a4 32f96641 8e0c0475 e1f2184e 33b3e894
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(19)                                                   = c6e1ad26
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 3b4392d2
+ mix->words[19]                                                                     = d3761595
+ ((s_mix->words[0] XOR ACCESSES(19)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = e8358747 --> dec 3895822151
+ (above) MOD num_full_pages                                                         = 0035a277
+ index[19] = 0035a277
+ 2 * index + 0 = 006b44ee --> dec 7029998
+ dag_node[006b44ee] = 006b44ee 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 006b44ef --> dec 7029999
+ dag_node[006b44ef] = 006b44ef 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[20]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+4c8dc4eb 3ee15b33 e6604a00 77e3f98f 157c3bfc de9b3b83 6b06c57e 0094cf89 99070148 0613f844 7f97ee62 94b63a2c 7f9bf853 11eb042f fe1c42ca f83720fc
+917d451b 3ee15b33 e6604a00 77e3f98f 157c3bfc de9b3b83 6b06c57e 0094cf89 99070148 0613f844 7f97ee62 94b63a2c 7f9bf853 11eb042f fe1c42ca f83720fc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(20)                                                   = c6e1ad21
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 36438af3
+ mix->words[20]                                                                     = 157c3bfc
+ ((s_mix->words[0] XOR ACCESSES(20)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 233fb10f --> dec 591376655
+ (above) MOD num_full_pages                                                         = 003fb529
+ index[20] = 003fb529
+ 2 * index + 0 = 007f6a52 --> dec 8350290
+ dag_node[007f6a52] = 007f6a52 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 007f6a53 --> dec 8350291
+ dag_node[007f6a53] = 007f6a53 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[21]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+6e5397a3 2fc29149 a9947e00 4ae1dc1d ce926db4 f15eaf39 f9a8e55a 7342b4ab 2e070458 d56fd30c 3e2c4446 46dd9344 3587eaa9 63f795fd d07d23fe bac8ecb4
+234ca3d2 2fc29149 a9947e00 4ae1dc1d ce926db4 f15eaf39 f9a8e55a 7342b4ab 2e070458 d56fd30c 3e2c4446 46dd9344 3587eaa9 63f795fd d07d23fe bac8ecb4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(21)                                                   = c6e1ad20
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 35438960
+ mix->words[21]                                                                     = f15eaf39
+ ((s_mix->words[0] XOR ACCESSES(21)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = c41d2659 --> dec 3290244697
+ (above) MOD num_full_pages                                                         = 001d3d51
+ index[21] = 001d3d51
+ 2 * index + 0 = 003a7aa2 --> dec 3832482
+ dag_node[003a7aa2] = 003a7aa2 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 003a7aa3 --> dec 3832483
+ dag_node[003a7aa3] = 003a7aa3 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[22]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+50adcf3b 784ab5eb f4c25a00 fe8d81a7 e482b25c 310dd6bb 5ee10cae 1d026931 cd0bd688 0b093be4 25af7a32 d2ced40c edf6680b 5bc11d47 32ffa8da be4c9f5c
+639f9935 784ab5eb f4c25a00 fe8d81a7 e482b25c 310dd6bb 5ee10cae 1d026931 cd0bd688 0b093be4 25af7a32 d2ced40c edf6680b 5bc11d47 32ffa8da be4c9f5c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(22)                                                   = c6e1ad23
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 38438e19
+ mix->words[22]                                                                     = 5ee10cae
+ ((s_mix->words[0] XOR ACCESSES(22)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 66a282b7 --> dec 1721926327
+ (above) MOD num_full_pages                                                         = 00228eba
+ index[22] = 00228eba
+ 2 * index + 0 = 00451d74 --> dec 4529524
+ dag_node[00451d74] = 00451d74 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00451d75 --> dec 4529525
+ dag_node[00451d75] = 00451d75 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[23]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+3cd82495 489c60f1 4df3ae00 5fc319e5 15bec6d4 f3c90861 0a46f5ea dbcb9823 51a2b818 438947ec 853d5cb6 e797cee4 a5e5c951 b80116c5 2276cf2e ee9eddd4
+097b331a 489c60f1 4df3ae00 5fc319e5 15bec6d4 f3c90861 0a46f5ea dbcb9823 51a2b818 438947ec 853d5cb6 e797cee4 a5e5c951 b80116c5 2276cf2e ee9eddd4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(23)                                                   = c6e1ad22
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 37438c86
+ mix->words[23]                                                                     = dbcb9823
+ ((s_mix->words[0] XOR ACCESSES(23)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = ec8814a5 --> dec 3968341157
+ (above) MOD num_full_pages                                                         = 0008305c
+ index[23] = 0008305c
+ 2 * index + 0 = 001060b8 --> dec 1073336
+ dag_node[001060b8] = 001060b8 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 001060b9 --> dec 1073337
+ dag_node[001060b9] = 001060b9 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[24]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+5d51f637 3f2c9b63 b69aea00 a521c37f 0f52ffbc 267830b3 17b51f5e 24807f19 9b27cdc8 3d1c3884 7598f282 77fab0ec 79bbea83 6eb6d81f 6f08256a 781734bc
+06e11157 3f2c9b63 b69aea00 a521c37f 0f52ffbc 267830b3 17b51f5e 24807f19 9b27cdc8 3d1c3884 7598f282 77fab0ec 79bbea83 6eb6d81f 6f08256a 781734bc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(24)                                                   = c6e1ad2d
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 42439dd7
+ mix->words[24]                                                                     = 9b27cdc8
+ ((s_mix->words[0] XOR ACCESSES(24)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = d964501f --> dec 3647229983
+ (above) MOD num_full_pages                                                         = 0064698d
+ index[24] = 0064698d
+ 2 * index + 0 = 00c8d31a --> dec 13161242
+ dag_node[00c8d31a] = 00c8d31a 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00c8d31b --> dec 13161243
+ dag_node[00c8d31b] = 00c8d31b 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[25]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+1fce4b8f d6389cd9 75de5e00 7326c0ed dba894f4 4234a9c9 b02060fa 8f48145b 07a8f1d8 b76cf7cc a1c5c2a6 cba48384 25d22c39 68d638cd 33d2e5de c88803f4
+2b8698ee d6389cd9 75de5e00 7326c0ed dba894f4 4234a9c9 b02060fa 8f48145b 07a8f1d8 b76cf7cc a1c5c2a6 cba48384 25d22c39 68d638cd 33d2e5de c88803f4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(25)                                                   = c6e1ad2c
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 41439c44
+ mix->words[25]                                                                     = b76cf7cc
+ ((s_mix->words[0] XOR ACCESSES(25)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = f62f6b88 --> dec 4130302856
+ (above) MOD num_full_pages                                                         = 002f885c
+ index[25] = 002f885c
+ 2 * index + 0 = 005f10b8 --> dec 6230200
+ dag_node[005f10b8] = 005f10b8 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 005f10b9 --> dec 6230201
+ dag_node[005f10b9] = 005f10b9 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[26]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+a09fe2a5 141ee99b 8d0dfa00 3301b517 be627c1c 01e7476b 3cf8a98e e9780b41 e6f4b708 8c8a1624 50516b52 17fb08cc c2db9dbb d63b6ab7 72ffdc7a a21e391c
+72bdae13 141ee99b 8d0dfa00 3301b517 be627c1c 01e7476b 3cf8a98e e9780b41 e6f4b708 8c8a1624 50516b52 17fb08cc c2db9dbb d63b6ab7 72ffdc7a a21e391c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(26)                                                   = c6e1ad2f
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 4443a0fd
+ mix->words[26]                                                                     = 50516b52
+ ((s_mix->words[0] XOR ACCESSES(26)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 1412cbaf --> dec 336776111
+ (above) MOD num_full_pages                                                         = 0012ce07
+ index[26] = 0012ce07
+ 2 * index + 0 = 00259c0e --> dec 2464782
+ dag_node[00259c0e] = 00259c0e 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00259c0f --> dec 2464783
+ dag_node[00259c0f] = 00259c0f 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[27]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+809455b1 47a9bf01 0d008e00 62b01335 d1096014 6a156d71 8972ea8a c8f9b753 9b3c2198 6160daac c22bf216 8c2ed924 7ab94d61 f688fe15 82c8140e 5193e714
+b3bc9be6 47a9bf01 0d008e00 62b01335 d1096014 6a156d71 8972ea8a c8f9b753 9b3c2198 6160daac c22bf216 8c2ed924 7ab94d61 f688fe15 82c8140e 5193e714
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(27)                                                   = c6e1ad2e
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 43439f6a
+ mix->words[27]                                                                     = 8c2ed924
+ ((s_mix->words[0] XOR ACCESSES(27)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = cf6d464e --> dec 3480045134
+ (above) MOD num_full_pages                                                         = 006d5e90
+ index[27] = 006d5e90
+ 2 * index + 0 = 00dabd20 --> dec 14335264
+ dag_node[00dabd20] = 00dabd20 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00dabd21 --> dec 14335265
+ dag_node[00dabd21] = 00dabd21 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[28]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+1a585883 d137ae93 77df8a00 902e3c6f 25c23f7c 70bb48e3 e9e7373e b41b97a9 f7a8e248 f7783cc4 c12e18a2 d1bfd3ac 92b4cfb3 2ea7fb0f eef7920a 7fd4c47c
+d733d633 d137ae93 77df8a00 902e3c6f 25c23f7c 70bb48e3 e9e7373e b41b97a9 f7a8e248 f7783cc4 c12e18a2 d1bfd3ac 92b4cfb3 2ea7fb0f eef7920a 7fd4c47c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(28)                                                   = c6e1ad29
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 3e43978b
+ mix->words[28]                                                                     = 92b4cfb3
+ ((s_mix->words[0] XOR ACCESSES(28)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = acf75838 --> dec 2901891128
+ (above) MOD num_full_pages                                                         = 00776c6f
+ index[28] = 00776c6f
+ 2 * index + 0 = 00eed8de --> dec 15653086
+ dag_node[00eed8de] = 00eed8de 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00eed8df --> dec 15653087
+ dag_node[00eed8df] = 00eed8df 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[29]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+fcfd8ee7 eda7d169 b4e63e00 67c922bd ecc9f034 59d3bd59 74fbf69a 306fbf0b 26dc3758 5647a88c bd90c706 dcfa37c4 a5a2f6c9 8170389d 39bae5be b7f14f34
+f974ea96 eda7d169 b4e63e00 67c922bd ecc9f034 59d3bd59 74fbf69a 306fbf0b 26dc3758 5647a88c bd90c706 dcfa37c4 a5a2f6c9 8170389d 39bae5be b7f14f34
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(29)                                                   = c6e1ad28
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 3d4395f8
+ mix->words[29]                                                                     = 8170389d
+ ((s_mix->words[0] XOR ACCESSES(29)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = bc33ad65 --> dec 3157503333
+ (above) MOD num_full_pages                                                         = 0033c36d
+ index[29] = 0033c36d
+ 2 * index + 0 = 006786da --> dec 6784730
+ dag_node[006786da] = 006786da 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 006786db --> dec 6784731
+ dag_node[006786db] = 006786db 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[30]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+2a40737f 882ea84b c6739a00 1ea1af87 f5e521dc c153131b c2a5346e 4ae9be51 84ab1f88 5ece5464 70e94e72 a1e5c98c 888a7e6b 60a91f27 9f37aa1a c4dfaedc
+496accf9 882ea84b c6739a00 1ea1af87 f5e521dc c153131b c2a5346e 4ae9be51 84ab1f88 5ece5464 70e94e72 a1e5c98c 888a7e6b 60a91f27 9f37aa1a c4dfaedc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(30)                                                   = c6e1ad2b
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 40439ab1
+ mix->words[30]                                                                     = 9f37aa1a
+ ((s_mix->words[0] XOR ACCESSES(30)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = df7430ab --> dec 3748933803
+ (above) MOD num_full_pages                                                         = 00744acd
+ index[30] = 00744acd
+ 2 * index + 0 = 00e8959a --> dec 15242650
+ dag_node[00e8959a] = 00e8959a 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00e8959b --> dec 15242651
+ dag_node[00e8959b] = 00e8959b 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[31]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+029d4577 ac72ee11 67fb6e00 bf875185 f3b44d54 70c71381 d811892a 3ef69983 6162a318 a2ced96c 31467d76 68bc4764 5d050271 513c0a65 bea0c6ee c8204454
+8cc83e60 ac72ee11 67fb6e00 bf875185 f3b44d54 70c71381 d811892a 3ef69983 6162a318 a2ced96c 31467d76 68bc4764 5d050271 513c0a65 bea0c6ee c8204454
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(31)                                                   = c6e1ad2a
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 3f43991e
+ mix->words[31]                                                                     = c8204454
+ ((s_mix->words[0] XOR ACCESSES(31)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = f763dd4a --> dec 4150517066
+ (above) MOD num_full_pages                                                         = 0063fa3c
+ index[31] = 0063fa3c
+ 2 * index + 0 = 00c7f478 --> dec 13104248
+ dag_node[00c7f478] = 00c7f478 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00c7f479 --> dec 13104249
+ dag_node[00c7f479] = 00c7f479 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[32]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+9453ae2d 89ecc4c3 b0ce2a00 0705545f f8d5bb3c 0a63b413 4d9aed1e a133a939 6646bec8 b7a04504 07f780c2 4464626c dfe2d7e3 46845cff 051928aa 5ecb903c
+fffdc559 89ecc4c3 b0ce2a00 0705545f f8d5bb3c 0a63b413 4d9aed1e a133a939 6646bec8 b7a04504 07f780c2 4464626c dfe2d7e3 46845cff 051928aa 5ecb903c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(32)                                                   = c6e1ad15
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 2a43780f
+ mix->words[00]                                                                     = 9453ae2d
+ ((s_mix->words[0] XOR ACCESSES(32)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = be10d622 --> dec 3188774434
+ (above) MOD num_full_pages                                                         = 0010ec66
+ index[32] = 0010ec66
+ 2 * index + 0 = 0021d8cc --> dec 2218188
+ dag_node[0021d8cc] = 0021d8cc 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0021d8cd --> dec 2218189
+ dag_node[0021d8cd] = 0021d8cd 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[33]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+ac9ae81b e2b9bef9 548c1e00 6c63d18d f475bf74 6df479e9 48e3463a fd5364bb c95e54d8 154ca54c 4c9fb166 1606f004 5519da59 015e656d b09b039e 76740e74
+555c73d6 e2b9bef9 548c1e00 6c63d18d f475bf74 6df479e9 48e3463a fd5364bb c95e54d8 154ca54c 4c9fb166 1606f004 5519da59 015e656d b09b039e 76740e74
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(33)                                                   = c6e1ad14
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 2943767c
+ mix->words[01]                                                                     = e2b9bef9
+ ((s_mix->words[0] XOR ACCESSES(33)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = cbfac885 --> dec 3422210181
+ (above) MOD num_full_pages                                                         = 007ae05e
+ index[33] = 007ae05e
+ 2 * index + 0 = 00f5c0bc --> dec 16105660
+ dag_node[00f5c0bc] = 00f5c0bc 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00f5c0bd --> dec 16105661
+ dag_node[00f5c0bd] = 00f5c0bd 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[34]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+d22ea23d e367a1fb 18933a00 2e22e0f7 495c639c 00dbe9cb f7c78d4e 85479261 d77f9008 d3a836a4 05644392 b0ebd64c 50b2ba1b 9499aa97 a206b1ba ecb2c09c
+367f995f e367a1fb 18933a00 2e22e0f7 495c639c 00dbe9cb f7c78d4e 85479261 d77f9008 d3a836a4 05644392 b0ebd64c 50b2ba1b 9499aa97 a206b1ba ecb2c09c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(34)                                                   = c6e1ad17
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 2c437b35
+ mix->words[02]                                                                     = 18933a00
+ ((s_mix->words[0] XOR ACCESSES(34)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 34d04135 --> dec 886063413
+ (above) MOD num_full_pages                                                         = 0050475c
+ index[34] = 0050475c
+ 2 * index + 0 = 00a08eb8 --> dec 10522296
+ dag_node[00a08eb8] = 00a08eb8 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00a08eb9 --> dec 10522297
+ dag_node[00a08eb9] = 00a08eb9 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[35]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+1cc9e8bf f723fe21 afc44e00 97e824d5 1870ce94 25310a91 5d2371ca 30ab6eb3 45cfbc98 d5ce042c 0ed65ed6 cf4259a4 245af881 84e78bb5 ca89c7ce 39653594
+297efe34 f723fe21 afc44e00 97e824d5 1870ce94 25310a91 5d2371ca 30ab6eb3 45cfbc98 d5ce042c 0ed65ed6 cf4259a4 245af881 84e78bb5 ca89c7ce 39653594
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(35)                                                   = c6e1ad16
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 2b4379a2
+ mix->words[03]                                                                     = 97e824d5
+ ((s_mix->words[0] XOR ACCESSES(35)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = bcab5d77 --> dec 3165347191
+ (above) MOD num_full_pages                                                         = 002b738e
+ index[35] = 002b738e
+ 2 * index + 0 = 0056e71c --> dec 5695260
+ dag_node[0056e71c] = 0056e71c 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0056e71d --> dec 5695261
+ dag_node[0056e71d] = 0056e71d 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[36]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+108f83b1 2ea90df3 b206ca00 f771fb4f 0d9532fc 1d33a243 68cc20fe 50df43c9 7e05e348 bf509144 31774ae2 e9731d2c bc353313 ed80edef a4e5894a ee5357fc
+86bcccc1 2ea90df3 b206ca00 f771fb4f 0d9532fc 1d33a243 68cc20fe 50df43c9 7e05e348 bf509144 31774ae2 e9731d2c bc353313 ed80edef a4e5894a ee5357fc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(36)                                                   = c6e1ad11
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 264371c3
+ mix->words[04]                                                                     = 0d9532fc
+ ((s_mix->words[0] XOR ACCESSES(36)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 2bd6433f --> dec 735462207
+ (above) MOD num_full_pages                                                         = 00564858
+ index[36] = 00564858
+ 2 * index + 0 = 00ac90b0 --> dec 11309232
+ dag_node[00ac90b0] = 00ac90b0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00ac90b1 --> dec 11309233
+ dag_node[00ac90b1] = 00ac90b1 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[37]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+c240df13 6720f589 40affe00 d76e9d5d 5ddf42b4 3b486f79 f757efda 1877b56b ab44ca58 6fd4ae0c c0cae1c6 ac36ec44 5abf66e9 d0f68f3d df571f7e 293381b4
+dc9ac362 6720f589 40affe00 d76e9d5d 5ddf42b4 3b486f79 f757efda 1877b56b ab44ca58 6fd4ae0c c0cae1c6 ac36ec44 5abf66e9 d0f68f3d df571f7e 293381b4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(37)                                                   = c6e1ad10
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 25437030
+ mix->words[05]                                                                     = 3b486f79
+ ((s_mix->words[0] XOR ACCESSES(37)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 1e0b1f49 --> dec 504045385
+ (above) MOD num_full_pages                                                         = 000b22cd
+ index[37] = 000b22cd
+ 2 * index + 0 = 0016459a --> dec 1459610
+ dag_node[0016459a] = 0016459a 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0016459b --> dec 1459611
+ dag_node[0016459b] = 0016459b 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[38]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+df096f73 e1e286ab d50cda00 8021b967 7a76015c cc077b7b 396e942e ef729771 f54a8888 17cdfce4 45616ab2 5e75ef0c c44f00cb 31237d07 1426935a 90152e5c
+a9b7d6dd e1e286ab d50cda00 8021b967 7a76015c cc077b7b 396e942e ef729771 f54a8888 17cdfce4 45616ab2 5e75ef0c c44f00cb 31237d07 1426935a 90152e5c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(38)                                                   = c6e1ad13
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 284374e9
+ mix->words[06]                                                                     = 396e942e
+ ((s_mix->words[0] XOR ACCESSES(38)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 112de0c7 --> dec 288219335
+ (above) MOD num_full_pages                                                         = 002de2c5
+ index[38] = 002de2c5
+ 2 * index + 0 = 005bc58a --> dec 6014346
+ dag_node[005bc58a] = 005bc58a 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 005bc58b --> dec 6014347
+ dag_node[005bc58b] = 005bc58b 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[39]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+8e81b783 4299ff31 633b2e00 1c16dd25 23c423d4 aac762a1 9713446a 626466e3 ac54ee18 5d451aec ea5af636 bfa74fe4 d35e3f91 61ddd205 12b9f6ae 2d57fad4
+093cf86c 4299ff31 633b2e00 1c16dd25 23c423d4 aac762a1 9713446a 626466e3 ac54ee18 5d451aec ea5af636 bfa74fe4 d35e3f91 61ddd205 12b9f6ae 2d57fad4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(39)                                                   = c6e1ad12
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 27437356
+ mix->words[07]                                                                     = 626466e3
+ ((s_mix->words[0] XOR ACCESSES(39)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 452715b5 --> dec 1160189365
+ (above) MOD num_full_pages                                                         = 00271dcb
+ index[39] = 00271dcb
+ 2 * index + 0 = 004e3b96 --> dec 5127062
+ dag_node[004e3b96] = 004e3b96 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 004e3b97 --> dec 5127063
+ dag_node[004e3b97] = 004e3b97 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[40]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+d97dd8af 096cba23 36296a00 5cfe213f 21c466bc 78e04373 3d54b2de c70df759 61b2cfc8 bfc96184 23319702 9862c3ec 4e5e1143 15319ddf 28bf53ea 357fdbbc
+f6b52993 096cba23 36296a00 5cfe213f 21c466bc 78e04373 3d54b2de c70df759 61b2cfc8 bfc96184 23319702 9862c3ec 4e5e1143 15319ddf 28bf53ea 357fdbbc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(40)                                                   = c6e1ad1d
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 324384a7
+ mix->words[08]                                                                     = 61b2cfc8
+ ((s_mix->words[0] XOR ACCESSES(40)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 53f14b6f --> dec 1408322415
+ (above) MOD num_full_pages                                                         = 00715538
+ index[40] = 00715538
+ 2 * index + 0 = 00e2aa70 --> dec 14854768
+ dag_node[00e2aa70] = 00e2aa70 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00e2aa71 --> dec 14854769
+ dag_node[00e2aa71] = 00e2aa71 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[41]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+10feb10d f9290519 4331de00 a30e562d e42db9f4 bc0a2e09 6a55937a b3fc611b 947d17d8 6e0482cc 6910b826 cf7a6c84 a1152c79 3c1b860d 0f31195e f446e8f4
+f2d2d818 f9290519 4331de00 a30e562d e42db9f4 bc0a2e09 6a55937a b3fc611b 947d17d8 6e0482cc 6910b826 cf7a6c84 a1152c79 3c1b860d 0f31195e f446e8f4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(41)                                                   = c6e1ad1c
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 31438314
+ mix->words[09]                                                                     = 6e0482cc
+ ((s_mix->words[0] XOR ACCESSES(41)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 5f4701d8 --> dec 1598489048
+ (above) MOD num_full_pages                                                         = 00470cfa
+ index[41] = 00470cfa
+ 2 * index + 0 = 008e19f4 --> dec 9312756
+ dag_node[008e19f4] = 008e19f4 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 008e19f5 --> dec 9312757
+ dag_node[008e19f5] = 008e19f5 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[42]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+cd7eae83 5493065b c7807a00 dc91a8d7 27fbbb1c 0d06782b deb7290e 714cdd81 98ec8908 fd19e724 8b51e3d2 21b8d3cc 0d55027b ac540677 484aeefa 7fa0b81c
+5964343d 5493065b c7807a00 dc91a8d7 27fbbb1c 0d06782b deb7290e 714cdd81 98ec8908 fd19e724 8b51e3d2 21b8d3cc 0d55027b ac540677 484aeefa 7fa0b81c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(42)                                                   = c6e1ad1f
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 344387cd
+ mix->words[10]                                                                     = 8b51e3d2
+ ((s_mix->words[0] XOR ACCESSES(42)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = bf12641f --> dec 3205653535
+ (above) MOD num_full_pages                                                         = 00127a81
+ index[42] = 00127a81
+ 2 * index + 0 = 0024f502 --> dec 2422018
+ dag_node[0024f502] = 0024f502 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0024f503 --> dec 2422019
+ dag_node[0024f503] = 0024f503 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[43]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+01484d3b 7e730141 0f400e00 104cca75 0d478d14 ac2f2bb1 a855a10a dd00b213 c45bb798 93c6ddac 23e9a396 e1f56a24 77d2e7a1 bf462d55 c7f6338e 0601d414
+f59ac904 7e730141 0f400e00 104cca75 0d478d14 ac2f2bb1 a855a10a dd00b213 c45bb798 93c6ddac 23e9a396 e1f56a24 77d2e7a1 bf462d55 c7f6338e 0601d414
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(43)                                                   = c6e1ad1e
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 3343863a
+ mix->words[11]                                                                     = e1f56a24
+ ((s_mix->words[0] XOR ACCESSES(43)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = d2b6ec1e --> dec 3535203358
+ (above) MOD num_full_pages                                                         = 003704c9
+ index[43] = 003704c9
+ 2 * index + 0 = 006e0992 --> dec 7211410
+ dag_node[006e0992] = 006e0992 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 006e0993 --> dec 7211411
+ dag_node[006e0993] = 006e0993 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[44]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+3fbf9a73 500af953 01d60a00 1de2b62f fba3167c bf41c7a3 08cc82be fb1853e9 b4620448 4e0ef5c4 1ecc8522 d95616ac 4202a273 70795ccf 5693288a 88e0db7c
+a6c478df 500af953 01d60a00 1de2b62f fba3167c bf41c7a3 08cc82be fb1853e9 b4620448 4e0ef5c4 1ecc8522 d95616ac 4202a273 70795ccf 5693288a 88e0db7c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(44)                                                   = c6e1ad19
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 2e437e5b
+ mix->words[12]                                                                     = 4202a273
+ ((s_mix->words[0] XOR ACCESSES(44)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 6c41dc28 --> dec 1816255528
+ (above) MOD num_full_pages                                                         = 0041e8d0
+ index[44] = 0041e8d0
+ 2 * index + 0 = 0083d1a0 --> dec 8638880
+ dag_node[0083d1a0] = 0083d1a0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0083d1a1 --> dec 8638881
+ dag_node[0083d1a1] = 0083d1a1 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[45]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+cd23f2a9 54467da9 e3f1be00 3ae4cbfd 9dbc6534 b78d4599 97f1d11a 304c17cb 3e4cbd58 a58ce38c 9df59486 ce85b0c4 5d25bb09 de0d19dd d3a8d13e f5f98434
+66c996ac 54467da9 e3f1be00 3ae4cbfd 9dbc6534 b78d4599 97f1d11a 304c17cb 3e4cbd58 a58ce38c 9df59486 ce85b0c4 5d25bb09 de0d19dd d3a8d13e f5f98434
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(45)                                                   = c6e1ad18
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 2d437cc8
+ mix->words[13]                                                                     = de0d19dd
+ ((s_mix->words[0] XOR ACCESSES(45)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = f34e6515 --> dec 4082001173
+ (above) MOD num_full_pages                                                         = 004e818f
+ index[45] = 004e818f
+ 2 * index + 0 = 009d031e --> dec 10289950
+ dag_node[009d031e] = 009d031e 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 009d031f --> dec 10289951
+ dag_node[009d031f] = 009d031f 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[46]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+980a0315 53f7d10b d58e1a00 b32d1f47 839350dc 8c648fdb 4bac2bee d2c97491 6ace1188 28ca3564 2f98cef2 e075448c ab656f2b 6b9fb6e7 70c1649a 6bcb1ddc
+7bc533db 53f7d10b d58e1a00 b32d1f47 839350dc 8c648fdb 4bac2bee d2c97491 6ace1188 28ca3564 2f98cef2 e075448c ab656f2b 6b9fb6e7 70c1649a 6bcb1ddc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(46)                                                   = c6e1ad1b
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 30438181
+ mix->words[14]                                                                     = 70c1649a
+ ((s_mix->words[0] XOR ACCESSES(46)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 4082e51b --> dec 1082320155
+ (above) MOD num_full_pages                                                         = 0002ecaa
+ index[46] = 0002ecaa
+ 2 * index + 0 = 0005d954 --> dec 383316
+ dag_node[0005d954] = 0005d954 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0005d955 --> dec 383317
+ dag_node[0005d955] = 0005d955 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[47]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+6cc7035b 3a1e1451 2eb2ee00 57083cc5 fce84a54 dd4e75c1 0e0927aa 64228043 aa659918 9a520c6c df8dc6f6 e49ae864 fbae00b1 536ceda5 1a715e6e 8cc00154
+b2757894 3a1e1451 2eb2ee00 57083cc5 fce84a54 dd4e75c1 0e0927aa 64228043 aa659918 9a520c6c df8dc6f6 e49ae864 fbae00b1 536ceda5 1a715e6e 8cc00154
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(47)                                                   = c6e1ad1a
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 2f437fee
+ mix->words[15]                                                                     = 8cc00154
+ ((s_mix->words[0] XOR ACCESSES(47)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = a3837eba --> dec 2743303866
+ (above) MOD num_full_pages                                                         = 000391e3
+ index[47] = 000391e3
+ 2 * index + 0 = 000723c6 --> dec 467910
+ dag_node[000723c6] = 000723c6 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 000723c7 --> dec 467911
+ dag_node[000723c7] = 000723c7 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[48]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+984d6b87 ce59fb83 83acaa00 c6f7aa1f 75ad023c 23835ed3 c269709e e54fe979 55f000c8 5b298e04 e2303542 43dbd56c e3eb16a3 f97a1abf 0e77a72a e642173c
+82ebf33b ce59fb83 83acaa00 c6f7aa1f 75ad023c 23835ed3 c269709e e54fe979 55f000c8 5b298e04 e2303542 43dbd56c e3eb16a3 f97a1abf 0e77a72a e642173c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(48)                                                   = c6e1ad05
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 1a435edf
+ mix->words[16]                                                                     = 82ebf33b
+ ((s_mix->words[0] XOR ACCESSES(48)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 98a8ade4 --> dec 2561191396
+ (above) MOD num_full_pages                                                         = 0028bfc3
+ index[48] = 0028bfc3
+ 2 * index + 0 = 00517f86 --> dec 5341062
+ dag_node[00517f86] = 00517f86 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00517f87 --> dec 5341063
+ dag_node[00517f87] = 00517f87 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[49]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+48b13a03 5aa6ef39 48cf9e00 56e0cecd 7b5a8474 bace4629 a9fc48ba 75cc897b 10d13ad8 866a904c 53e3d6e6 3f10f904 6e14a299 7a381aad f05c271e b60a9374
+543e9a66 5aa6ef39 48cf9e00 56e0cecd 7b5a8474 bace4629 a9fc48ba 75cc897b 10d13ad8 866a904c 53e3d6e6 3f10f904 6e14a299 7a381aad f05c271e b60a9374
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(49)                                                   = c6e1ad04
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 19435d4c
+ mix->words[17]                                                                     = 5aa6ef39
+ ((s_mix->words[0] XOR ACCESSES(49)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 43e5b275 --> dec 1139126901
+ (above) MOD num_full_pages                                                         = 0065ba5e
+ index[49] = 0065ba5e
+ 2 * index + 0 = 00cb74bc --> dec 13333692
+ dag_node[00cb74bc] = 00cb74bc 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00cb74bd --> dec 13333693
+ dag_node[00cb74bd] = 00cb74bd 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[50]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+71352605 edca96bb 9ed5ba00 90e58cb7 a37e829c 3bb8728b 52267cce ebfc6ca1 515fa208 e5c127a4 f5ab4c12 4bb8014c e37bf6db 1351fe57 7f11943a 06a61f9c
+04467a2f edca96bb 9ed5ba00 90e58cb7 a37e829c 3bb8728b 52267cce ebfc6ca1 515fa208 e5c127a4 f5ab4c12 4bb8014c e37bf6db 1351fe57 7f11943a 06a61f9c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(50)                                                   = c6e1ad07
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 1c436205
+ mix->words[18]                                                                     = 9ed5ba00
+ ((s_mix->words[0] XOR ACCESSES(50)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 8296d805 --> dec 2190923781
+ (above) MOD num_full_pages                                                         = 0016e750
+ index[50] = 0016e750
+ 2 * index + 0 = 002dcea0 --> dec 3002016
+ dag_node[002dcea0] = 002dcea0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 002dcea1 --> dec 3002017
+ dag_node[002dcea1] = 002dcea1 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[51]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+3b87177f 10eb4861 0a73ce00 d05c8415 fc279b94 8e5c50d1 2096784a 1f5f0173 218c1298 5311672c cea8c056 7eaa0aa4 f7259ac1 c11362f5 42ac574e 1383c294
+e9df995c 10eb4861 0a73ce00 d05c8415 fc279b94 8e5c50d1 2096784a 1f5f0173 218c1298 5311672c cea8c056 7eaa0aa4 f7259ac1 c11362f5 42ac574e 1383c294
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(51)                                                   = c6e1ad06
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 1b436072
+ mix->words[19]                                                                     = d05c8415
+ ((s_mix->words[0] XOR ACCESSES(51)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = cb1fe467 --> dec 3407864935
+ (above) MOD num_full_pages                                                         = 001ffc31
+ index[51] = 001ffc31
+ 2 * index + 0 = 003ff862 --> dec 4192354
+ dag_node[003ff862] = 003ff862 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 003ff863 --> dec 4192355
+ dag_node[003ff863] = 003ff863 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[52]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+3496048f 0362f0b3 744d4a00 16a3ed0f 8659e9fc ec533903 96df5c7e d58f4809 67814548 f0656a44 a9a6c762 09aec02c d1329dd3 e684c7af 434d6fca 4c6b4efc
+86c193b7 0362f0b3 744d4a00 16a3ed0f 8659e9fc ec533903 96df5c7e d58f4809 67814548 f0656a44 a9a6c762 09aec02c d1329dd3 e684c7af 434d6fca 4c6b4efc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(52)                                                   = c6e1ad01
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 16435893
+ mix->words[20]                                                                     = 8659e9fc
+ ((s_mix->words[0] XOR ACCESSES(52)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 901ab16f --> dec 2417668463
+ (above) MOD num_full_pages                                                         = 001ac24f
+ index[52] = 001ac24f
+ 2 * index + 0 = 0035849e --> dec 3507358
+ dag_node[0035849e] = 0035849e 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0035849f --> dec 3507359
+ dag_node[0035849f] = 0035849f 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[53]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+571ca983 07c0e9c9 15ab7e00 b30e2e9d 7b8b57b4 0a02bfb9 ff9e9a5a 398e662b 38801058 b3a6490c 738bdf46 6a188544 25ae7329 9206587d bce6fafe 48ed56b4
+d98e0d8a 07c0e9c9 15ab7e00 b30e2e9d 7b8b57b4 0a02bfb9 ff9e9a5a 398e662b 38801058 b3a6490c 738bdf46 6a188544 25ae7329 9206587d bce6fafe 48ed56b4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(53)                                                   = c6e1ad00
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 15435700
+ mix->words[21]                                                                     = 0a02bfb9
+ ((s_mix->words[0] XOR ACCESSES(53)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 1f41e8b9 --> dec 524413113
+ (above) MOD num_full_pages                                                         = 0041ec5b
+ index[53] = 0041ec5b
+ 2 * index + 0 = 0083d8b6 --> dec 8640694
+ dag_node[0083d8b6] = 0083d8b6 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0083d8b7 --> dec 8640695
+ dag_node[0083d8b7] = 0083d8b7 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[54]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+a59d018f fdb0076b 1cf75a00 7c536127 305b105c 7b53d03b c0acfbae c62ad5b1 4999ba88 dac4fde4 2b307b32 4899ca0c 7a9f498b 5cfd4cc7 5d9d1dda 819f7d5c
+041c8889 fdb0076b 1cf75a00 7c536127 305b105c 7b53d03b c0acfbae c62ad5b1 4999ba88 dac4fde4 2b307b32 4899ca0c 7a9f498b 5cfd4cc7 5d9d1dda 819f7d5c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(54)                                                   = c6e1ad03
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 18435bb9
+ mix->words[22]                                                                     = c0acfbae
+ ((s_mix->words[0] XOR ACCESSES(54)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = d8efa017 --> dec 3639582743
+ (above) MOD num_full_pages                                                         = 006fb976
+ index[54] = 006fb976
+ 2 * index + 0 = 00df72ec --> dec 14643948
+ dag_node[00df72ec] = 00df72ec 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00df72ed --> dec 14643949
+ dag_node[00df72ed] = 00df72ed 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[55]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+45f606f1 c71bad71 9962ae00 de41f065 7b5ac0d4 5ff0cce1 fe5032ea a66e65a3 6500a418 481badec 2f51efb6 561910e4 93c0c5d1 29bfdd45 3855fe2e 6a1257d4
+01359d46 c71bad71 9962ae00 de41f065 7b5ac0d4 5ff0cce1 fe5032ea a66e65a3 6500a418 481badec 2f51efb6 561910e4 93c0c5d1 29bfdd45 3855fe2e 6a1257d4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(55)                                                   = c6e1ad02
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 17435a26
+ mix->words[23]                                                                     = a66e65a3
+ ((s_mix->words[0] XOR ACCESSES(55)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = b12d3f85 --> dec 2972532613
+ (above) MOD num_full_pages                                                         = 002d5443
+ index[55] = 002d5443
+ 2 * index + 0 = 005aa886 --> dec 5941382
+ dag_node[005aa886] = 005aa886 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 005aa887 --> dec 5941383
+ dag_node[005aa887] = 005aa887 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[56]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+131645e5 e19208e3 7657ea00 46cd6eff 03dd8dbc e9128633 4240265e a2c9ff99 180251c8 6f92ca84 33fc5b82 6d7596ec 69776803 fe09539f dd5f226a cee042bc
+2d3c3db5 e19208e3 7657ea00 46cd6eff 03dd8dbc e9128633 4240265e a2c9ff99 180251c8 6f92ca84 33fc5b82 6d7596ec 69776803 fe09539f dd5f226a cee042bc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(56)                                                   = c6e1ad0d
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 22436b77
+ mix->words[24]                                                                     = 180251c8
+ ((s_mix->words[0] XOR ACCESSES(56)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 3a413abf --> dec 977353407
+ (above) MOD num_full_pages                                                         = 0041418b
+ index[56] = 0041418b
+ 2 * index + 0 = 00828316 --> dec 8553238
+ dag_node[00828316] = 00828316 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00828317 --> dec 8553239
+ dag_node[00828317] = 00828317 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[57]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+f1928469 fbe3fd59 4c655e00 7465bb6d d1c61ef4 1b294249 a8fc65fa dcfd5ddb 93a6bdd8 2814cdcc 58440da6 3c1c9584 09f8bcb9 87aea34d e6c32cde 67090df4
+ea57a0f8 fbe3fd59 4c655e00 7465bb6d d1c61ef4 1b294249 a8fc65fa dcfd5ddb 93a6bdd8 2814cdcc 58440da6 3c1c9584 09f8bcb9 87aea34d e6c32cde 67090df4
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(57)                                                   = c6e1ad0c
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 214369e4
+ mix->words[25]                                                                     = 2814cdcc
+ ((s_mix->words[0] XOR ACCESSES(57)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 0957a428 --> dec 156738600
+ (above) MOD num_full_pages                                                         = 0057a536
+ index[57] = 0057a536
+ 2 * index + 0 = 00af4a6c --> dec 11487852
+ dag_node[00af4a6c] = 00af4a6c 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00af4a6d --> dec 11487853
+ dag_node[00af4a6d] = 00af4a6d 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[58]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+b2093b27 e0e7d31b 4392fa00 a9260c97 2ee2ba1c 0af358eb ff54888e bddabfc1 477cdb08 e4bff824 99217c52 24ff5ecc 6b91173b e4eb1237 233fa17a 2740f71c
+df5d2c05 e0e7d31b 4392fa00 a9260c97 2ee2ba1c 0af358eb ff54888e bddabfc1 477cdb08 e4bff824 99217c52 24ff5ecc 6b91173b e4eb1237 233fa17a 2740f71c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(58)                                                   = c6e1ad0f
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 24436e9d
+ mix->words[26]                                                                     = 99217c52
+ ((s_mix->words[0] XOR ACCESSES(58)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = bd6212cf --> dec 3177321167
+ (above) MOD num_full_pages                                                         = 006228f5
+ index[58] = 006228f5
+ 2 * index + 0 = 00c451ea --> dec 12866026
+ dag_node[00c451ea] = 00c451ea 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00c451eb --> dec 12866027
+ dag_node[00c451eb] = 00c451eb 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[59]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+6b4c4f8f 27f15381 605f8e00 dde5d1b5 eaeafa14 2814f9f1 8012f78a a05bdcd3 918ccd98 3e33a0ac 61b6b516 0a023b24 906791e1 950dac95 f72b330e e7450114
+a4681a34 27f15381 605f8e00 dde5d1b5 eaeafa14 2814f9f1 8012f78a a05bdcd3 918ccd98 3e33a0ac 61b6b516 0a023b24 906791e1 950dac95 f72b330e e7450114
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(59)                                                   = c6e1ad0e
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 23436d0a
+ mix->words[27]                                                                     = 0a023b24
+ ((s_mix->words[0] XOR ACCESSES(59)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 2941562e --> dec 692147758
+ (above) MOD num_full_pages                                                         = 00415afc
+ index[59] = 00415afc
+ 2 * index + 0 = 0082b5f8 --> dec 8566264
+ dag_node[0082b5f8] = 0082b5f8 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 0082b5f9 --> dec 8566265
+ dag_node[0082b5f9] = 0082b5f9 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[60]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+78a38be5 61e67413 b66c8a00 05c91fef e3e7ad7c 0a057663 27dbae3e 439ca029 b8a7a648 9745eec4 e89f11a2 e58319ac 340aa533 3986ae8f 27015f0a 25a0b27c
+03638a25 61e67413 b66c8a00 05c91fef e3e7ad7c 0a057663 27dbae3e 439ca029 b8a7a648 9745eec4 e89f11a2 e58319ac 340aa533 3986ae8f 27015f0a 25a0b27c
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(60)                                                   = c6e1ad09
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 1e43652b
+ mix->words[28]                                                                     = 340aa533
+ ((s_mix->words[0] XOR ACCESSES(60)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 2a49c018 --> dec 709476376
+ (above) MOD num_full_pages                                                         = 0049c504
+ index[60] = 0049c504
+ 2 * index + 0 = 00938a08 --> dec 9669128
+ dag_node[00938a08] = 00938a08 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 00938a09 --> dec 9669129
+ dag_node[00938a09] = 00938a09 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[61]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+cee6b377 30c8b9e9 2cdd3e00 0a9d453d 41b61a34 29995dd9 fcd34b9a 9890208b f7eac358 e716de8c d468c206 f96169c4 1fc20f49 1e04cb1d 71289cbe b7f8f934
+7a21f236 30c8b9e9 2cdd3e00 0a9d453d 41b61a34 29995dd9 fcd34b9a 9890208b f7eac358 e716de8c d468c206 f96169c4 1fc20f49 1e04cb1d 71289cbe b7f8f934
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(61)                                                   = c6e1ad08
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 1d436398
+ mix->words[29]                                                                     = 1e04cb1d
+ ((s_mix->words[0] XOR ACCESSES(61)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = 0347a885 --> dec 55027845
+ (above) MOD num_full_pages                                                         = 0047a8df
+ index[61] = 0047a8df
+ 2 * index + 0 = 008f51be --> dec 9392574
+ dag_node[008f51be] = 008f51be 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 008f51bf --> dec 9392575
+ dag_node[008f51bf] = 008f51bf 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[62]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+2ca3d5eb b4fca9cb a0489a00 f293ff07 a5ab3fdc 556ebc9b 9aa0036e b5e33ad1 9e918388 55005664 66e96f72 58597f8c 477e0feb 5e8bbea7 e0eebf1a d0f04cdc
+79ff1abd b4fca9cb a0489a00 f293ff07 a5ab3fdc 556ebc9b 9aa0036e b5e33ad1 9e918388 55005664 66e96f72 58597f8c 477e0feb 5e8bbea7 e0eebf1a d0f04cdc
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(62)                                                   = c6e1ad0b
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 20436851
+ mix->words[30]                                                                     = e0eebf1a
+ ((s_mix->words[0] XOR ACCESSES(62)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = c0add74b --> dec 3232618315
+ (above) MOD num_full_pages                                                         = 002dedda
+ index[62] = 002dedda
+ 2 * index + 0 = 005bdbb4 --> dec 6020020
+ dag_node[005bdbb4] = 005bdbb4 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 005bdbb5 --> dec 6020021
+ dag_node[005bdbb5] = 005bdbb5 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+--------
+mix[63]:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+30b21b45 b4bf4a91 524a6e00 e5fa7805 a8958754 1852e801 d7e5662a 25b59703 27120f18 3387ff6c 737a7076 a0e3c964 76730ef1 7cfd20e5 31d6d5ee c648fe54
+c9cccc32 b4bf4a91 524a6e00 e5fa7805 a8958754 1852e801 d7e5662a 25b59703 27120f18 3387ff6c 737a7076 a0e3c964 76730ef1 7cfd20e5 31d6d5ee c648fe54
+ s_mix->words[0]                                                                    = c6e1ad35 --> dec 3336678709
+ s_mix->words[0] XOR ACCESSES(63)                                                   = c6e1ad0a
+ (s_mix->words[0] ^ i) * FNV_PRIME)                                                 = 1f4366be
+ mix->words[31]                                                                     = c648fe54
+ ((s_mix->words[0] XOR ACCESSES(63)) MUL FNV_PRIME) XOR (mix->words[i % MIX_WORDS]) = d90b98ea --> dec 3641415914
+ (above) MOD num_full_pages                                                         = 000bb258
+ index[63] = 000bb258
+ 2 * index + 0 = 001764b0 --> dec 1533104
+ dag_node[001764b0] = 001764b0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ 2 * index + 1 = 001764b1 --> dec 1533105
+ dag_node[001764b1] = 001764b1 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+
+ dag_accesses = 128
+ fnv_hashes   = 2048
+
+final mix:
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+ed77892f 1a226243 8b2b2a00 0e4aefdf b764093c 4b833993 081fd41e 5fdcb9b9 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c
+df721607 1a226243 8b2b2a00 0e4aefdf b764093c 4b833993 081fd41e 5fdcb9b9 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c
+
+compress mix:
+ w = 00 --> mix->words[00] = a7bca231
+ w = 04 --> mix->words[01] = 68c21ad8
+ w = 08 --> mix->words[02] = 60db764e
+ w = 12 --> mix->words[03] = 3d35be54
+ w = 16 --> mix->words[04] = 938cee69
+ w = 20 --> mix->words[05] = 68c21ad8
+ w = 24 --> mix->words[06] = 60db764e
+ w = 28 --> mix->words[07] = 3d35be54
+
+mix after compression (16 + 32 words):
+c6e1ad35 f173e743 08f12a00 cfd378df 9c066d3c c214ee93 c5d5861e a43cd8b9 f1f1bac8 a37a7304 206877c2 3e7dbc6c 70a9ea63 aa49b17f 64d20baa efadc23c
+a7bca231 68c21ad8 60db764e 3d35be54 938cee69 68c21ad8 60db764e 3d35be54 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c
+df721607 1a226243 8b2b2a00 0e4aefdf b764093c 4b833993 081fd41e 5fdcb9b9 996dc2c8 8b171704 3fbf09c2 aa96086c 68208563 a77ac87f 6332c5aa 78e85e3c
+final compressed mix hash (8 words):
+a7bca231 68c21ad8 60db764e 3d35be54 938cee69 68c21ad8 60db764e 3d35be54
+
+mix_hash = 31a2bca7d81ac2684e76db6054be353d69ee8c93d81ac2684e76db6054be353d
+result   = bff9dc8f2fd359dc2509c254bec24d344fe5b55ac2d13332a2a7d1de1d003b16
+
+-- END   -- ethash_hash_debug()
+
+ Result hash = bff9dc8f2fd359dc2509c254bec24d344fe5b55ac2d13332a2a7d1de1d003b16
+ ethash_full hash: 5309ns, bff9dc8f2fd359dc2509c254bec24d344fe5b55ac2d13332a2a7d1de1d003b16
+
+ dag_node[] = e01c3100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+----------------------------------------------------------------------------------------------------
