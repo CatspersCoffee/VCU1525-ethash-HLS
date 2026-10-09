@@ -1,0 +1,24 @@
+# Vivado / Vivado HLS generated output
+.Xil/
+*.runs/
+*.cache/
+*.gen/
+*.hw/
+*.sim/
+*.ip_user_files/
+project_X/
+solution*/
+.autopilot/
+checkpoints/
+bitfiles/
+*.dcp
+*.bit
+*.bin
+*.mcs
+*.ltx
+*.xclbin
+*.log
+*.jou
+*webtalk*
+# HLS install headers (copy from a Vivado HLS 2018.x install)
+HLS_include/
